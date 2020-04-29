@@ -1,0 +1,126 @@
+<ion-view view-title="Issue Raw Mat">
+  <ion-content class="IssueRawMat input-custom"><!--container-->
+
+    <div class="padding-top">
+      
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center"><label class="text-danger">Line No :</label></div>
+        <div class="col col-center"><input type="text" id="Line_No" ng-model="data.Line_No" class="form-control" placeholder="" ng-keyup="($event.which === 13) ? searchLine(data.Line_No) : return;"></div>
+        <div class="col col-50 col-center">
+          <select id="PD" ng-model="data.PD" ng-change="changePD(data.PD)">
+            <option value="">เลือก</option>
+            <option ng-if="getBaggingOrderHeaderList" ng-repeat="(key, value) in getBaggingOrderHeaderList | orderObjectBy:'BaggingOrder_No':false" value="{{value.BaggingOrder_Index+','+value.BaggingOrder_No}}">{{value.BaggingOrder_No}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center"><label class="text-danger">Shift :</label></div>
+        <div class="col col-25 col-center">
+          <select id="Shift" id="Shift" ng-model="data.Shift" ng-change="changeShift(data.Shift)">
+            <option value="">เลือก</option>
+            <option ng-if="getShiftList" ng-repeat="(key, value) in getShiftList | orderObjectBy:'Seq':false" value="{{value.WorkShifts_Index+','+value.WorkShiftsTime}}">{{value.Seq}}</option>
+          </select>
+        </div>
+        <div class="col col-center"><input type="text" ng-model="data.Shift_Time" class="form-control" placeholder="" readonly></div>
+      </div>
+
+      <br>
+
+      <div class="item">
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center"><label class="text-danger">Start Date :</label></div>
+          <div class="col col-center">
+            <input type="date" id="Date" ng-model="data.Date" max="{{data.MaxDate}}" class="form-control" value="{{date | date:'dd/MM/yyyy'}}" ng-keyup="($event.which === 13) ? searchDate(data.Date) : return;">
+          </div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center"><label class="text-danger">ประเภทเบิก :</label></div>
+          <div class="col col-center">
+            <select id="TypeIssue" ng-model="data.TypeIssue" ng-change="changeTypeIssue(data.TypeIssue)">
+              <option value="">เลือก</option>
+              <option ng-if="getTypeIssueList" ng-repeat="value in getTypeIssueList" value="{{value}}">{{value}}</option>
+            </select>
+          </div>
+        </div>
+
+        <!--<div class="row responsive-xs">
+          <div class="col col-25 col-center">
+            <label class="text-danger">Location :</label>
+          </div>
+          <div class="col col-40 col-center">
+            <input type="text" ng-model="data.Location" id="Location" class="form-control" ng-keyup="($event.which === 13) ? search(data.Location,'Location','read location no') : return;" placeholder="" uppercased>
+          </div>
+          <div class="col col-center">
+            <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('Location')"></a>
+          </div>
+          <div class="col col-20 col-center">
+            <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.Location,'Location','click button')"></button>
+          </div>
+        </div>-->
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">
+            <label class="text-danger">Pallet :</label>
+          </div>
+          <div class="col col-40 col-center">
+            <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'PalletNo','read pallet no') : return;" placeholder="" uppercased>
+          </div>
+          <div class="col col-center">
+            <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('PalletNo')"></a>
+          </div>
+          <div class="col col-20 col-center">
+            <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo,'PalletNo','click button')"></button>
+          </div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">Status :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Status" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">สินค้า :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Detail" class="form-control" placeholder="" readonly></div> 
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">Lot :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Lot_No" class="form-control" placeholder="" readonly></div>
+          <div class="col col-center"><input type="text" ng-model="data.Qty" class="form-control" placeholder="" readonly></div>
+        </div>
+
+      </div>
+      <br>
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center"><label class="text-danger">จน. เบิก :</label></div>
+        <div class="col col-center"><input type="text" id="IssueQty" ng-model="data.IssueQty" class="form-control" placeholder="" ng-keyup="cal($event.which,data.IssueQty)" ng-disabled="isDisable_IssueQty"></div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center"><label>จน. คงเหลือ :</label></div>
+        <div class="col col-center"><input type="text" ng-model="data.BalanceQty" class="form-control" placeholder="" readonly></div>
+      </div>
+
+      <hr>
+
+      <div class="text-center">
+        <button class="button button-assertive button-select icon-left ion-close" ng-click="clear()">Clear</button>
+        <button class="button button-dark button-select icon-left ion-checkmark" ng-click="save()">ยืนยัน</button>
+      </div>
+      
+    </div>
+
+  </ion-content>
+
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+      <div class="keep col col-center">
+        <!--<span class="right">พาเลทที่ : {{lbPallet}}</span>-->
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

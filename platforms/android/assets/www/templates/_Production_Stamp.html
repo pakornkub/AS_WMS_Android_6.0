@@ -1,0 +1,47 @@
+
+<ion-view view-title="Production Stamp" >
+  <ion-content class="ProductionStamp input-custom containner padding-left padding-right padding-top">
+    <!-- <form role="form" name="myForm" novalidate> -->
+
+        <div class="row text-right padding-top">
+          <label class="col col-center col-25 text-danger">Line :</label>
+          <div class="col col-40"><input type="text" ng-model="data.Line"  ng-keyup="search(data.Line, 'Line','read barcode')" id="Line" class="form-control" placeholder="Enter Text" uppercased></div>
+          <div class="col text-center"><a class=" button-icon icon ion-ios-camera-outline" ng-click="scanBarcode('Line')" style="cursor: pointer ;line-height: 30px; max-height: 35px !important;"></a></div>
+          <div class="col col-20">
+            <button class="button button-dark button-block no-margin button-save" ng-click="search(data.Line, 'Line','')">ค้นหา</button>
+            <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+            </div>
+        </div>
+        <div class="row">
+          <label class="col col-center col-25 text-right text-danger">Bag Order :;</label>
+          <div class="col">
+            <select width="100%" style="width: 100%; height: 32px; " ng-model="data.BagOrder" ng-change="changeBagOrder(data.BagOrder)">
+              <option value="">เลือก</option>
+              <option ng-if="getBagging.length > 0" ng-repeat="(key, value) in getBagging | orderObjectBy:'BaggingOrder_No':false " value="{{value.BaggingOrder_No}}">{{value.BaggingOrder_No}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row text-right">
+          <label class="col col-center col-25 text-danger">Barcode :</label>
+          <div class="col col-40"><input type="text" ng-model="data.Barcode" id="Barcode" ng-keyup="search(data.Barcode, 'Barcode','read barcode')" class="form-control" placeholder="Enter Text" uppercased></div>
+          <div class="col"><a class=" button-icon icon ion-ios-camera-outline" ng-click="scanBarcode('Barcode')" style="cursor: pointer ;line-height: 30px; max-height: 35px !important;"></a></div>
+          <div class="col col-20"><button class="button button-dark button-block no-margin button-save" ng-click="search(data.Barcode, 'Barcode','')">บันทึก</button></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25">Date :</div>
+          <div class="col "><input type="text" ng-model="data.Date" class="form-control" readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25">User :</div>
+          <div class="col"><input type="text" ng-model="data.User" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        
+    <!-- </form> -->
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+      <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

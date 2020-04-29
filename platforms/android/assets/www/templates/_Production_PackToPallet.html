@@ -1,0 +1,100 @@
+
+<ion-view view-title="Bag To Pallet" >
+  <ion-content class="PackToPallet input-custom containner padding-left padding-right padding-top">
+    <form role="form" name="myForm" novalidate>
+
+        <div class="row padding-top">
+            <div class="col col-center col-20 text-right">
+              <label class="text-danger">Bag Out : </label>
+            </div>
+            <div class="col">
+                <select id="orderItem" width="100%" style="width: 100%; height: 32px; " required ng-change="changeOrder(data.Order)" ng-model="data.Order">
+                <option value="">เลือก</option>
+                <option ng-if="getBaggingOrderHeaderList" ng-repeat="(key, value) in getBaggingOrderHeaderList | orderObjectBy:'BaggingOrder_No':false " value="{{value.BaggingOrder_No+','+value.BaggingOrder_Index}}">{{value.BaggingOrder_No}}</option>
+              </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-center col-20 text-right">
+                <label class="text-danger">Grade : </label>
+            </div>
+            <div class="col">
+              <input type="text" ng-model="data.grade" value="{{data.grade}}"  class="form-control" readonly>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col col-center col-20 text-right">
+              <label class=" text-danger">Pallet :</label>
+            </div>
+            <div class="col col-45">
+                <input type="text" id="PalletBarcode" ng-keyup="checkPallet('read barcode')"  ng-model="data.PalletBarcode" value="{{data.PalletBarcode}}" class="form-control" placeholder="Enter Text">
+            </div>
+            <div class="col">
+                <a class="button-icon icon ion-ios-camera-outline button-scanbarcode" ng-disabled="isDisable" ng-click="scanBarcode1()"></a>
+            </div>
+            <div class="col col-20">
+              <button class="button button-block button-dark button-save pull-right no-margin" ng-click="checkPallet('')">ค้นหา</button>
+              <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+            </div>
+        </div>
+        <div class="row">
+          <div class="col col-center col-20 text-right">
+            <label class="text-danger">Roll :</label>
+          </div>
+          <div class="col col-45"><input type="text" id="RollBarcode" ng-keyup="checkRoll('read barcode')" ng-model="data.RollBarcode"  value="{{data.RollBarcode}}" class="form-control" placeholder="Enter Text"></div>
+          <div class="col">
+              <a class="button-icon icon ion-ios-camera-outline button-scanbarcode" ng-disabled="isDisable" ng-click="scanBarcode2()"></a>
+          </div>
+          <div class="col col-20">
+            <button class="button button-block button-dark button-save pull-right no-margin" ng-click="checkRoll('')">ค้นหา</button>
+          <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag2" value="yes" >
+           
+          </div>
+
+        </div>
+
+        <div class="padding">
+          <!--<div ><label class="header-table-title">History</label></div>-->
+          <div class="item">
+            <ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (data.gridTable && data.gridTableLength > 10)? '500px':'auto'}">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Roll No.</th>
+                      <th>Weight</th>
+                      <th>Lot</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  <tr ng-if="data.gridTableLength == 0">
+                    <td colspan="9">ไม่มี history สำหรับรายการนี้</td>
+                  </tr>
+                  <tr ng-if="data.gridTableLength > 0" ng-repeat="(n, v) in data.gridTable track by $index">
+                    <td>{{v.Roll_No}}</td>
+                    <td>{{v.Weight_Act}}</td>
+                    <td>{{v.PLot}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+            </ion-scroll>
+
+          <ul class="list-inline pull-right text-right">
+            <li class="text-right">Count</li>
+            <li class="col-30"><input type="text" value="{{data.gridTableLength}}" class="form-control text-right input-skyblue" placeholder="0" readonly></li>
+            <li class="text-left">Roll</li>
+          </ul>
+          <br>
+        </div> 
+
+        <br>        
+        <div class="list text-center"><button class="button button-dark button-select" ng-click="save()">Save</button></div>
+
+    </form>
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+      <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

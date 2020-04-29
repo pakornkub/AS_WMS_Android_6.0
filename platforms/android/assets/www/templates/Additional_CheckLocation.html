@@ -1,0 +1,77 @@
+<ion-view view-title="ตรวจสอบ Location">
+  <ion-content class="CheckLocation input-custom"><!--container-->
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+				<div class="col col-25 col-center">
+					<label class="text-danger">Location :</label>
+				</div>
+				<div class="col col-40 col-center">
+					<input type="text" ng-model="data.Location" id="Location" class="form-control" ng-keyup="($event.which === 13) ? search(data.Location,'read location') : return;" placeholder="" uppercased>
+				</div>
+				<div class="col col-center">
+					<a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanLocation()"></a>
+				</div>
+				<div class="col col-20 col-center">
+					<button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.Location,'click button')"></button>
+					<input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+				</div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center">Zone :</div>
+        <div class="col col-center"><input type="text" ng-model="data.Location2" class="form-control" placeholder="" uppercased readonly></div>
+      </div>
+
+      <div class="col col-center">
+				<div style="margin-bottom: 10px;"><span class="header-table-title">รายการ</span></div>
+				<ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (dataTableItemLength > 10)? '570px':'auto'}">
+					<table class="table table-bordered table-responsive">
+						<thead>
+							<tr style="background-color: #eeeeee">
+								<th>No</th>
+                <th>Grade</th>
+                <th>Qty</th>
+                <th>Weight</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-if="dataTableItemLength <= 0">
+								<td colspan="4" class="text-center text-danger">ไม่มีรายการ</td>
+							</tr>
+							<tr ng-if="dataTableItemLength > 0" ng-repeat="(n, v) in dataTableItem track by $index">
+                <td>{{$index+1}}</td>
+                <td>{{v.Grade}}</td>
+                <td>{{v.Qty}}</td>
+                <td>{{v.Weight}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</ion-scroll>
+			</div>
+
+      <div class="row responsive-sm">
+        <div class="col col-50 col-offset-50">
+          <div class="row">
+            <div class="col col-center">รายการสินค้าทั้งหมด</div>
+            <div class="col col-50  col-center">
+              <input type="text" ng-model="data.Count" ng-value="dataTableItemLength" class="form-control text-right input-skyblue" placeholder="0" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+  </ion-content>
+
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+      <div class="keep col col-center">
+        <!--<span class="right">พาเลทที่ : {{lbPallet}}</span>-->
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

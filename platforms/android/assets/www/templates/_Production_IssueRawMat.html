@@ -1,0 +1,122 @@
+
+<ion-view view-title="Issue Raw mat" >
+  <ion-content class="IssueRawMat input-custom containner padding-left padding-right padding-top">
+
+      <div class="padding-top">
+        <div class="row no-padding">
+          <div class="col col-center col-25 text-right">
+            <label class="text-danger">Line No. :</label>
+          </div>
+          <div class="col col-40"><input type="text" ng-model="data.Line" ng-keyup="search(data.Line, 'Line','read barcode')" id="Line" class="form-control" placeholder="Enter Text" uppercased></div>
+          <div class="col text-center">
+            <a class=" button-icon icon ion-ios-camera-outline" ng-click="scanBarcode('Line')" style="cursor: pointer ;line-height: 30px; max-height: 35px !important;"></a>
+          </div>
+          <div class="col col-20">
+            <button class="button button-dark button-block button-save no-margin" ng-click="search(data.Line, 'Line','')">ค้นหา</button>
+            <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+            </div>
+        </div>
+        <div class="row no-padding">
+          <div class="col col-center col-25 text-right"></div>
+          <div class="col">
+            <select style="height: 32px; " ng-model="data.BagOrder">
+              <option value="">เลือก</option>
+              <option ng-if="getBagging.length > 0" ng-repeat="(key, value) in getBagging | orderObjectBy:'BaggingOrder_Index':false " value="{{value.BaggingOrder_Index+','+value.BaggingOrder_No}}">{{value.BaggingOrder_No}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row no-padding">
+          <div class="col col-center col-25 text-right">
+            <label class="text-danger">Shift :</label>
+          </div>
+          <div class="col ">
+            <select width="100%" style="height: 32px;" ng-model="data.Shift" ng-change="change(data.Shift, 'Shift')">
+              <option value="">เลือก</option>
+              <option ng-if="getShift.length>0" ng-repeat="(key, value) in getShift | orderObjectBy:'Seq':false " value="{{value.WorkShifts_Index}}">{{value.Seq}}</option>
+            </select>
+          </div>
+          <div class="col">
+            <input type="text" ng-model="data.WorkShiftsTime" class="form-control" placeholder="Enter Text" readonly>
+          </div>
+        </div>
+        <div class="row no-padding">
+          <div class="col col-center col-25 text-right">
+            <label class="text-danger">Start Date :</label>
+          </div>
+          <div class="col ">
+            <input type="date" ng-model="data.StartDate" max="{{data.DateMax}}" class="form-control" >
+          </div>
+        </div>
+        <div class="row no-padding ">
+          <div class="col col-center col-25 text-right">
+            <label class="text-danger">ประเภท :</label>
+          </div>
+          <div class="col">
+            <select width="60%" style="width: 60%; height: 32px;" ng-model="data.TypeIssue" ng-change="change(data.TypeIssue, 'TypeIssue')">
+              <option value="">เลือก</option>
+              <option ng-if="TypeIssue.length>0" ng-repeat="value in TypeIssue" value="{{value}}">{{value}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row no-padding">
+          <div class="col col-center col-25 text-right">
+            <label class="text-danger">Location :</label>
+          </div>
+          <div class="col col-40">
+            <input type="text" ng-model="data.Location" id="Location" class="form-control" placeholder="Enter Text" >
+            </div>
+          <div class="col text-center">
+            <a class="button-icon icon ion-ios-camera-outline" ng-click="scanBarcode('Location')" style="cursor: pointer ;line-height: 30px; max-height: 35px !important;"></a>
+          </div>
+          
+          <!-- <button class="button button-stable btn-custom" ng-click="search(data.Location, 'Location')">ค้นหา</button> -->
+        </div>
+        <div class="row no-padding">
+          <div class="col col-center col-25 text-right">
+            <label class="text-danger">Pallet No. : </label>
+          </div>
+          <div class="col col-40"><input type="text" ng-model="data.Pallet" id="Pallet" ng-keyup="search(data.Pallet, 'Pallet','read barcode')" class="form-control" placeholder="Enter Text" ></div>
+          <div class="col text-center">
+            <a class="button-icon icon ion-ios-camera-outline" ng-click="scanBarcode('Pallet')" style="cursor: pointer ;line-height: 30px; max-height: 35px !important;"></a>
+          </div>
+          <div class="col col-20"><button class="button button-dark button-block button-save no-margin" ng-click="search(data.Pallet, 'Pallet','')">ค้นหา</button></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25 text-right">
+            <label class="text-danger">Status : </label>
+          </div>
+          <div class="col "><input type="text" ng-model="data.Status" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25">สินค้า : </div>
+          <div class="col "><input type="text" ng-model="data.Product" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25">Lot : </div>
+          <div class="col"><input type="text" ng-model="data.Lot" class="form-control" placeholder="Enter Text" readonly></div>
+          <div class="col" style="margin-left: 6px;"><input type="text" ng-model="data.QtyBal" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="item" style="padding-left: 0px; padding-right: 0px;">
+          <div class="row">
+            <label class="col col-center col-25 text-right text-danger">จำนวนเบิก :</label>
+            <div class="col"><input type="text" ng-model="data.IssueQty" id="IssueQty" class="form-control" placeholder="Enter Text" ng-disabled="isIssueQty" ng-change="inputIssueQty(data.IssueQty)" ></div>
+          </div>
+          <div class="row ">
+            <div class="col col-center col-25 text-right">จำนวนคงเหลือ : </div>
+            <div class="col"><input type="text" ng-model="data.BalanceQty" class="form-control input-skyblue" placeholder="Enter Text" readonly></div>
+          </div>
+        </div>
+        
+        <br><div class="text-center"><button class="button button-assertive button-select" ng-click="clear()">Clear</button></div>
+        <br><div class="text-center"><button class="button button-dark button-select" ng-click="save()">บันทึก</button></div>
+
+      </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+      <div class="bar bar-footer fooExit">
+          <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+      </div>
+  </ion-footer-bar>
+</ion-view>

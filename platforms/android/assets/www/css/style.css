@@ -1,0 +1,321 @@
+/* Empty. Add your own CSS if you like */
+@font-face {
+  font-family: "Supermarket";
+  src: url("../font/supermarket.eot");
+  src: url("../font/supermarket.eot?#iefix") format("embedded-opentype"),
+    url("../font/supermarket.woff") format("woff"),
+    url("../font/supermarket.ttf") format("truetype"),
+    url("../font/supermarket.svg#supermarket") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  font-family: "Supermarket" !important;
+  font-size: 19px;
+  font-weight: normal !important;
+}
+
+.fooExit {
+  /*background-position: bottom !important;*/
+  font-size: 35px !important;
+}
+
+/*--------------------
+CUSTOM LABEL
+---------------------*/
+label {
+  font-size: 16px;
+}
+
+label.text-danger {
+  font-weight: bold !important;
+}
+
+/*--------------------
+CUSTOM INPUT BOX
+---------------------*/
+input {
+  height: 40px !important;
+}
+
+.login-input input {
+  padding: 0px 12px !important;
+}
+
+.input-custom input {
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  padding: 0px 12px !important;
+  font-size: 16px !important;
+}
+
+.input-skyblue {
+  background-color: skyblue !important;
+}
+
+/*--------------------
+CUSTOM SELECT BOX
+---------------------*/
+
+select {
+  height: 40px !important;
+}
+
+.input-custom select {
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  padding: 0px 12px !important;
+  font-size: 16px !important;
+  width: 100%;
+}
+
+.selected {
+  background-color: cornflowerblue;
+  color: white;
+  /*font-weight:bold;*/
+}
+
+.NewInUnwire,
+.UserCusReturn,
+.NewInShipping,
+.CostomerReturn,
+.AdditionalSumRoll,
+.AdditionalCheckPallet,
+.AdditionalCheckLocation,
+.TransportPayProductGenaral {
+  /*padding-left: 5px;
+	padding-right: 5px;*/
+  width: 100%;
+}
+
+.NewInUnwireBP,
+.ProductGeneral,
+.ReceiveCoreToPallet,
+.ReceivingRawMatPackingChemical,
+.RawMat,
+.MovePallet {
+  /*padding-top: 7px !important;
+	padding-left: 5px;
+	padding-right: 5px;*/
+  width: 100%;
+}
+
+.NewInUnwire .row,
+.UserCusReturn .row,
+.NewInShipping .row,
+.CostomerReturn .row,
+.AdditionalSumRoll .row,
+.AdditionalCheckPallet .row,
+.AdditionalCheckLocation .row,
+.TransportPayProductGenaral .row {
+  width: 100%;
+}
+
+.Rack .row,
+.PayProductGenaral .row,
+.ProductGeneral .row,
+.SplitPallet .row,
+.CombinePallet .row,
+.MoveLocation .row,
+.ReceiveCoreToPallet .row,
+.ReceivingRawMatPackingChemical .row,
+.ClearPallet .row,
+.PackingCore .row,
+.BagJumbo .row,
+.BagFilm .row,
+.CancelPallet .row,
+.UpdatePallet .row,
+.PackToPallet .row,
+.DeleteRoll .row,
+.ProductionStamp .row,
+.RawMat .row,
+.IssueRawMat .row,
+.MovePallet .row,
+.NewInUnwireBP .row {
+  /*padding-bottom: 15px !important;*/
+  width: 100%;
+}
+
+.keep {
+  color: #337ab7;
+  line-height: inherit;
+  font-size: 20px;
+}
+
+/*--------------------
+CUSTOM COL
+---------------------*/
+
+.col-15 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 15%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 15%;
+  -ms-flex: 0 0 15%;
+  flex: 0 0 15%;
+  max-width: 15%;
+}
+
+.col-45 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 45%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 45%;
+  -ms-flex: 0 0 45%;
+  flex: 0 0 45%;
+  max-width: 45%;
+}
+
+/*--------------------
+MENU BUTTON
+---------------------*/
+
+.main-menu-button {
+  font-size: 19px;
+}
+
+/*--------------------
+CUSTOM BUTTON
+---------------------*/
+
+.button-login-container {
+  /*padding-top: 100px;*/
+  padding-top: 5px;
+}
+
+.button-login,
+.button-exit-login {
+  font-size: 19px !important;
+  width: 50%;
+  margin: 15px;
+}
+
+.btn-custom {
+  min-height: 14px !important;
+  line-height: 0px !important;
+}
+
+.button-scanpalletno {
+  min-height: 34px;
+}
+
+.button-save {
+  min-height: 34px;
+  line-height: 1;
+}
+
+.button-delete {
+  min-height: 34px;
+  line-height: 1;
+}
+
+.button-select {
+  width: 85px;
+  min-height: inherit;
+}
+
+/*--------------------
+CUSTOM TABLE STYLE
+---------------------*/
+
+.header-table-title {
+  font-size: 20px;
+}
+
+thead {
+  background-color: #eeeeee;
+}
+
+/*--------------------
+CUSTOM STYLE
+---------------------*/
+
+.no-margin {
+  margin: 0 !important;
+}
+
+.no-padding {
+  padding: 0;
+}
+
+.ion-ios-camera-outline::before {
+  line-height: initial !important;
+}
+
+ion-footer-bar.bar-footer .bar-footer {
+  height: 80px;
+}
+
+.has-footer {
+  bottom: 80px;
+}
+
+.padding-top-15 {
+  padding-top: 15px;
+}
+
+.padding-top-40 {
+  padding-top: 40px;
+}
+
+.row {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.margin-right-5 {
+  margin-right: 5px;
+}
+
+.right {
+  float: right;
+}
+
+.manual-list-fullwidth {
+  padding-top: 20px;
+}
+
+/*--------------------
+CUSTOM LINE VIEW STYLE
+---------------------*/
+
+.line-view {
+  border: black solid 1px;
+}
+
+/*--------------------
+CUSTOM USER
+---------------------*/
+
+.displayblock {
+  display: block;
+}
+
+.displaynone {
+  display: none;
+}
+
+.slide-in-right {
+  -webkit-transform: translateX(100%);
+  transform: translateX(100%);
+}
+
+.slide-in-right.ng-enter,
+.slide-in-right > .ng-enter {
+  -webkit-transition: all cubic-bezier(0.1, 0.7, 0.1, 1) 400ms;
+  transition: all cubic-bezier(0.1, 0.7, 0.1, 1) 400ms;
+}
+
+.slide-in-right.ng-enter-active,
+.slide-in-right > .ng-enter-active {
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+}
+
+.slide-in-right.ng-leave,
+.slide-in-right > .ng-leave {
+  -webkit-transition: all ease-in-out 250ms;
+  transition: all ease-in-out 250ms;
+}
+

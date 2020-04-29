@@ -1,0 +1,100 @@
+
+<ion-view view-title="ย้าย Roll To Pallet ต่าง Lot" >
+  <ion-content class="AdditionalSumRoll input-custom containner padding-top">
+    <form role="form" name="myForm" novalidate>
+
+      <div class="item-input"><label>รายละเอียดสินค้า</label></div>
+      <div class="item">
+        <div class="row text-right">
+          <label class="col col-20 col-center text-danger">Pallet ต้นทาง : </label>
+          <div class="col col-50"><input type="text" ng-model="data.Pallet" ng-keyup="search(data.Pallet, 'Pallet','read barcode')" id="Pallet" class="form-control" placeholder="Text" uppercased></div>
+          <div class="col text-center">
+            <a class="button-icon icon ion-ios-camera-outline button-scanbarcode" ng-click="scanBarcode('Pallet')"></a>
+          </div>
+          <div class="col col-20">
+            <button class="button button-block button-dark button-save pull-right no-margin" ng-click="search(data.Pallet, 'Pallet','click button')">ค้นหา</button>
+             <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+          </div>
+        </div>
+        <div class="row text-right">
+          <label class="col col-20 col-center text-danger">Barcode : </label>
+          <div class="col col-50"><input type="text" ng-model="data.Barcode" ng-keyup="search(data.Barcode, 'Barcode','read barcode')" id="Barcode" class="form-control" placeholder="Text" ></div>
+          <div class="col text-center">
+            <a class="button-icon icon ion-ios-camera-outline button-scanbarcode" ng-click="scanBarcode('Barcode')"></a>
+          </div>
+          <div class="col col-20">
+            <button class="button button-block button-dark button-save pull-right no-margin" ng-click="search(data.Barcode, 'Barcode','click button')">ค้นหา</button>
+          </div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-20 col-center"><labe> Garde : </labe></div>
+          <div class="col col-80"><input type="text" ng-model="data.Grade" class="form-control" placeholder="Text" readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-20 col-center"><labe> Lot : </labe></div>
+          <div class="col col-80"><input type="text" ng-model="data.Lot" class="form-control" placeholder="Text" readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-20 col-center"><labe> Roll : </labe></div>
+          <div class="col col-80"><input type="text" ng-model="data.Roll" class="form-control" placeholder="Text" readonly></div>
+        </div>
+        <div class="row">
+          <div class="col col-20 col-center text-right"><labe> Weight : </labe></div>
+          <div class="col col-25"><input type="text" ng-model="data.Weight" class="form-control" placeholder="Number" readonly></div>
+          <div class="col col-center"><labe> KG. </labe></div>
+          <div class="col col-20 col-center text-right">Length : </div>
+          <div class="col col-25"><input type="text" ng-model="data.Length" class="form-control" placeholder="Number" readonly></div>
+          <div class="col col-center"><labe> M.</labe></div>
+        </div>
+        <div class="row text-right">
+          <label class="col col-20 col-center text-danger">Pallet ปลายทาง : </label>
+          <div class="col col-50"><input type="text" ng-model="data.MoveToPallet" ng-keyup="search(data.MoveToPallet, 'MoveToPallet','read barcode')" id="MoveToPallet" class="form-control" placeholder="Text" uppercased></div>
+          <div class="col text-center">
+            <a class="button-icon icon ion-ios-camera-outline button-scanbarcode" ng-click="scanBarcode('MoveToPallet')"></a>
+          </div>
+          <div class="col col-20">
+            <button class="button button-block button-dark button-save pull-right no-margin" ng-click="search(data.MoveToPallet, 'MoveToPallet','click button')">ค้นหา</button>
+          </div>
+        </div>
+      </div>
+      
+      <br>
+      <div class="item-input"><label>รายการที่ย้ายแล้ว</label></div>
+        <div class="item">
+        <ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (dataGridView.length > 10)? '500px':'auto'}">
+        <table class="table table-bordered table-responsive" >
+          <thead>
+            <tr style="background-color: #eeeeee">
+              <th>Roll_No</th>
+              <th>Weight_Act</th>
+              <th>Pallet_No</th>
+              <th>Total_Qty</th>
+            </tr>
+          </thead>
+          <tbody >
+            <tr ng-if="dataGridView.length == 0">
+              <td colspan="4">ไม่มีรายการ</td>
+            </tr>
+            <tr ng-if="dataGridView.length > 0" ng-repeat="(n, v) in dataGridView track by $index">
+              <td>{{v.Roll_No}}</td>
+              <td>{{v.Weight_Act}}</td>
+              <td>{{v.Pallet_No}}</td>
+              <td>{{v.Total_Qty}}</td>
+            </tr>
+          </tbody>
+        </table>        
+        </ion-scroll>
+        </div>
+
+        <br>
+        <div class="text-center"><button class="button button-dark button-select" ng-click="save(data)">Save</button></div>
+
+    </form>
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+      <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

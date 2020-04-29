@@ -1,0 +1,232 @@
+<ion-view view-title="Load สินค้าขึ้นรถ">
+  <ion-content class="SHLoading input-custom">
+    <!--container-->
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+        <div class="co col-50 col-center">
+          <button class="button button-block button-calm pull-right no-margin icon-left ion-home"
+            ng-click="changeDisplay(0)">หน้าหลัก</button>
+        </div>
+        <div class="col col-50 col-center">
+          <button class="button button-block button-balanced pull-right no-margin icon-left ion-clipboard"
+            ng-click="changeDisplay(1)">รายการสินค้า</button>
+        </div>
+      </div>
+
+      <div ng-class="{displayblock: DisplayFlag === 0,displaynone: DisplayFlag === 1}">
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">เลขDO :</div>
+          <div class="col col-center">
+            <select id="DO" ng-model="data.DO" ng-change="changeDO(data.DO)">
+              <option value="">เลือก</option>
+              <option ng-if="getDOList" ng-repeat="(key, value) in getDOList | orderObjectBy:'Withdraw_No':false" value="{{value.Withdraw_Index}}">{{value.Withdraw_No}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">ใบคุมรถ :</div>
+          <div class="col col-center"><input type="text" id="TM" ng-model="data.TM" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">โกดัง :</div>
+          <div class="col col-center"><input type="text" ng-model="data.GoDown" class="form-control" placeholder=""
+              readonly></div>
+        </div>
+
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">ทะเบียน :</div>
+          <div class="col col-center"><input type="text" id="inputVehicle_License_No" ng-model="data.inputVehicle_License_No" class="form-control" placeholder="" ng-keyup="($event.which === 13) ? keyupVehicle_License_No(data.inputVehicle_License_No) : return;"></div>
+          <div class="col col-center"><input type="text" ng-model="data.Vehicle_License_No" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">คนขับ :</div>
+          <div class="col col-center"><input type="text" ng-model="data.DriverName" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">
+            <label class="text-danger">Pallet No :</label>
+          </div>
+          <div class="col col-40 col-center">
+            <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'read pallet no') : return;" placeholder="" uppercased readonly>
+          </div>
+          <div class="col col-center">
+            <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo()"></a>
+          </div>
+          <div class="col col-20 col-center">
+            <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo,'click button')"></button>
+            <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+          </div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">
+            <label class="text-danger">On Pallet :</label>
+          </div>
+          <div class="col col-25 col-center" style="padding-top: 10px;">
+            <label class="toggle">
+              <input type="checkbox" ng-model="data.On_Pallet">
+              <div class="track">
+                <div class="handle"></div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="col col-center">
+          <ion-scroll zooming="false" has-bouncing="false" direction="xy" style="max-height:70vh; border: 1px solid #ddd; margin-bottom: 10px;">
+            <table class="table table-bordered no-margin">
+              <thead>
+                <tr style="background-color: #eeeeee">
+                  <th>พาเลท</th>
+                  <th>จำนวน</th>
+                  <th>สถานะ</th>
+                  <!--<th style="display:none;">Withdraw_No</th>
+                  <th style="display:none;">รหัสระบบ(WIS)</th>
+                  <th style="display:none;">รหัสระบบ(WI)</th>-->
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-if="datatablesList_PalletLength <= 0">
+                  <td colspan="3" class="text-center text-danger">ไม่มีรายการ</td>
+                </tr>
+                <tr ng-if="datatablesList_PalletLength > 0" ng-repeat="(n, v) in datatablesList_Pallet | orderObjectBy:'Pallet_No':false">
+                  <td>{{v.PALLET_NO}}</td>
+                  <td>{{v.STATE}}</td>
+                  <td>{{v.QTY}}</td>
+                  <!--<td style="display:none;">{{v.Withdraw_No}}</td>
+                  <td style="display:none;">{{v.WithdrawItem_Status}}</td>
+                  <td style="display:none;">{{v.WithdrawItem_Index}}</td>-->
+                </tr>
+              </tbody>
+            </table>
+          </ion-scroll>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-50 col-center"><label class="text-danger">{{lbError}}</label></div>
+          <div class="col col-50 col-center"><span class="right">{{lbQty}}/{{lbTotal}}</span></div>
+        </div>
+
+        <br>
+
+        <div class="text-center">
+          <button class="button button-dark button-select icon-left ion-checkmark" ng-click="save()">ยืนยัน</button>
+        </div>
+
+      </div>
+
+      <div ng-class="{displayblock: DisplayFlag === 1,displaynone: DisplayFlag === 0}">
+        <!--<button class="button" ng-click="modal.show()">Open Modal</button>-->
+        <div class="col col-center">
+          <ion-scroll zooming="false" has-bouncing="false" direction="xy" style="max-height:70vh; border: 1px solid #ddd; margin-bottom: 10px;">
+            <table class="table table-bordered no-margin">
+              <thead>
+                <tr style="background-color: #eeeeee">
+                  <th>พาเลท</th>
+                  <th>สถานะ&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                  <th>Lot</th>
+                  <th>จน.</th>
+                  <th>On Pallet&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-if="datatablesList_AssetLength <= 0">
+                  <td colspan="5" class="text-center text-danger">ไม่มีรายการ</td>
+                </tr>
+                <tr ng-if="datatablesList_AssetLength > 0" ng-repeat="(n, v) in datatablesList_Asset | orderObjectBy:'WITHDRAWITEM-STATUS':false" ng-click="setSelected(v.PALLET_x0020_NO.toUpperCase(),v.STATE)" ng-class="{selected: v.PALLET_x0020_NO.toUpperCase() === selectedPallet_No}">
+                  <td>{{v.PALLET_x0020_NO.toUpperCase()}}</td>
+                  <td>{{v.STATE}}</td>
+                  <td>{{v.LOT_x002F_BATCH}}</td>
+                  <td>{{v.QTY}}</td>
+                  <td>{{v.ON_x0020_PALLET}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </ion-scroll>
+        </div>
+
+        <div class="text-center">
+          <button class="button button-assertive button-select icon-left ion-close" ng-click="clear()">Clear</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </ion-content>
+
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit"
+            ng-click="GoBack()"></i></a></div>
+      <!--<div class="keep col col-center" >
+            <span class="right" >พาเลทที่ : {{0}}</span>
+          </div>-->
+    </div>
+  </ion-footer-bar>
+
+  <script id="my-modal.html" type="text/ng-template">
+    <ion-modal-view>
+      <ion-header-bar class="bar-balanced">
+        <h1 class="title">ยึนยันคนขับรถ</h1>
+      </ion-header-bar>
+      <ion-content class="SHLoading input-custom">
+        <div class="padding-top">
+
+          <div class="row responsive-xs">
+            <div class="col col-25 col-center">ใบคุมรถ :</div>
+            <div class="col col-center"><input type="text" ng-model="modal_data.TM" class="form-control" placeholder="" readonly></div>
+          </div>
+  
+          <div class="row responsive-xs">
+            <div class="col col-25 col-center">ทะเบียน :</div>
+            <div class="col col-center"><input type="text" ng-model="modal_data.Vehicle_License_No" class="form-control" placeholder="" readonly></div>
+          </div>
+
+          <div class="row responsive-xs">
+            <div class="col col-25 col-center">GoDown :</div>
+            <div class="col col-center"><input type="text" ng-model="modal_data.GoDown" class="form-control" placeholder=""
+                readonly></div>
+          </div>
+
+          <div class="row responsive-xs">
+            <div class="col col-center"><span class="left"><label class="text-danger">จำนวนพาเลทรวม :</label> {{lbQty}}/{{lbTotal}}</span></div>
+          </div>
+  
+          <div class="row responsive-xs">
+            <div class="col col-25 col-center">คนขับรถ :</div>
+            <div class="col col-center"><input type="text" ng-model="modal_data.DriverName" class="form-control" placeholder="" readonly></div>
+          </div>
+
+          <div class="row responsive-xs">
+            <div class="col col-25 col-center"></div>
+            <div class="col col-center"><input type="text" id="inputDriverName" ng-model="modal_data.inputDriverName" class="form-control" placeholder="" ng-keyup="($event.which === 13) ? keyupDriverName(modal_data.inputDriverName) : return;"></div>
+          </div>
+            
+          <div class="text-center">
+            <button class="button button-dark button-select icon-left ion-checkmark" ng-click="keyupDriverName(modal_data.inputDriverName)">ยืนยัน</button>
+          </div>
+        </div>
+      </ion-content>
+      <ion-footer-bar>
+          <div class="bar bar-footer">
+            <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="modal.hide()"></i></a></div>
+            <!--<div class="keep col col-center" >
+                  <span class="right" >พาเลทที่ : {{0}}</span>
+                </div>-->
+          </div>
+        </ion-footer-bar>
+    </ion-modal-view>
+  </script>
+  
+</ion-view>
+
+

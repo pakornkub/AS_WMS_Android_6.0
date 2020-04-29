@@ -1,0 +1,105 @@
+
+<ion-view view-title="Mix Rawmat" >
+  <ion-content class="IssueRawMat input-custom containner padding-left padding-right padding-top">
+
+      <div class="padding-top">
+        <div class="row no-padding">
+          <div class="col col-center col-27 text-right">
+            <label class="text-danger">PD No :</label>
+          </div>
+          <div class="col">
+            <select class="form-control" style="height: 32px; " ng-model="data.BagOrder" ng-change="SelectPD()" >
+              <option value="">เลือก</option>
+              <option ng-repeat="(key, value) in getBagging" value="{{value.Production_No}}">{{value.Production_No}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row no-padding">
+          <div class="col col-center col-27 text-right">
+            <label class="text-danger">Location : </label>
+          </div>
+          <div class="col col-70"><input type="text" ng-model="data.Location" id="Location" class="form-control" value="{{data.Location}}" placeholder="Enter Text" ></div>
+          <!-- <div class="col text-center">
+            <a class=" button-icon icon ion-ios-camera-outline" ng-disabled="isDisable" ng-click="scanBarcode(data)"></a>
+          </div> -->
+        </div>
+        <div class="row no-padding">
+          <div class="col col-center col-27 text-right">
+            <label class="text-danger">Batch :</label>
+          </div>
+          <div class="col">
+            <select class="form-control" style="height: 32px; " ng-model="data.Batch" ng-change="SelectBatch()">
+              <option value="">เลือก</option>
+              <option ng-repeat="(key, value) in getBatch" value="{{ value.Batch_Name+','+value.Type_Batch }}">{{value.Batch_Name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row no-padding">
+          <div class="col col-center col-27 text-right">
+            <label class="text-danger">Type :</label>
+          </div>
+          <div class="col">
+              <input type="hidden" ng-model="data.Batch_Number" class="form-control  input-skyblue" readonly>
+            <input type="text" ng-model="data.Type" class="form-control  input-skyblue" readonly>
+          </div>
+        </div>
+        <div class="row no-padding">
+          <div class="col col-center col-27 text-right">
+            <label class="text-danger">Pallet No. : </label>
+          </div>
+          <!-- ng-keyup="search(data.Pallet, 'Pallet')" -->
+          <div class="col col-48"><input type="text" id="Pallet" ng-keyup="($event.which === 13) ? search(data.Pallet, 'Pallet') : return;" ng-model="data.Pallet" class="form-control" placeholder="Enter Text" ></div>
+          <!-- <div class="col text-center">
+            <a class=" button-icon icon ion-ios-camera-outline" ng-disabled="isDisable" ng-click="scanBarcode(data)"></a>
+          </div> -->
+          <div class="col col-22"><button class="button button-dark button-block button-save no-margin" ng-click="search(data.Pallet, 'click button')">ค้นหา</button></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-27 text-right">
+            <label class="text-danger">Detail : </label>
+          </div>
+          <div class="col "><input type="text" ng-model="data.Detail" class="form-control  input-skyblue" readonly></div>
+        </div>
+        <div class="row text-right">
+            <div class="col col-center col-27 text-right">
+              <label class="text-danger">QTY Begin : </label>
+            </div>
+            <div class="col "><input type="text" ng-model="data.QTYBegin" class="form-control  input-skyblue" readonly></div>
+          </div>
+
+
+        
+        <div class="row text-right item" >
+          <div class="col col-center col-27 text-right;">
+            <label class="text-danger">QTY Std :</label>
+          </div>
+          <div class="col"><input type="text" ng-model="data.QTYStd" class="form-control  input-skyblue" readonly></div>
+          <div class="col col-center col-10 text-right">
+            <label class="text-danger">QTY :</label>
+          </div>
+          <div class="col" style="margin-left: 6px;"><input type="number" ng-model="data.QTYIssue" class="form-control" ng-readonly="truefalse"></div>
+        </div><br>
+        <input type="hidden" ng-model="data.Sku_Index">
+        <input type="hidden" ng-model="data.TagNo">
+        <input type="hidden" ng-model="data.Customer_Index">
+
+        <table style="width:100%">
+          <tr>
+            <td style="text-align:right;width: 48%"></div><button class="button button-dark button-select" ng-click="save()">บันทึก</button></td>
+            <td> </td>
+            <td style="text-align:left;width: 48%"><button class="button button-assertive button-select" ng-click="clear()">Clear</button></td>
+          </tr>
+        </table>
+        <!-- <br><div class="text-center"><button class="button button-assertive button-select" ng-click="clear()">Clear</button></div>
+        <br><div class="text-center"><button class="button button-dark  button-select" ng-click="save()">บันทึก</button></div> -->
+
+      </div>
+
+  </ion-content>
+  <ion-footer-bar>
+      <div class="bar bar-footer fooExit">
+          <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+      </div>
+    </ion-footer-bar>
+  
+</ion-view>

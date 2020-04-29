@@ -1,0 +1,49 @@
+
+<ion-view view-title="Login to Warehouse Management"	>
+<ion-nav-buttons side="right" ng-hide="true"></ion-nav-buttons>
+	<ion-content has-bouncing="false" style="overflow: hide;">
+		<form name="myForm" novalidate>
+			<section class="login-container" style="padding:10px;">
+				<div class = "col header text-center " style="padding:10px;">
+					<img src="./img/TPIPL_logo.png" width="30%" class = "logo" />
+				</div>
+				<div class="list login-input" style="padding-top:10px;">
+					<div class="control-group " ng-class="{'has-error': myForm.username.$invalid}">
+						<label class="item item-input">
+							<span class="input-label text-danger text-right">ผู้ใช้ : </span>
+							<input type="text" placeholder="Username" name="username" ng-model="login.username" id="input-username" required autofocus>
+						</label>
+					</div>
+					<div class="control-group " ng-class="{'has-error': myForm.password.$invalid}">
+						<label class="item item-input">
+							<span class="input-label text-danger text-right">รหัสผ่าน : </span>
+							<input type="password" placeholder="Password" name="password" ng-model="login.password" required>
+						</label>
+					</div>
+					<!--<div class="list">-->
+					<div class="control-group">
+						<label class="item item-input">
+							<span class="input-label text-danger text-right">ฐานข้อมูล : </span>
+							<input type="text" value="WMS_TPIPL_LDPE" readonly>
+							<input type="hidden" name="database" ng-model="login.database">
+							<!--<select width="180" style="width: 180px;" name="database" ng-model="login.database">
+								<option value="">เลือก</option>
+								<option ng-if="loadBranchList" ng-repeat="(key, value) in loadBranchList" value="{{value.Branch_Id}}">{{value.Branch_Name}}</option>
+							</select>-->
+						</label>
+					</div>
+				</div>    	
+			</section>
+			<div class="text-center button-login-container">
+				<button class="button button-positive button-login" ng-disabled="myForm.$invalid" ng-click="login(login)">
+					เข้าระบบ
+				</button>
+				<button class="button button-outline button-dark button-exit-login" ng-click="exit()">
+					ออก
+				</button>
+			</div>
+		</form>
+
+	</ion-content>
+
+</ion-view>

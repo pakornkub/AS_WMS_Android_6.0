@@ -1,0 +1,148 @@
+<ion-view view-title="รับ User Return, Customer Return, Movein" >
+  <ion-content class="UserCustomerReturn input-custom"><!--container-->
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">T/F :</div>
+        <div class="col col-center">
+          <select id="TF" ng-model="data.TF" ng-change="changeTF(data.TF)" ng-disabled="isDisable_TF">
+            <option value="">เลือก</option>
+            <option ng-if="getOrderTopicList" ng-repeat="(key, value) in getOrderTopicList | orderObjectBy:'Order_No':false " value="{{value.Order_Index}}">{{value.Order_No}}</option>
+          </select>
+        </div>
+        <div class="col col-center">
+          <input type="text" ng-model="data.Ref_No1" class="form-control" placeholder="" readonly>
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">
+          <label class="text-danger">Pallet :</label>
+        </div>
+        <div class="col col-45 col-center">
+          <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'read pallet no') : return;" ng-disabled="isDisable" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo()" ng-disabled="isDisable"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo,'click button')" ng-disabled="isDisable"></button>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row responsive-xs">
+      <div class="co col-50 col-center">
+        <button class="button button-block button-calm pull-right no-margin icon-left ion-home"
+          ng-click="changeDisplay(0)">รายละเอียดสินค้า</button>
+      </div>
+      <div class="col col-50 col-center">
+        <button class="button button-block button-balanced pull-right no-margin icon-left ion-clipboard"
+          ng-click="changeDisplay(1)">รายการที่รับแล้ว</button>
+      </div>
+    </div>
+
+    <div ng-class="{displayblock: DisplayFlag === 0,displaynone: DisplayFlag === 1}">
+      <div class="item">
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">สินค้า :</div>
+          <div class="col col-center"><input type="text" ng-model="data.SKU" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">วันที่รับ :</div>
+          <div class="col col-center"><input type="text" ng-model="data.OrderDate" class="form-control" placeholder="" readonly></div>
+        </div>
+
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Pallet :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Pallet_No" class="form-control" placeholder="" readonly></div>
+          <div class="col col-20 col-center">Lot No :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">จำนวน : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Roll" class="form-control" placeholder="" readonly></div>
+          <div class="col col-10 col-center">Roll.</div>
+          <div class="col col-center"><input type="text" ng-model="data.Weight" class="form-control" placeholder="" readonly></div>
+          <div class="col col-10 col-center">KG.</div>
+          <div class="col col-center"><input type="text" ng-model="data.Length" class="form-control" placeholder="" readonly></div>
+          <div class="col col-10 col-center">M.</div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">ต้นทาง : </div>
+          <div class="col"><input type="text" ng-model="data.ItemStatusFrom" class="form-control" placeholder="" readonly></div>
+          <div class="col col-20 col-center">ปลายทาง : </div>
+          <div class="col"><input type="text" ng-model="data.ItemStatusTo" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">ตำแหน่ง : </div>
+          <div class="col col-center"><input type="text" value="" class="form-control input-skyblue" placeholder=""></div>
+          <div class="col col-center"><input type="text" ng-model="data.SysLocation" class="form-control input-skyblue" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">หมายเหตุ : </div>
+          <div class="col col-center"><textarea rows="2" ng-model="data.Remark" class="form-control" readonly></textarea></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div ng-class="{displayblock: DisplayFlag === 1,displaynone: DisplayFlag === 0}">   
+      <div class="item">
+        <ion-scroll zooming="false" has-bouncing="false" direction="x" style="border: 1px solid #ddd;">
+          <table class="table table-bordered no-margin" >
+            <thead>
+              <tr style="background-color: #eeeeee">
+                <th style="display:none;">Order_No</th>
+                <th style="display:none;">Order_Index</th>
+                <th>Pallet</th>
+                <th>Grade</th>
+                <th>Lot</th>
+                <th>Length</th>
+                <th>Weight</th>
+                <th>ItemStatus</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody >
+              <tr ng-if="getTagOrderIndexListLength <= 0">
+                <td colspan="7" class="text-center text-danger">ไม่มีรายการ</td>
+              </tr>
+              <tr ng-if="getTagOrderIndexListLength > 0" ng-repeat="(n, v) in getTagOrderIndexList track by $index">
+                <td style="display:none;">{{v.Order_No}}</td>
+                <td style="display:none;">{{v.Order_Index}}</td>
+                <td>{{v.Pallet_No}}</td>
+                <td>{{v.Sku_Id}}</td>
+                <td>{{v.PLot}}</td>
+                <td>{{v.Qty_per_TAG}}</td>
+                <td>{{v.Weight}}</td>
+                <td>{{v.ItemStatus}}</td>
+                <td>{{v.Location}}</td>
+              </tr>
+            </tbody>
+          </table>  
+        </ion-scroll>
+      </div>
+    </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer ">
+        <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+        <div class="keep col col-center" >
+          <span class="right" >เก็บ : {{data.PalletCount_itemPutAway}}/{{data.PalletCount_itemALL}}</span>
+        </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

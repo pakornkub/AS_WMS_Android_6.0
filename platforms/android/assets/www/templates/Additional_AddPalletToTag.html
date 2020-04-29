@@ -1,0 +1,115 @@
+
+<ion-view view-title="เพิ่มเลข Pallet">
+  <ion-content class="AddPalletToTag input-custom">
+    <div class="padding-top">
+    
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center">
+          <label class="text-danger">Pallet :</label>
+        </div>
+        <div class="col col-40 col-center">
+          <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-disabled="isDisable" ng-keyup="($event.which === 13) ? search(data.PalletNo,'PalletNo','read pallet no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-disabled="isDisable" ng-click="scanPalletNo('PalletNo')"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-disabled="isDisable" ng-click="search(data.PalletNo,'PalletNo','click button')"></button>
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center">
+          <label class="text-danger">Location :</label>
+        </div>
+        <div class="col col-40 col-center">
+          <input type="text" ng-model="data.Location" id="Location" class="form-control" ng-keyup="($event.which === 13) ? search(data.Location,'Location','read location no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('Location')"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.Location,'Location','click button')"></button>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center">สินค้า :</div>
+        <div class="col col-center">
+          <select id="PD" ng-model="data.PD" ng-change="changePD(data.PD)">
+            <option value="">เลือก</option>
+            <option ng-if="getPDList" ng-repeat="(key, value) in getPDList track by $index" value="{{value.sku_index}}">{{value.sku_id}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center">Tag :</div>
+        <div class="col col-center">
+          <select id="Tag" ng-model="data.Tag" ng-change="changeTag(data.Tag)">
+            <option value="">เลือก</option>
+            <option ng-if="getTagList" ng-repeat="(key, value) in getTagList track by $index" value="{{value.tag_no}}">{{value.tag_no}}</option>
+          </select>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="item">
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">รหัสสินค้า :</div>
+          <div class="col col-center"><input type="text" ng-model="data.SKU" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">ชื่อสินค้า :</div>
+          <div class="col col-center"><input type="text" ng-model="data.SKU_Str1" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Lot :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">สถานะ :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Status" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">จำนวน : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Qty" class="form-control" placeholder="" readonly></div>
+          <div class="col col-10 col-center">KG.</div>
+        </div>
+
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center">สถานะ :</div>
+        <div class="col col-center">
+          <select id="StatusPallet" ng-model="init_data.StatusPallet">
+            <option value="">เลือก</option>
+            <option ng-if="getStatusPalletList" ng-repeat="(key, value) in getStatusPalletList track by $index" value="{{value.PalletStatus_Index}}">{{value.PalletStatus_Id}}</option>
+          </select>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="text-center"><button class="button button-dark button-select icon-left ion-checkmark" ng-click="save()">ยืนยัน</button></div>
+    
+    </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+      <div class="keep col col-center">
+        <!--<span class="right">พาเลทที่ : {{lbPallet}}</span>-->
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

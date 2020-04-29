@@ -1,0 +1,19 @@
+
+<ion-view view-title="{{namePage}}" >
+<ion-nav-buttons side="right" ng-hide="true"></ion-nav-buttons>
+  <ion-content >
+    <section class="login-container" style="padding:10px;">
+      <div class = "col header text-center " style="padding:10px;">
+         <img src="./img/TPIPL_logo.png" width="30%" class = "logo" />
+      </div>
+
+      <div class="list text-center" style="padding-top:10px;">
+        <button id="ddd" class="button button-stable button-block main-menu-button" ng-repeat="(key,name) in menuList track by $index" ng-click="clickMenu(key, name)">{{name}}</button>
+      </div>    
+    </section>
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+  </ion-footer-bar>
+</ion-view>

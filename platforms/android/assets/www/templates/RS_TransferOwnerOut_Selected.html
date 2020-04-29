@@ -1,0 +1,135 @@
+<ion-view view-title="(เบิก)โอนเจ้าของสินค้า">
+	<ion-content class="TransferOwnerOut_Selected input-custom">
+		<!--container-->
+
+		<div class="padding-top">
+
+			<div class="row responsive-xs">
+				<div class="col col-25 col-center">เลขที่ใบโอน :</div>
+				<div class="col col-center">
+					<input type="text" ng-model="data.Document_No" class="form-control" placeholder="" readonly>
+				</div>
+			</div>
+
+			<div class="row responsive-xs">
+				<div class="col col-25 col-center">โอนจาก :</div>
+				<div class="col col-center"><input type="text" ng-model="data.Cus" class="form-control" placeholder="" readonly></div>
+				<div class="col col-10 col-center">ไป</div>
+				<div class="col col-center"><input type="text" ng-model="data.Cus_New" class="form-control" placeholder="" readonly></div>
+			</div>
+
+			<div class="row responsive-xs">
+				<div class="col col-25 col-center">
+					  <label class="text-danger">Pallet :</label>
+				</div>
+				<div class="col col-40 col-center">
+					  <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'PalletNo','read pallet no') : return;" placeholder="" uppercased>
+				</div>
+				<div class="col col-center">
+					  <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('PalletNo')"></a>
+				</div>
+				<div class="col col-20 col-center">
+					  <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo,'PalletNo','click button')"></button>
+					  <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+				</div>
+			</div>
+
+		</div>
+
+		<div class="row responsive-xs">
+			<div class="co col-50 col-center">
+				<button class="button button-block button-calm pull-right no-margin icon-left ion-home" ng-click="changeDisplay(0)">รายละเอียดสินค้า</button>
+			</div>
+			<div class="col col-50 col-center">
+				<button class="button button-block button-balanced pull-right no-margin icon-left ion-clipboard" ng-click="changeDisplay(1)">รายการโอน</button>
+			</div>
+		</div>
+
+		<div ng-class="{displayblock: DisplayFlag === 0,displaynone: DisplayFlag === 1}">
+			<div class="item">
+
+				<div class="row responsive-xs">
+					<div class="col col-20 col-center">สินค้า :</div>
+					<div class="col col-center"><input type="text" ng-model="data.SKU" class="form-control" placeholder="" readonly></div>
+				</div>
+
+				<div class="row responsive-xs">
+					<div class="col col-20 col-center">Lot :</div>
+					<div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control" placeholder="" readonly></div>
+				</div>
+
+				<div class="row responsive-xs">
+					<div class="col col-20 col-center">จำนวน :</div>
+					<div class="col col-center"><input type="text" ng-model="data.TotalQty" class="form-control" placeholder="" readonly></div>
+					<div class="col col-10 col-center">KG.</div>
+					<div class="col col-center"><input type="text" ng-model="data.PackageQty" class="form-control" placeholder="" readonly></div>
+					<div class="col col-10 col-center">BAG.</div>
+				</div>
+
+				<div class="row responsive-xs">
+					<div class="col col-20 col-center">
+						  <label class="text-danger">ตน.จัดเก็บ :</label>
+					</div>
+					<div class="col col-45 col-center">
+						  <input type="text" ng-model="data.Location" id="Location" class="form-control" ng-keyup="($event.which === 13) ? search(data.Location,'Location','read location no') : return;" placeholder="" uppercased>
+					</div>
+					<div class="col col-center">
+						  <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanLocation('Location')"></a>
+					</div>
+					<div class="col col-20 col-center">
+						  <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.Location,'Location','click button')"></button>
+						  <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+					</div>
+				</div>
+
+				<br>
+
+				<div class="text-center"><button class="button button-dark button-select icon-left ion-checkmark" ng-click="save()">ยืนยัน</button></div>
+
+			</div>
+		</div>
+
+		<div ng-class="{displayblock: DisplayFlag === 1,displaynone: DisplayFlag === 0}">
+			<div class="item">
+				<ion-scroll zooming="false" has-bouncing="false" direction="x" style="border: 1px solid #ddd;">
+					<table class="table table-bordered no-margin">
+						<thead>
+							<tr style="background-color: #eeeeee">
+								<th>Status</th>
+								<th>เลข Pallet</th>
+								<th>ตำแหน่งต้นทาง</th>
+								<th>Grade</th>
+								<th>Lot</th>
+								<th style="display:none;">TransferOwnerLocation_Index</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-if="TOWItemListLength <= 0">
+								<td colspan="9" class="text-center text-danger">ไม่มีรายการ</td>
+							</tr>
+							<tr ng-if="TOWItemListLength > 0" ng-repeat="(n, v) in TOWItemList track by $index">
+								<td>{{v.status_Des}}</td>
+								<td>{{v.Pallet_No}}</td>
+								<td>{{v.From_Location}}</td>
+								<td>{{v.Sku_Id}}</td>
+								<td>{{v.Plot}}</td>
+								<td style="display:none;">{{v.TransferOwnerLocation_Index}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</ion-scroll>
+			</div>
+		</div>
+
+	</ion-content>
+
+	<ion-footer-bar>
+		<div class="bar bar-footer ">
+			<div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit"
+						ng-click="GoBack()"></i></a></div>
+			<div class="keep col col-center">
+				<span class="right">{{data.Count}}/{{data.TotalCount}}</span>
+			</div>
+		</div>
+	</ion-footer-bar>
+</ion-view>

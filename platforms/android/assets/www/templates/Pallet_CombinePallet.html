@@ -1,0 +1,116 @@
+<ion-view view-title="Combine Pallet">
+  <ion-content class="CombinePallet input-custom">
+    <!--container-->
+
+    <div class="padding-top">
+
+      
+      <div class="row responsive-xs">
+        <div class="col col-33 col-center">
+          <label class="text-danger">Pallet ต้นทาง :</label>
+        </div>
+        <div class="col col-33 col-center">
+          <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'PalletNo','read pallet no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('PalletNo')"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo,'PalletNo','click button')"></button>
+        </div>
+      </div>
+      
+      <div class="row responsive-xs">
+        <div class="col col-33 col-center">เลขที่ Tag :</div>
+        <div class="col col-center">
+          <select id="Tag" ng-model="data.Tag" ng-change="changeTag(data.Tag)">
+            <option value="">เลือก</option>
+            <option ng-if="getTagList" ng-repeat="(key, value) in getTagList | orderObjectBy:'Tag_No_T':false" value="{{value.Tag_No_T}}">{{value.Tag_No_T}}</option>
+          </select>
+        </div>
+      </div>
+      <br>
+      <div class="item">
+
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">สินค้า :</div>
+          <div class="col col-33 col-center"><input type="text" ng-model="data.SKU" class="form-control" placeholder="" readonly></div>
+          <div class="col col-center">สถานะ :</div>
+          <div class="col col-center"><input type="text" ng-model="data.PalletStatusFrom" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+            <div class="col col-25 col-center">Lot No :</div>
+            <div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control" placeholder="" readonly></div>
+          </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">จน. เต็ม :</div>
+          <div class="col col-center"><input type="text" ng-model="data.TotalQty" class="form-control" placeholder="" readonly></div>
+          <div class="col col-15 col-center">KG.</div>
+          <div class="col col-center"><input type="text" ng-model="data.PackageQty" class="form-control" placeholder="" readonly></div>
+          <div class="col col-15 col-center">BAG</div>
+        </div>
+
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">จน. ย้าย :</div>
+          <div class="col col-center"><input type="text" id="MoveQty" ng-model="data.MoveQty" class="form-control input-skyblue" placeholder="" ng-keyup="cal($event.which,data.MoveQty)"></div>
+          <div class="col col-15 col-center">KG.</div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">จน. คงเหลือ :</div>
+          <div class="col col-center"><input type="text" ng-model="data.SumQtyAfterMove" class="form-control" placeholder="" readonly></div>
+          <div class="col col-15 col-center">KG.</div>
+        </div>
+
+      </div>
+      <br>
+      <div class="row responsive-xs">
+        <div class="col col-33 col-center">
+          <label class="text-danger">Pallet ปลายทาง :</label>
+        </div>
+        <div class="col col-33 col-center">
+          <input type="text" ng-model="data.PalletNo2" id="PalletNo2" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo2,'PalletNo2','read pallet no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('PalletNo2')"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo2,'PalletNo2','click button')"></button>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-33 col-center">เลขที่ Tag :</div>
+        <div class="col col-center">
+          <select id="Tag2" ng-model="data.Tag2">
+            <option value="">เลือก</option>
+            <option ng-if="getTagList2" ng-repeat="(key, value) in getTagList2 | orderObjectBy:'Tag_No_T':false" value="{{value.Tag_No_T}}">{{value.Tag_No_T}}</option>
+          </select>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="text-center">
+        <button class="button button-assertive button-select icon-left ion-close" ng-click="clear()">Clear</button>
+        <button class="button button-dark button-select icon-left ion-checkmark" ng-click="save()">ยืนยัน</button>
+      </div>
+      
+    </div>
+
+  </ion-content>
+
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+      <div class="keep col col-center">
+        <!--<span class="right">พาเลทที่ : {{lbPallet}}</span>-->
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

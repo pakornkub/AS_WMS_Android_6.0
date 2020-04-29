@@ -1,0 +1,100 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "https://github.com/driftyco/ionic-plugins-keyboard.git",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "https://github.com/driftyco/ionic-plugins-keyboard.git",
+        "spec": "git+https://github.com/driftyco/ionic-plugins-keyboard.git",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:driftyco/ionic-plugins-keyboard.git",
+          "sshUrl": "git+ssh://git@github.com/driftyco/ionic-plugins-keyboard.git",
+          "httpsUrl": "git+https://github.com/driftyco/ionic-plugins-keyboard.git",
+          "gitUrl": "git://github.com/driftyco/ionic-plugins-keyboard.git",
+          "shortcut": "github:driftyco/ionic-plugins-keyboard",
+          "directUrl": "https://raw.githubusercontent.com/driftyco/ionic-plugins-keyboard/master/package.json"
+        }
+      },
+      "C:\\Users\\AuthorWise\\tpipl\\tpipl\\node_modules"
+    ]
+  ],
+  "_from": "git+https://github.com/driftyco/ionic-plugins-keyboard.git",
+  "_id": "ionic-plugin-keyboard@2.2.1",
+  "_inCache": true,
+  "_location": "/ionic-plugin-keyboard",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "https://github.com/driftyco/ionic-plugins-keyboard.git",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "https://github.com/driftyco/ionic-plugins-keyboard.git",
+    "spec": "git+https://github.com/driftyco/ionic-plugins-keyboard.git",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:driftyco/ionic-plugins-keyboard.git",
+      "sshUrl": "git+ssh://git@github.com/driftyco/ionic-plugins-keyboard.git",
+      "httpsUrl": "git+https://github.com/driftyco/ionic-plugins-keyboard.git",
+      "gitUrl": "git://github.com/driftyco/ionic-plugins-keyboard.git",
+      "shortcut": "github:driftyco/ionic-plugins-keyboard",
+      "directUrl": "https://raw.githubusercontent.com/driftyco/ionic-plugins-keyboard/master/package.json"
+    }
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/driftyco/ionic-plugins-keyboard.git#9b7c416effe392d62b4ff99cd1b931ca3b5a710e",
+  "_shasum": "2e7005763043d91cdd7b7778fd95700f666459cc",
+  "_shrinkwrap": null,
+  "_spec": "https://github.com/driftyco/ionic-plugins-keyboard.git",
+  "_where": "C:\\Users\\AuthorWise\\tpipl\\tpipl\\node_modules",
+  "author": {
+    "name": "Ionic"
+  },
+  "bugs": {
+    "url": "https://github.com/driftyco/ionic-plugin-keyboard/issues"
+  },
+  "cordova": {
+    "id": "ionic-plugin-keyboard",
+    "platforms": [
+      "android",
+      "ios",
+      "blackberry10",
+      "wp8",
+      "windows"
+    ]
+  },
+  "dependencies": {},
+  "description": "Ionic Keyboard Plugin",
+  "devDependencies": {},
+  "gitHead": "9b7c416effe392d62b4ff99cd1b931ca3b5a710e",
+  "homepage": "https://github.com/driftyco/ionic-plugin-keyboard#readme",
+  "issue": "https://github.com/driftyco/ionic-plugin-keyboard/issues",
+  "keywords": [
+    "ionic",
+    "cordova",
+    "keyboard",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "cordova-blackberry10",
+    "cordova-wp8",
+    "cordova-windows"
+  ],
+  "license": "Apache 2.0",
+  "name": "ionic-plugin-keyboard",
+  "optionalDependencies": {},
+  "readme": "Keyboard\r\n======\r\n\r\nThe `cordova.plugins.Keyboard` object provides functions to make interacting with the keyboard easier, and fires events to indicate that the keyboard will hide/show.\r\n\r\n    cordova plugin add ionic-plugin-keyboard --save\r\n\r\nMethods\r\n-------\r\n\r\n- cordova.plugins.Keyboard.hideKeyboardAccessoryBar\r\n- cordova.plugins.Keyboard.close\r\n- cordova.plugins.Keyboard.disableScroll\r\n- cordova.plugins.Keyboard.show\r\n\r\nProperties\r\n--------\r\n\r\n- cordova.plugins.Keyboard.isVisible\r\n\r\nEvents\r\n--------\r\n\r\nThese events are fired on the window.\r\n\r\n- native.keyboardshow\r\n  * A number `keyboardHeight` is given on the event object, which is the pixel height of the keyboard.\r\n- native.keyboardhide\r\n\r\n\r\n# API reference\r\n\r\nKeyboard.hideKeyboardAccessoryBar\r\n=================\r\n\r\nHide the keyboard accessory bar with the next, previous and done buttons.\r\n\r\n    cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);\r\n    cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);\r\n\r\nSupported Platforms\r\n-------------------\r\n\r\n- iOS\r\n\r\n\r\nKeyboard.close\r\n=================\r\n\r\nClose the keyboard if it is open.\r\n\r\n    cordova.plugins.Keyboard.close();\r\n\r\nSupported Platforms\r\n-------------------\r\n\r\n- iOS, Android, Blackberry 10, Windows\r\n\r\n\r\nKeyboard.disableScroll\r\n=================\r\n\r\nPrevent the native UIScrollView from moving when an input is focused.  The telltale sign that this is happening is the top of your app scrolls out of view (if using Ionic, your header bar will disappear).\r\n\r\nThis does *not* prevent any DOM elements from being able to scroll.  That needs to happen from CSS and JavaScript, not this plugin. \r\n\r\n    cordova.plugins.Keyboard.disableScroll(true);\r\n    cordova.plugins.Keyboard.disableScroll(false);\r\n\r\nSupported Platforms\r\n-------------------\r\n\r\n- iOS, Windows\r\n\r\nKeyboard.show\r\n=================\r\n\r\nForce keyboard to be shown. This typically helps if autofocus on a text element does not pop up the keyboard automatically\r\n\r\n    cordova.plugins.Keyboard.show();\r\n\r\nSupported Platforms\r\n\r\n- Android, Blackberry 10, Windows\r\n\r\nnative.keyboardshow\r\n=================\r\n\r\nThis event fires when the keyboard will be shown or when the keyboard frame resizes (when switching between keyboards for example)\r\n\r\n    window.addEventListener('native.keyboardshow', keyboardShowHandler);\r\n\r\n    function keyboardShowHandler(e){\r\n        alert('Keyboard height is: ' + e.keyboardHeight);\r\n    }\r\n\r\nProperties\r\n-----------\r\n\r\nkeyboardHeight: the height of the keyboard in pixels\r\n\r\n\r\nSupported Platforms\r\n-------------------\r\n\r\n- iOS, Android, Blackberry 10, Windows\r\n\r\n\r\nnative.keyboardhide\r\n=================\r\n\r\nThis event fires when the keyboard will hide\r\n\r\n    window.addEventListener('native.keyboardhide', keyboardHideHandler);\r\n\r\n    function keyboardHideHandler(e){\r\n        alert('Goodnight, sweet prince');\r\n    }\r\n\r\nProperties\r\n-----------\r\n\r\nNone\r\n\r\nSupported Platforms\r\n-------------------\r\n\r\n- iOS, Android, Blackberry 10, Windows\r\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/driftyco/ionic-plugin-keyboard.git"
+  },
+  "version": "2.2.1"
+}

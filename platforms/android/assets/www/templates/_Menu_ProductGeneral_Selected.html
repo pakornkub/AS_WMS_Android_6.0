@@ -1,0 +1,97 @@
+
+<ion-view view-title="รับสินค้าทั่วไป" >
+  <ion-content class="ProductGeneral input-custom containner" ng-init="item=[1,2,3,4,5,6,7,8,9,10]">
+
+    <div>
+        <span class="header-table-title">รายละเอียดสินค้า</span>
+    </div>
+    <div class="item">
+      <div class="row">
+        <div class="col col-20 col-center text-right"><label>สินค้า : </label></div>
+        <div class="col col-70"><input type="text" ng-model="data.Product" class="form-control " placeholder="Enter Text" readonly></div>
+      </div>
+      <div class="row">
+        <div class="col col-20 col-center text-right"><label> Lot : </div>
+        <div class="col col-70"><input type="text" ng-model="data.Lot" class="form-control" placeholder="Enter Text" readonly></div>
+      </div>
+      <div class="row text-right">
+        <div class="col col-20 col-center"><label> จำนวน : </label></div>
+        <div class="col col-30"><input type="text" ng-model="data.Qty_per_TAG" class="form-control text-right" placeholder="Number" readonly></div>
+        <div class="col col-10 col-center text-left"> KG.</div>
+        <div class="col col-30"><input type="text" ng-model="data.BAG" class="form-control text-right" placeholder="Number" readonly></div>
+        <div class="col col-10 col-center text-left">Bag</div>
+      </div>
+      <div class="row">
+        <div class="col col-20 col-center text-right"><label> ตำแหน่งจัดเก็บ :</label></div>
+        <input type="text" ng-model="data.LocationStorage" class="form-control col-30 input-skyblue" placeholder="Enter Text" >
+      </div>
+      <div class="row">
+        <label class="col col-20 col-center text-right text-danger">Pallet No. :</label>
+        <div class="col col-45">
+          <input type="text" ng-model="data.PalletBarcode" ng-keyup="saveProduct('read barcode')" class="form-control " id="input-PalletNoBar" placeholder="Enter Text" uppercased>
+        </div>
+        <div class="col text-center">
+          <a class="button-icon icon ion-ios-camera-outline" ng-click="scanBarcode()"></a>
+        </div>
+        <div class="col col-20">
+          <button class="button button-block button-dark button-save no-margin" ng-click="saveProduct('')">จัดเก็บ</button>
+          <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+        </div>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="item">
+      <div class="">
+          <span class="header-table-title">รายการที่รับแล้ว</span>
+      </div>
+      <ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (dsTAGList && dsTAGList.length > 10) ? '500px':'auto'}">
+        <table class="table table-bordered" >
+          <thead>
+            <tr style="background-color: #eeeeee">
+              <th>Str1_T</th>
+              <th>PLot</th>             
+              <th>Order_No</th>
+              <th>TAG_No</th>
+              <th>Qty_per_TAG</th>
+              <th>Weight_per_TAG</th>
+              <th>Volume_per_TAG</th>
+              <th>itemstatus</th> 
+            </tr>
+          </thead>
+          <tbody >
+            <tr ng-if="!dsTAGList">
+              <td colspan="8">ไม่มีรายการ</td>
+            </tr>
+            <tr ng-if="dsTAGList" ng-repeat="(n, v) in dsTAGList track by $index">
+              <td>{{v.Str1_T}}</td>
+              <td>{{v.PLot}}</td>
+              <td>{{v.Order_No}}</td>
+              <td>{{v.TAG_No}}</td>
+              <td>{{v.Qty_per_TAG}}</td>
+              <td>{{v.Weight_per_TAG}}</td>
+              <td>{{v.Volume_per_TAG}}</td>
+              <td>{{v.itemstatus}}</td>
+            </tr>
+          </tbody>
+        </table>        
+        </ion-scroll>
+    </div>
+
+    <div ng-hide="true">
+      {{data.TAG_No}}
+    </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+      <div class="keep col col-center" >
+        <span class="right" ng-if="dsTAGList.length">เก็บ : {{dsTAGList.length}}</span>
+        <span class="right" ng-if="!dsTAGList.length">เก็บ : 0</span>
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>
