@@ -1,0 +1,83 @@
+<ion-view view-title="Delete Roll" >
+  <ion-content class="DeleteRoll input-custom"><!--container-->
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center"><label class="text-danger">PD :</label></div>
+        <div class="col col-center">
+          <select id="PD" ng-model="data.PD" ng-change="changePD(data.PD)">
+            <option value="">เลือก</option>
+            <option ng-if="getBaggingOrderHeaderList" ng-repeat="(key, value) in getBaggingOrderHeaderList | orderObjectBy:'BaggingOrder_No':false " value="{{value.BaggingOrder_Index+','+value.BaggingOrder_No}}">{{value.BaggingOrder_No}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">
+          <label class="text-danger">Roll :</label>
+        </div>
+        <div class="col col-45 col-center">
+          <input type="text" ng-model="data.RollNo" id="RollNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.RollNo, 'RollNo','read roll no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('RollNo')"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.RollNo, 'RollNo','click button')"></button>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+      
+    </div>
+    
+    <div class="item">
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">Grade :</div>
+        <div class="col col-center"><input type="text" ng-model="data.SKU" class="form-control" placeholder="" readonly></div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">Lot :</div>
+        <div class="col col-center"><input type="text" ng-model="data.PLot" class="form-control" placeholder="" readonly></div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">Pallet : </div>
+        <div class="col col-center"><input type="text" ng-model="data.Pallet" class="form-control" placeholder="" readonly></div>
+        <div class="col col-20 col-center">Status : </div>
+        <div class="col col-center"><input type="text" ng-model="data.Status_Pallet" class="form-control" placeholder="" readonly></div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">Weight : </div>
+        <div class="col col-center"><input type="text" ng-model="data.Weight" class="form-control" placeholder="KG." readonly></div>
+        <div class="col col-20 col-center">Length : </div>
+        <div class="col col-center"><input type="text" ng-model="data.Length" class="form-control" placeholder="M." readonly></div>
+      </div> 
+      
+      <div class="row responsive-xs">
+        <div class="col col-33 col-center">Tranfer Status :</div>
+        <div class="col col-center"><input type="text" ng-model="data.Status_Tranfer" class="form-control" placeholder="" readonly></div>
+      </div>
+
+    </div>
+
+    <br>
+
+    <div class="text-center">
+      <button class="button button-dark button-select icon-left ion-checkmark" ng-click="save()">ยืนยัน</button>
+    </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer ">
+        <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+        <div class="keep col col-center" >
+          <!--<span class="right" >เก็บ : {{data.PalletCount_itemPutAway}}/{{data.PalletCount_itemALL}}</span>-->
+        </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

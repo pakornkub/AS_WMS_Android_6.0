@@ -26,7 +26,7 @@
 
       <div class="col col-center">
 				<div style="margin-bottom: 10px;"><span class="header-table-title">รายการ</span></div>
-				<ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (dataTableItemLength > 10)? '570px':'auto'}">
+				<ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (dataTableItemLength > 10)? '380px':'auto'}">
 					<table class="table table-bordered table-responsive">
 						<thead>
 							<tr style="background-color: #eeeeee">
@@ -34,17 +34,19 @@
                 <th>Grade</th>
                 <th>Qty</th>
                 <th>Weight</th>
+                <th>Roll</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr ng-if="dataTableItemLength <= 0">
-								<td colspan="4" class="text-center text-danger">ไม่มีรายการ</td>
+								<td colspan="5" class="text-center text-danger">ไม่มีรายการ</td>
 							</tr>
 							<tr ng-if="dataTableItemLength > 0" ng-repeat="(n, v) in dataTableItem track by $index">
                 <td>{{$index+1}}</td>
-                <td>{{v.Grade}}</td>
-                <td>{{v.Qty}}</td>
+                <td>{{v.Sku_Id}}</td>
+                <td>{{v.Qty_per_TAG}}</td>
                 <td>{{v.Weight}}</td>
+                <td>{{v.Roll}}</td>
 							</tr>
 						</tbody>
 					</table>

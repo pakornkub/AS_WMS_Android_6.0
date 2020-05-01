@@ -11,7 +11,7 @@ angular.module('Login.Services', [])
     //console.log('55555');
     //consolnpme.log('LoginService_test:::>',checkUser);
     return {
-        LoginData: {
+        test: {
             Version: "3.5.208.30",
             Branch_ID: "1",
             // ConnectionStr: "Data Source=authorwise.co.th;Initial Catalog=WMS_Site_AS;User Id=sa; Password=Autt1211!",
@@ -30,7 +30,7 @@ angular.module('Login.Services', [])
             Host_Name: "",
             Host_IP: ""
         },
-        test: {
+        LoginData: {
             Version: '',
             Branch_ID: '',
             ConnectionStr: '',

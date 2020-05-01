@@ -70,8 +70,8 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
         $state.current.name == "main_ProductGeneralLot" || 
         $state.current.name == "main_ProductGeneralLot_Selected" ||
 
-        $state.current.name == "store_ReceiveRawMatPackingChemical" || 
-        $state.current.name == "store_ReceiveRawMatPackingChemical_Selected" ||
+        //$state.current.name == "store_ReceiveRawMatPackingChemical" || 
+        //$state.current.name == "store_ReceiveRawMatPackingChemical_Selected" ||
         $state.current.name == "store_WeighingChemical" ||
 
         $state.current.name == "production_PackingRoll" || 
@@ -150,11 +150,11 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
       controller: 'Main_NewInUnwireBPCtrl'
     })
 
-    .state('main_NewInUnwireBP_Selected', {
+    /*.state('main_NewInUnwireBP_Selected', {
       url: '/Main_NewInUnwireBP_Selected/{Order_Index}/{Order_No}',
       templateUrl: 'templates/Main_NewInUnwireBP_Selected.html',
       controller: 'Main_NewInUnwireBP_SelectedCtrl'
-    })
+    })*/
 
     .state('main_ProductGeneral', {
       url: '/Main_ProductGeneral',
@@ -200,7 +200,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
       controller: 'MenuCtrl'
     })
 
-    .state('store_ReceiveRawMatPackingChemical', {
+    /*.state('store_ReceiveRawMatPackingChemical', {
       url: '/Store_ReceiveRawMatPackingChemical',
       templateUrl: 'templates/Store_ReceiveRawMatPackingChemical.html',
       controller: 'Store_ReceiveRawMatPackingChemicalCtrl'
@@ -210,7 +210,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
       url: '/Store_ReceiveRawMatPackingChemical_Selected/{Order_Index}/{Order_No}',
       templateUrl: 'templates/Store_ReceiveRawMatPackingChemical_Selected.html',
       controller: 'Store_ReceiveRawMatPackingChemical_SelectedCtrl'
-    })
+    })*/
 
     .state('store_WeighingChemical', {
       url: '/Store_WeighingChemical/{Order_Index}/{Order_No}',

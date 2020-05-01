@@ -44,7 +44,7 @@ angular.module('Pallet.Controllers', [])
 		------------------------------------- */
 		$scope.deleted = function () {
 			if (AppService.findObjValue($scope.dataTableItem, 'isSelect', true, true).length <= 0) {
-				AppService.err('', 'ไม่มีรายการ Pallet No. ที่เลือก','PalletNo');
+				AppService.err('', 'ไม่มีรายการ Pallet No. ที่เลือก', 'PalletNo');
 			} else {
 				for (var i in $scope.dataTableItem) {
 					if ($scope.dataTableItem[i].isSelect)
@@ -85,7 +85,7 @@ angular.module('Pallet.Controllers', [])
 
 			if (searchType == 'read pallet no') {
 				keyCnt += 1;
-				let curTextCount = dataSearch == null ? 0 : dataSearch.length;
+				var curTextCount = dataSearch == null ? 0 : dataSearch.length;
 				//console.log('current inut text length: ' + curTextCount);
 				//console.log('current inut keyCnt: ' + keyCnt);
 				if (keyCnt == 1 && curTextCount > 1) {
@@ -185,12 +185,11 @@ angular.module('Pallet.Controllers', [])
 									template: 'Pallet No. นี้มีสินค้าใน Stock ต้องการ Clear หรือไม่ ?'
 								}).then(function (res) {
 
-									if(res)
-									{
+									if (res) {
 										$ionicLoading.show();
 
 										AppService.blur();
-										
+
 										App.API('getPalletWithdrawToCustomer', {
 											objsession: angular.copy(LoginService.getLoginData()),
 											pPallet_No: dataS
@@ -224,8 +223,7 @@ angular.module('Pallet.Controllers', [])
 											AppService.err('getPalletWithdrawToCustomer', res);
 										}).finally(function () { }); // End Call API getBalancePallet_No
 									}
-									else
-									{
+									else {
 										setFocus();
 									}
 
@@ -245,7 +243,7 @@ angular.module('Pallet.Controllers', [])
 
 				}).catch(function (res) {
 					AppService.err('getPallet', res);
-				}).finally(function () {}); //End Call API getPallet
+				}).finally(function () { }); //End Call API getPallet
 
 			}
 
@@ -279,8 +277,7 @@ angular.module('Pallet.Controllers', [])
 				}).then(function (res) {
 
 
-					if(res)
-					{
+					if (res) {
 						$ionicLoading.show();
 
 						AppService.blur();
@@ -317,17 +314,16 @@ angular.module('Pallet.Controllers', [])
 							//$scope.data.Count = $scope.dataTableItemLength;
 							//}
 							//AppService.succ('Clear Pallet Success :: ', res);  
-							AppService.succ('ยืนยัน Clear Pallet เรียบร้อยแล้ว','PalletNo');
+							AppService.succ('ยืนยัน Clear Pallet เรียบร้อยแล้ว', 'PalletNo');
 
 						}).catch(function (res) {
 							AppService.err('Clear_Pallet', res);
-						}).finally(function () {});
+						}).finally(function () { });
 					}
-					else
-					{
+					else {
 						setFocus();
 					}
-					
+
 
 				}); //End Confirm Popup
 
@@ -350,21 +346,21 @@ angular.module('Pallet.Controllers', [])
 		$scope.data = {};
 		$scope.getTagList = {};
 
-		let Qty_Bal = 0;
-		let ItemStatus_Index_Bal = '';
+		var Qty_Bal = 0;
+		var ItemStatus_Index_Bal = '';
 
-		let keyCnt = 0;
+		var keyCnt = 0;
 
-		let clearData = () => {
+		var clearData = function () {
 			$scope.data = {};
 			$scope.getTagList = {};
 		};
 
-		let setFocus = (id) => {
+		var setFocus = function (id) {
 			AppService.focus(id);
 		}
 
-		let findByValue = (key, value, isOptions) => {
+		var findByValue = function (key, value, isOptions) {
 			return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
 		};
 
@@ -377,7 +373,7 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Scan Barcode Function
 		------------------------------------- */
-		$scope.scanPalletNo = (id) => {
+		$scope.scanPalletNo = function (id) {
 			$cordovaBarcodeScanner.scan().then(function (imageData) {
 				if (!imageData.cancelled) {
 
@@ -393,7 +389,7 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Event Function search
 		------------------------------------- */
-		$scope.search = (dataSearch, id, searchType) => {
+		$scope.search = function (dataSearch, id, searchType) {
 
 			if (!dataSearch) {
 				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', id);
@@ -425,83 +421,94 @@ angular.module('Pallet.Controllers', [])
 
 		};
 
-		async function searchPallet(dataSearch, id) {
+		function searchPallet(dataSearch, id) {
 			try {
 
 				$ionicLoading.show();
 
 				AppService.blur();
 
-				let objsession = angular.copy(LoginService.getLoginData());
+				var objsession = angular.copy(LoginService.getLoginData());
 
-				const res_getPallet_No = await getPallet_No(objsession, dataSearch);
+				var res_getPallet_No = getPallet_No(objsession, dataSearch);
 
-				let resDataSet = (!res_getPallet_No['diffgr:diffgram']) ? {} : res_getPallet_No['diffgr:diffgram'].NewDataSet.Table1;
+				var res_getBalancePallet_No = getBalancePallet_No(objsession, dataSearch);
 
-				const res_getBalancePallet_No = await getBalancePallet_No(objsession, dataSearch);
+				Promise.all([res_getPallet_No, res_getBalancePallet_No]).then(function (res) {
 
-				let resDataSet2 = (!res_getBalancePallet_No['diffgr:diffgram']) ? {} : res_getBalancePallet_No['diffgr:diffgram'].NewDataSet.Table1;
+					var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
 
+					var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
 
+					if (id == 'PalletNo') {
 
-				if (id == 'PalletNo') {
+						if (Object.keys(resDataSet).length == 0) {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'ไม่พบ Pallet ที่ระบุ!', id);
+							return;
+						}
 
-					if (Object.keys(resDataSet).length == 0) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'ไม่พบ Pallet ที่ระบุ!', id);
-						return;
+						if (Object.keys(resDataSet2).length == 0) {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'Pallet ที่ระบุไม่มีสินค้าแล้ว!', id);
+							return;
+						}
+
+						if (resDataSet[0].PalletStatus_Index != '0010000000004') {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'สถานะ Pallet ไม่เป็น RD', id);
+							return;
+						}
+
+						var res_searchPallet_Detail = searchPallet_Detail(dataSearch);
+
+						res_searchPallet_Detail.then(function (res) {
+
+							if (!res) {
+								$scope['data'][id] = null;
+								AppService.err('แจ้งเตือน', 'ไม่พบ Pallet นี้ในระบบ', id);
+								return;
+							}
+
+							$ionicLoading.hide();
+
+						}).catch(function (error) {
+							console.log("Error occurred");
+							AppService.err('Error', 'Error occurred', '');
+							return;
+						});
+
+					}
+					else {
+
+						if (Object.keys(resDataSet).length == 0) {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'ไม่พบ Pallet ปลายทางที่ระบุ!', id);
+							return;
+						}
+
+						if (Object.keys(resDataSet2).length != 0) {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'Pallet ปลายทางที่ระบุมีสินค้าแล้ว!', id);
+							return;
+						}
+
+						if (resDataSet[0].PalletStatus_Index != '0010000000000') {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'สถานะ Pallet ไม่เป็น EM', id);
+							return;
+						}
+
+						saveSplit();
+
 					}
 
-					if (Object.keys(resDataSet2).length == 0) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'Pallet ที่ระบุไม่มีสินค้าแล้ว!', id);
-						return;
-					}
+				}).catch(function (error) {
+					console.log("Error occurred");
+					AppService.err('Error', 'Error occurred', '');
+					return;
+				});
 
-					if (resDataSet[0].PalletStatus_Index != '0010000000004') {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'สถานะ Pallet ไม่เป็น RD', id);
-						return;
-					}
-
-					const res_searchPallet_Detail = await searchPallet_Detail(dataSearch);
-
-					//res_searchPallet_Detail.then(res=>{
-
-					if (!res_searchPallet_Detail) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'ไม่พบ Pallet นี้ในระบบ', id);
-						return;
-					}
-
-					/*})
-					.catch(() => console.log('"Error occurred"'));*/
-
-				}
-				else {
-
-					if (Object.keys(resDataSet).length == 0) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'ไม่พบ Pallet ปลายทางที่ระบุ!', id);
-						return;
-					}
-
-					if (Object.keys(resDataSet2).length != 0) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'Pallet ปลายทางที่ระบุมีสินค้าแล้ว!', id);
-						return;
-					}
-
-					if (resDataSet[0].PalletStatus_Index != '0010000000000') {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'สถานะ Pallet ไม่เป็น EM', id);
-						return;
-					}
-
-					await saveSplit();
-				}
-
-				$ionicLoading.hide();
 
 			} catch (error) {
                 console.log("Error occurred");
@@ -510,27 +517,34 @@ angular.module('Pallet.Controllers', [])
             }
 		}
 
-		async function searchPallet_Detail(dataSearch) {
+		function searchPallet_Detail(dataSearch) {
 			try {
 
-				let objsession = angular.copy(LoginService.getLoginData());
+				var objsession = angular.copy(LoginService.getLoginData());
 
-				const res_getPalletTagBalance = await getPalletTagBalance(objsession, dataSearch);
+				var res_getPalletTagBalance = getPalletTagBalance(objsession, dataSearch);
 
-				let resDataSet = (!res_getPalletTagBalance['diffgr:diffgram']) ? {} : res_getPalletTagBalance['diffgr:diffgram'].NewDataSet.Table1;
+				return res_getPalletTagBalance.then(function (res) {
 
-				if (Object.keys(resDataSet).length > 0) {
+					var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
 
-					$scope.getTagList = resDataSet;
+					if (Object.keys(resDataSet).length > 0) {
 
-					$scope.changeTag(resDataSet[0].Tag_No_T);
+						$scope.getTagList = resDataSet;
 
-					return true;
-				}
-				else {
-					return false;
-				}
+						$scope.changeTag(resDataSet[0].Tag_No_T);
 
+						return true;
+					}
+					else {
+						return false;
+					}
+
+				}).catch(function (error) {
+					console.log("Error occurred");
+					AppService.err('Error', 'Error occurred', '');
+					return;
+				});
 
 			} catch (error) {
                 console.log("Error occurred");
@@ -540,8 +554,8 @@ angular.module('Pallet.Controllers', [])
 
 		};
 
-		let getPallet_No = (objsession, pPallet_No) => {
-			return new Promise((resolve, reject) => {
+		var getPallet_No = function (objsession, pPallet_No) {
+			return new Promise(function (resolve, reject) {
 
 				App.API('getPallet_No', {
 					objsession: objsession,
@@ -555,8 +569,8 @@ angular.module('Pallet.Controllers', [])
 			})
 		}
 
-		let getBalancePallet_No = (objsession, pPallet_No) => {
-			return new Promise((resolve, reject) => {
+		var getBalancePallet_No = function (objsession, pPallet_No) {
+			return new Promise(function (resolve, reject) {
 
 				App.API('getBalancePallet_No', {
 					objsession: objsession,
@@ -570,8 +584,8 @@ angular.module('Pallet.Controllers', [])
 			})
 		}
 
-		let getPalletTagBalance = (objsession, pPallet_No) => {
-			return new Promise((resolve, reject) => {
+		var getPalletTagBalance = function (objsession, pPallet_No) {
+			return new Promise(function (resolve, reject) {
 
 				App.API('getPalletTagBalance', {
 					objsession: objsession,
@@ -588,7 +602,7 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Event Function changeTag
 		------------------------------------- */
-		$scope.changeTag = (Tag_No) => {
+		$scope.changeTag = function (Tag_No) {
 
 			$scope.data.Tag = Tag_No
 
@@ -596,16 +610,16 @@ angular.module('Pallet.Controllers', [])
 
 		}
 
-		let changeTagDetail = (Tag_No) => {
+		var changeTagDetail = function (Tag_No) {
 
 			if (!Tag_No) {
 				return
 			}
 
-			let datatables_Tag = {};
-			let i = 0;
+			var datatables_Tag = {};
+			var i = 0;
 
-			for (let x in $scope.getTagList) {
+			for (var x in $scope.getTagList) {
 
 				if ($scope.getTagList[x].TAG_No == Tag_No) {
 					datatables_Tag[x] = $scope.getTagList[x];
@@ -637,20 +651,20 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Event Function save
 		------------------------------------- */
-		$scope.save = () => {
+		$scope.save = function () {
 
 			saveSplit();
 
 		}
 
-		async function saveSplit() {
+		function saveSplit() {
 			try {
 
 				$ionicLoading.show();
 
 				AppService.blur();
 
-				let objsession = angular.copy(LoginService.getLoginData());
+				var objsession = angular.copy(LoginService.getLoginData());
 
 				if (!$scope.data.PalletNo) {
 					$scope.data.PalletNo = null;
@@ -670,15 +684,21 @@ angular.module('Pallet.Controllers', [])
 					return;
 				}
 
-				const res_saveRelocate_SplitPallet_NewByPakorn = await saveRelocate_SplitPallet_NewByPakorn(objsession, $scope.data.Tag, $scope.data.PalletNo2, $scope.data.PalletNo, $scope.data.MoveQty, $scope.data.SumQtyAfterMove, ItemStatus_Index_Bal);
+				var res_saveRelocate_SplitPallet_NewByPakorn = saveRelocate_SplitPallet_NewByPakorn(objsession, $scope.data.Tag, $scope.data.PalletNo2, $scope.data.PalletNo, $scope.data.MoveQty, $scope.data.SumQtyAfterMove, ItemStatus_Index_Bal);
 
-				if (res_saveRelocate_SplitPallet_NewByPakorn == 'True') {
-					clearData();
-					AppService.succ('ทำการแตกพาเลทสินค้าเรียบร้อย', 'PalletNo');
+				res_saveRelocate_SplitPallet_NewByPakorn.then(function (res) {
 
-				}
+					if (res == 'True') {
+						clearData();
+						AppService.succ('ทำการแตกพาเลทสินค้าเรียบร้อย', 'PalletNo');
+						$ionicLoading.hide();
+					}
 
-				$ionicLoading.hide();
+				}).catch(function (error) {
+					console.log("Error occurred");
+					AppService.err('Error', 'Error occurred', '');
+					return;
+				});
 
 			} catch (error) {
                 console.log("Error occurred");
@@ -687,8 +707,8 @@ angular.module('Pallet.Controllers', [])
             }
 		}
 
-		let saveRelocate_SplitPallet_NewByPakorn = (objsession, OldTag_No, NewPallet_No, OldPallet_No, dblQtyMove, dblQtyAfterMove, pstrNewPalletStatus_Index) => {
-			return new Promise((resolve, reject) => {
+		var saveRelocate_SplitPallet_NewByPakorn = function (objsession, OldTag_No, NewPallet_No, OldPallet_No, dblQtyMove, dblQtyAfterMove, pstrNewPalletStatus_Index) {
+			return new Promise(function (resolve, reject) {
 
 				App.API('saveRelocate_SplitPallet_NewByPakorn', {
 					objsession: objsession,
@@ -710,7 +730,7 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Event Function clear
 		------------------------------------- */
-		$scope.clear = () => {
+		$scope.clear = function () {
 
 			clearData();
 
@@ -719,9 +739,9 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Event Function cal
 		------------------------------------- */
-		$scope.cal = (keyEnter, Qty) => {
+		$scope.cal = function (keyEnter, Qty) {
 
-			let Bal = parseFloat(Qty_Bal) - parseFloat(Qty);
+			var Bal = parseFloat(Qty_Bal) - parseFloat(Qty);
 
 			$scope.data.SumQtyAfterMove = Bal;
 
@@ -744,22 +764,22 @@ angular.module('Pallet.Controllers', [])
 		$scope.getTagList = {};
 		$scope.getTagList2 = {};
 
-		let Qty_Bal = 0;
-		let ItemStatus_Index_Bal = '';
+		var Qty_Bal = 0;
+		var ItemStatus_Index_Bal = '';
 
-		let keyCnt = 0;
+		var keyCnt = 0;
 
-		let clearData = () => {
+		var clearData = function () {
 			$scope.data = {};
 			$scope.getTagList = {};
 			$scope.getTagList2 = {};
 		};
 
-		let setFocus = (id) => {
+		var setFocus = function (id) {
 			AppService.focus(id);
 		}
 
-		let findByValue = (key, value, isOptions) => {
+		var findByValue = function (key, value, isOptions) {
 			return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
 		};
 
@@ -772,7 +792,7 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Scan Barcode Function
 		------------------------------------- */
-		$scope.scanPalletNo = (id) => {
+		$scope.scanPalletNo = function (id) {
 			$cordovaBarcodeScanner.scan().then(function (imageData) {
 				if (!imageData.cancelled) {
 
@@ -788,7 +808,7 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Event Function search
 		------------------------------------- */
-		$scope.search = (dataSearch, id, searchType) => {
+		$scope.search = function (dataSearch, id, searchType) {
 
 			if (!dataSearch) {
 				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', id);
@@ -820,95 +840,109 @@ angular.module('Pallet.Controllers', [])
 
 		};
 
-		async function searchPallet(dataSearch, id) {
+		function searchPallet(dataSearch, id) {
 			try {
 
 				$ionicLoading.show();
 
 				AppService.blur();
 
-				let objsession = angular.copy(LoginService.getLoginData());
+				var objsession = angular.copy(LoginService.getLoginData());
 
-				const res_getPallet_No = await getPallet_No(objsession, dataSearch);
+				var res_getPallet_No = getPallet_No(objsession, dataSearch);
 
-				let resDataSet = (!res_getPallet_No['diffgr:diffgram']) ? {} : res_getPallet_No['diffgr:diffgram'].NewDataSet.Table1;
+				var res_getBalancePallet_No = getBalancePallet_No(objsession, dataSearch);
 
-				const res_getBalancePallet_No = await getBalancePallet_No(objsession, dataSearch);
+				Promise.all([res_getPallet_No, res_getBalancePallet_No]).then(function (res) {
 
-				let resDataSet2 = (!res_getBalancePallet_No['diffgr:diffgram']) ? {} : res_getBalancePallet_No['diffgr:diffgram'].NewDataSet.Table1;
+					var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
 
+					var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
 
+					if (id == 'PalletNo') {
 
-				if (id == 'PalletNo') {
+						if (Object.keys(resDataSet).length == 0) {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'ไม่พบ Pallet ที่ระบุ!', id);
+							return;
+						}
 
-					if (Object.keys(resDataSet).length == 0) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'ไม่พบ Pallet ที่ระบุ!', id);
-						return;
+						if (Object.keys(resDataSet2).length == 0) {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'Pallet ที่ระบุไม่มีสินค้าแล้ว!', id);
+							return;
+						}
+
+						if (resDataSet[0].PalletStatus_Index != '0010000000004') {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'สถานะ Pallet ไม่เป็น RD', id);
+							return;
+						}
+
+						var res_searchPallet_Detail = searchPallet_Detail(dataSearch, id);
+
+						res_searchPallet_Detail.then(function (res) {
+
+							if (!res_searchPallet_Detail) {
+								$scope['data'][id] = null;
+								AppService.err('แจ้งเตือน', 'ไม่พบ Pallet นี้ในระบบ', id);
+								return;
+							}
+
+							$ionicLoading.hide();
+
+						}).catch(function (error) {
+							console.log("Error occurred");
+							AppService.err('Error', 'Error occurred', '');
+							return;
+						});
+
+					}
+					else {
+
+						if (Object.keys(resDataSet).length == 0) {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'ไม่พบ Pallet ปลายทางที่ระบุ!', id);
+							return;
+						}
+
+						if (Object.keys(resDataSet2).length == 0) {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'Pallet ปลายทางที่ระบุไม่มีสินค้าแล้ว!', id);
+							return;
+						}
+
+						if (resDataSet[0].PalletStatus_Index != '0010000000004') {
+							$scope['data'][id] = null;
+							AppService.err('แจ้งเตือน', 'สถานะ Pallet ไม่เป็น RD', id);
+							return;
+						}
+
+						var res_searchPallet_Detail = searchPallet_Detail(dataSearch);
+
+						res_searchPallet_Detail.then(function (res) {
+
+							if (!res_searchPallet_Detail) {
+								$scope['data'][id] = null;
+								AppService.err('แจ้งเตือน', 'ไม่พบ Pallet นี้ในระบบ', id);
+								return;
+							}
+
+							$ionicLoading.hide();
+
+						}).catch(function (error) {
+							console.log("Error occurred");
+							AppService.err('Error', 'Error occurred', '');
+							return;
+						});
+
 					}
 
-					if (Object.keys(resDataSet2).length == 0) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'Pallet ที่ระบุไม่มีสินค้าแล้ว!', id);
-						return;
-					}
-
-					if (resDataSet[0].PalletStatus_Index != '0010000000004') {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'สถานะ Pallet ไม่เป็น RD', id);
-						return;
-					}
-
-					const res_searchPallet_Detail = await searchPallet_Detail(dataSearch, id);
-
-					//res_searchPallet_Detail.then(res=>{
-
-					if (!res_searchPallet_Detail) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'ไม่พบ Pallet นี้ในระบบ', id);
-						return;
-					}
-
-					/*})
-					.catch(() => console.log('"Error occurred"'));*/
-
-				}
-				else {
-
-					if (Object.keys(resDataSet).length == 0) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'ไม่พบ Pallet ปลายทางที่ระบุ!', id);
-						return;
-					}
-
-					if (Object.keys(resDataSet2).length == 0) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'Pallet ปลายทางที่ระบุไม่มีสินค้าแล้ว!', id);
-						return;
-					}
-
-					if (resDataSet[0].PalletStatus_Index != '0010000000004') {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'สถานะ Pallet ไม่เป็น RD', id);
-						return;
-					}
-
-					const res_searchPallet_Detail = await searchPallet_Detail(dataSearch);
-
-					//res_searchPallet_Detail.then(res=>{
-
-					if (!res_searchPallet_Detail) {
-						$scope['data'][id] = null;
-						AppService.err('แจ้งเตือน', 'ไม่พบ Pallet นี้ในระบบ', id);
-						return;
-					}
-
-					/*})
-					.catch(() => console.log('"Error occurred"'));*/
-
-				}
-
-				$ionicLoading.hide();
+				}).catch(function (error) {
+					console.log("Error occurred");
+					AppService.err('Error', 'Error occurred', '');
+					return;
+				});
 
 			} catch (error) {
                 console.log("Error occurred");
@@ -917,35 +951,46 @@ angular.module('Pallet.Controllers', [])
             }
 		}
 
-		async function searchPallet_Detail(dataSearch, id) {
+		function searchPallet_Detail(dataSearch, id) {
 			try {
 
-				let objsession = angular.copy(LoginService.getLoginData());
+				var objsession = angular.copy(LoginService.getLoginData());
 
-				const res_getPalletTagBalance = await getPalletTagBalance(objsession, dataSearch);
+				var res_getPalletTagBalance = getPalletTagBalance(objsession, dataSearch);
 
-				let resDataSet = (!res_getPalletTagBalance['diffgr:diffgram']) ? {} : res_getPalletTagBalance['diffgr:diffgram'].NewDataSet.Table1;
+				return res_getPalletTagBalance.then(function (res) {
 
-				if (Object.keys(resDataSet).length > 0) {
+					var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
 
-					if (id == 'PalletNo') {
-						$scope.getTagList = resDataSet;
+					if (Object.keys(resDataSet).length > 0) {
 
-						$scope.changeTag(resDataSet[0].Tag_No_T);
+						if (id == 'PalletNo') {
+
+							$scope.getTagList = resDataSet;
+
+							$scope.changeTag(resDataSet[0].Tag_No_T);
+						}
+						else {
+
+							$scope.getTagList2 = resDataSet;
+
+							$scope.data.Tag2 = resDataSet[0].Tag_No_T;
+						}
+
+						return true;
+
 					}
 					else {
-						$scope.getTagList2 = resDataSet;
 
-						$scope.data.Tag2 = resDataSet[0].Tag_No_T;
+						return false;
+
 					}
 
-
-					return true;
-				}
-				else {
-					return false;
-				}
-
+				}).catch(function (error) {
+					console.log("Error occurred");
+					AppService.err('Error', 'Error occurred', '');
+					return;
+				});
 
 			} catch (error) {
                 console.log("Error occurred");
@@ -955,8 +1000,8 @@ angular.module('Pallet.Controllers', [])
 
 		};
 
-		let getPallet_No = (objsession, pPallet_No) => {
-			return new Promise((resolve, reject) => {
+		var getPallet_No = function (objsession, pPallet_No) {
+			return new Promise(function (resolve, reject) {
 
 				App.API('getPallet_No', {
 					objsession: objsession,
@@ -970,8 +1015,8 @@ angular.module('Pallet.Controllers', [])
 			})
 		}
 
-		let getBalancePallet_No = (objsession, pPallet_No) => {
-			return new Promise((resolve, reject) => {
+		var getBalancePallet_No = function (objsession, pPallet_No) {
+			return new Promise(function (resolve, reject) {
 
 				App.API('getBalancePallet_No', {
 					objsession: objsession,
@@ -985,8 +1030,8 @@ angular.module('Pallet.Controllers', [])
 			})
 		}
 
-		let getPalletTagBalance = (objsession, pPallet_No) => {
-			return new Promise((resolve, reject) => {
+		var getPalletTagBalance = function (objsession, pPallet_No) {
+			return new Promise(function (resolve, reject) {
 
 				App.API('getPalletTagBalance', {
 					objsession: objsession,
@@ -1003,7 +1048,7 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Event Function changeTag
 		------------------------------------- */
-		$scope.changeTag = (Tag_No) => {
+		$scope.changeTag = function (Tag_No) {
 
 			$scope.data.Tag = Tag_No;
 
@@ -1011,16 +1056,16 @@ angular.module('Pallet.Controllers', [])
 
 		}
 
-		let changeTagDetail = (Tag_No) => {
+		var changeTagDetail = function (Tag_No) {
 
 			if (!Tag_No) {
 				return
 			}
 
-			let datatables_Tag = {};
-			let i = 0;
+			var datatables_Tag = {};
+			var i = 0;
 
-			for (let x in $scope.getTagList) {
+			for (var x in $scope.getTagList) {
 
 				if ($scope.getTagList[x].TAG_No == Tag_No) {
 					datatables_Tag[x] = $scope.getTagList[x];
@@ -1052,20 +1097,20 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Event Function save
 		------------------------------------- */
-		$scope.save = () => {
+		$scope.save = function () {
 
 			saveSplit();
 
 		}
 
-		async function saveSplit() {
+		function saveSplit() {
 			try {
 
 				$ionicLoading.show();
 
 				AppService.blur();
 
-				let objsession = angular.copy(LoginService.getLoginData());
+				var objsession = angular.copy(LoginService.getLoginData());
 
 				if (!$scope.data.PalletNo) {
 					$scope.data.PalletNo = null;
@@ -1093,22 +1138,30 @@ angular.module('Pallet.Controllers', [])
 					return;
 				}
 
-				const res_saveRelocate_CombinePallet_NewByPakorn = await saveRelocate_CombinePallet_NewByPakorn(objsession, $scope.data.Tag, $scope.data.Tag2, $scope.data.PalletNo2, $scope.data.PalletNo, $scope.data.MoveQty, $scope.data.SumQtyAfterMove, ItemStatus_Index_Bal);
+				var res_saveRelocate_CombinePallet_NewByPakorn = saveRelocate_CombinePallet_NewByPakorn(objsession, $scope.data.Tag, $scope.data.Tag2, $scope.data.PalletNo2, $scope.data.PalletNo, $scope.data.MoveQty, $scope.data.SumQtyAfterMove, ItemStatus_Index_Bal);
 
-				if (res_saveRelocate_CombinePallet_NewByPakorn == 'True') {
-					clearData();
-					AppService.succ('ทำการรวมพาเลทสินค้าเรียบร้อย', 'PalletNo');
+				res_saveRelocate_CombinePallet_NewByPakorn.then(function (res) {
 
-				}
-				else {
-					$scope.data.PalletNo2 = null;
-					$scope.data.Tag2 = null;
-					$scope.getTagList2 = {};
-					AppService.err('แจ้งเตือน', 'Grade หรือ Lot ไม่ตรงกัน', 'PalletNo2');
+					if (res == 'True') {
+						clearData();
+						AppService.succ('ทำการรวมพาเลทสินค้าเรียบร้อย', 'PalletNo');
+						$ionicLoading.hide();
+					}
+					else {
+						$scope.data.PalletNo2 = null;
+						$scope.data.Tag2 = null;
+						$scope.getTagList2 = {};
+						AppService.err('แจ้งเตือน', 'Grade หรือ Lot ไม่ตรงกัน', 'PalletNo2');
+						return;
+					}
+
+
+
+				}).catch(function (error) {
+					console.log("Error occurred");
+					AppService.err('Error', 'Error occurred', '');
 					return;
-				}
-
-				$ionicLoading.hide();
+				});
 
 			} catch (error) {
                 console.log("Error occurred");
@@ -1117,8 +1170,8 @@ angular.module('Pallet.Controllers', [])
             }
 		}
 
-		let saveRelocate_CombinePallet_NewByPakorn = (objsession, OldTag_No, OldTag_No2, NewPallet_No, OldPallet_No, dblQtyMove, dblQtyAfterMove, pstrNewPalletStatus_Index) => {
-			return new Promise((resolve, reject) => {
+		var saveRelocate_CombinePallet_NewByPakorn = function (objsession, OldTag_No, OldTag_No2, NewPallet_No, OldPallet_No, dblQtyMove, dblQtyAfterMove, pstrNewPalletStatus_Index) {
+			return new Promise(function (resolve, reject) {
 
 				App.API('saveRelocate_CombinePallet_NewByPakorn', {
 					objsession: objsession,
@@ -1141,7 +1194,7 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Event Function clear
 		------------------------------------- */
-		$scope.clear = () => {
+		$scope.clear = function () {
 
 			clearData();
 
@@ -1150,9 +1203,9 @@ angular.module('Pallet.Controllers', [])
 		/*--------------------------------------
 		Event Function cal
 		------------------------------------- */
-		$scope.cal = (keyEnter, Qty) => {
+		$scope.cal = function (keyEnter, Qty) {
 
-			let Bal = parseFloat(Qty_Bal) - parseFloat(Qty);
+			var Bal = parseFloat(Qty_Bal) - parseFloat(Qty);
 
 			$scope.data.SumQtyAfterMove = Bal;
 

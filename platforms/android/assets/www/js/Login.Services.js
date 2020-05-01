@@ -17,7 +17,7 @@ angular.module('Login.Services', [])
             // ConnectionStr: "Data Source=authorwise.co.th;Initial Catalog=WMS_Site_AS;User Id=sa; Password=Autt1211!",
             // ConnectionStr: "Data Source=192.168.23.60;Initial Catalog=WMS_TEST;User ID=sa; PWD=kascodb",
 
-            ConnectionStr: "Data Source=192.168.21.50;Initial Catalog=WMS_Site_TPIPL;User ID=sa; PWD=kascodb;",
+            ConnectionStr: "Data Source=192.168.23.60;Initial Catalog=WMS_Site_AS;User ID=sa; PWD=kascodb;",
 
            
             //  ConnectionStr: "Data Source=27.254.109.166\SQLEXPRESS,1433; Initial Catalog=WMS_Site_AS;User Id=sa; Password=Aut1211!; ",

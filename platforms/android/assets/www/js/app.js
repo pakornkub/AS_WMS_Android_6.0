@@ -4,8 +4,8 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', 'LocalStorageModule', 'App.Controllers', 
-  'Login.Controllers', 'Login.Services', 'Menu.Controllers', 'Main.Controllers', /*'Menu_MainMenu.Controllers', 'Menu_MainMenu.Services',*/
-  'Store.Controllers', 'Bagging.Controllers', 'Transport.Controllers', 'Additional.Controllers', 'Pallet.Controllers', 'Film.Controllers', 'Receive.Controllers', 'RS.Controllers'])
+  'Login.Controllers', 'Login.Services', 'Menu.Controllers', 'Main.Controllers',
+  'Store.Controllers', 'Production.Controllers', 'Shipping.Controllers', 'Additional.Controllers', 'Pallet.Controllers','TumblingMix.Controllers'])
 
 /*test*/
 // .constant('API', {
@@ -13,7 +13,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
 // })
 
 .constant('API', {
-    url: 'http://192.168.21.50/WMS_Android/Business_Layer.asmx'
+    url: 'http://192.168.23.60/WMS_Android_V1/Business_Layer.asmx'
     //url: 'http://authorwise.co.th/tpipl/Business_Layer.asmx'
 })
 
@@ -60,56 +60,42 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
         ionic.Platform.exitApp();
       } else if(
         
+        $state.current.name == "main_NewInUnwire" || 
+        $state.current.name == "main_NewInUnwireBP" || 
+        //$state.current.name == "main_NewInUnwireBP_Selected" ||
+        $state.current.name == "main_ProductGeneral" || 
+        $state.current.name == "main_ProductGeneral_Selected" ||
+        $state.current.name == "main_UserCustomerReturn" || 
+        $state.current.name == "main_PayProductGenaral" || 
+        $state.current.name == "main_ProductGeneralLot" || 
+        $state.current.name == "main_ProductGeneralLot_Selected" ||
 
-        $state.current.name == "main_Rack" || 
-        $state.current.name == "main_PickingRack" || 
-        $state.current.name == "main_PickingRack_Selected" || 
-        $state.current.name == "main_WHTransferToSH" ||
-        $state.current.name == "main_WHIssueDamage" ||
-        
-        $state.current.name == "store_ProcessPallet" || 
+        //$state.current.name == "store_ReceiveRawMatPackingChemical" || 
+        //$state.current.name == "store_ReceiveRawMatPackingChemical_Selected" ||
+        $state.current.name == "store_WeighingChemical" ||
 
-        $state.current.name == "bagging_BagJumbo" || 
-        $state.current.name == "bagging_CancelPallet" || 
-        $state.current.name == "bagging_UpdatePallet" || 
-        $state.current.name == "bagging_BagFilm" || 
+        $state.current.name == "production_PackingRoll" || 
+        $state.current.name == "production_PackToPallet" || 
+        $state.current.name == "production_DeleteRoll" || 
+        $state.current.name == "production_ReceiveRawMat" || 
+        $state.current.name == "production_ReceiveRawMat_Selected" ||
+        $state.current.name == "production_IssueRawMat" || 
 
-        /*$state.current.name == "additional_MovePallet" || 
-        $state.current.name == "additional_MoveLocation" ||*/
-        $state.current.name == "additional_CheckPallet" || 
-        $state.current.name == "additional_CheckLocation" ||
-        $state.current.name == "additional_AddPalletToTag" ||
-        $state.current.name == "additional_MovePalletToLocation" ||
+        $state.current.name == "shipping_Sale" || 
+        $state.current.name == "shipping_NewInShipping" || 
+        $state.current.name == "shipping_CustomerReturn" || 
 
+        $state.current.name == "additional_MoveRoll" || 
+        $state.current.name == "additional_MovePallet" || 
+        $state.current.name == "additional_MoveLocation" || 
+        $state.current.name == "additional_CheckRollPallet" || 
+        $state.current.name == "additional_CheckLocation" || 
+
+        $state.current.name == "pallet_SplitPallet" || 
+        $state.current.name == "pallet_CombinePallet" || 
         $state.current.name == "pallet_ClearPallet" ||
-        $state.current.name == "pallet_SplitPallet" ||
-        $state.current.name == "pallet_CombinePallet" ||
         
-        $state.current.name == "film_NewIn" || 
-        $state.current.name == "film_NoNewIn" || 
-        $state.current.name == "film_ProductGeneral" || 
-        $state.current.name == "film_ProductGeneral_Selected" || 
-
-        $state.current.name == "receive_NewIn" || 
-        $state.current.name == "receive_NoNewIn" || 
-        $state.current.name == "receive_NoNewIn_Selected" || 
-        $state.current.name == "receive_NewIn_Auto" || 
-        $state.current.name == "receive_ProductGeneral" || 
-        $state.current.name == "receive_ProductGeneral_Selected" || 
-
-        $state.current.name == "transport_PayProductGenaral" || 
-        $state.current.name == "transport_SHTransferToDockout" || 
-        $state.current.name == "transport_SHLoading" ||
-        $state.current.name == "transport_SHReceive" ||
-        
-        $state.current.name == "rs_ReceiveDM" || 
-        $state.current.name == "rs_TranferPick" || 
-        $state.current.name == "rs_TranferPut" ||
-        $state.current.name == "rs_AssignPallet" ||
-        $state.current.name == "rs_AssingRS_Selected" ||
-        $state.current.name == "rs_TransferOwnerOut_Selected" ||
-        $state.current.name == "rs_TransferOwnerIn_Selected" ||
-        $state.current.name == "rs_TransferOwnerIn_DM_New_Selected" ) {
+        $state.current.name == "tumblingmix_MixRawMat") {
         
         $ionicPopup.confirm({
           title: 'Confirm',
@@ -152,34 +138,58 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
       controller: 'MenuCtrl'
     })
 
-    .state('main_Rack', {
-      url: '/Main_Rack',
-      templateUrl: 'templates/Main_Rack.html',
-      controller: 'Main_RackCtrl'
+    .state('main_NewInUnwire', {
+      url: '/Main_NewInUnwire',
+      templateUrl: 'templates/Main_NewInUnwire.html',
+      controller: 'Main_NewInUnwireCtrl'
     })
 
-    .state('main_PickingRack', {
-      url: '/Main_PickingRack',
-      templateUrl: 'templates/Main_PickingRack.html',
-      controller: 'Main_PickingRackCtrl'
+    .state('main_NewInUnwireBP', {
+      url: '/Main_NewInUnwireBP',
+      templateUrl: 'templates/Main_NewInUnwireBP.html',
+      controller: 'Main_NewInUnwireBPCtrl'
     })
 
-    .state('main_PickingRack_Selected', {
-      url: '/Main_PickingRack_Selected/{Withdraw_Index}/{Withdraw_No}',
-      templateUrl: 'templates/Main_PickingRack_Selected.html',
-      controller: 'Main_PickingRack_SelectedCtrl'
+    /*.state('main_NewInUnwireBP_Selected', {
+      url: '/Main_NewInUnwireBP_Selected/{Order_Index}/{Order_No}',
+      templateUrl: 'templates/Main_NewInUnwireBP_Selected.html',
+      controller: 'Main_NewInUnwireBP_SelectedCtrl'
+    })*/
+
+    .state('main_ProductGeneral', {
+      url: '/Main_ProductGeneral',
+      templateUrl: 'templates/Main_ProductGeneral.html',
+      controller: 'Main_ProductGeneralCtrl'
     })
 
-    .state('main_WHTransferToSH', {
-      url: '/Main_WHTransferToSH',
-      templateUrl: 'templates/Main_WHTransferToSH.html',
-      controller: 'Main_WHTransferToSHCtrl'
+    .state('main_ProductGeneral_Selected', {
+      url: '/Main_ProductGeneral_Selected/{Order_Index}/{Order_No}',
+      templateUrl: 'templates/Main_ProductGeneral_Selected.html',
+      controller: 'Main_ProductGeneral_SelectedCtrl'
     })
 
-    .state('main_WHIssueDamage', {
-      url: '/Main_WHIssueDamage',
-      templateUrl: 'templates/Main_WHIssueDamage.html',
-      controller: 'Main_WHIssueDamageCtrl'
+    .state('main_UserCustomerReturn', {
+      url: '/Main_UserCustomerReturn',
+      templateUrl: 'templates/Main_UserCustomerReturn.html',
+      controller: 'Main_UserCustomerReturnCtrl'
+    })
+
+    .state('main_PayProductGenaral', {
+      url: '/Main_PayProductGenaral',
+      templateUrl: 'templates/Main_PayProductGenaral.html',
+      controller: 'Main_PayProductGenaralCtrl'
+    })
+
+    .state('main_ProductGeneralLot', {
+      url: '/Main_ProductGeneralLot',
+      templateUrl: 'templates/Main_ProductGeneralLot.html',
+      controller: 'Main_ProductGeneralLotCtrl'
+    })
+
+    .state('main_ProductGeneralLot_Selected', {
+      url: '/Main_ProductGeneralLot_Selected/{Order_Index}/{Order_No}',
+      templateUrl: 'templates/Main_ProductGeneralLot_Selected.html',
+      controller: 'Main_ProductGeneralLot_SelectedCtrl'
     })
 
 
@@ -190,72 +200,90 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
       controller: 'MenuCtrl'
     })
 
-    .state('store_ProcessPallet', {
-      url: '/Store_ProcessPallet',
-      templateUrl: 'templates/Store_ProcessPallet.html',
-      controller: 'Store_ProcessPalletCtrl'
+    /*.state('store_ReceiveRawMatPackingChemical', {
+      url: '/Store_ReceiveRawMatPackingChemical',
+      templateUrl: 'templates/Store_ReceiveRawMatPackingChemical.html',
+      controller: 'Store_ReceiveRawMatPackingChemicalCtrl'
     })
 
-    /*Menu Bagging*/
-    .state('Bagging', {
+    .state('store_ReceiveRawMatPackingChemical_Selected', {
+      url: '/Store_ReceiveRawMatPackingChemical_Selected/{Order_Index}/{Order_No}',
+      templateUrl: 'templates/Store_ReceiveRawMatPackingChemical_Selected.html',
+      controller: 'Store_ReceiveRawMatPackingChemical_SelectedCtrl'
+    })*/
+
+    .state('store_WeighingChemical', {
+      url: '/Store_WeighingChemical/{Order_Index}/{Order_No}',
+      templateUrl: 'templates/Store_WeighingChemical.html',
+      controller: 'Store_WeighingChemicalCtrl'
+    })
+
+    /*Menu Production*/
+    .state('Production', {
       url: '/{menuPage}/{namePage}',
       templateUrl: 'templates/Menu.html',
       controller: 'MenuCtrl'
     })
 
-    .state('bagging_BagJumbo', {
-      url: '/Bagging_BagJumbo',
-      templateUrl: 'templates/Bagging_BagJumbo.html',
-      controller: 'Bagging_BagJumboCtrl'
+    .state('production_PackingRoll', {
+      url: '/Production_PackingRoll',
+      templateUrl: 'templates/Production_PackingRoll.html',
+      controller: 'Production_PackingRollCtrl'
     })
 
-    .state('bagging_BagFilm', {
-      url: '/Bagging_BagFilm',
-      templateUrl: 'templates/Bagging_BagFilm.html',
-      controller: 'Bagging_BagFilmCtrl'
+    .state('production_PackToPallet', {
+      url: '/Production_PackToPallet',
+      templateUrl: 'templates/Production_PackToPallet.html',
+      controller: 'Production_PackToPalletCtrl'
     })
 
-    .state('bagging_CancelPallet', {
-      url: '/Bagging_CancelPallet',
-      templateUrl: 'templates/Bagging_CancelPallet.html',
-      controller: 'Bagging_CancelPalletCtrl'
+    .state('production_DeleteRoll', {
+      url: '/Production_DeleteRoll',
+      templateUrl: 'templates/Production_DeleteRoll.html',
+      controller: 'Production_DeleteRollCtrl'
     })
 
-    .state('bagging_UpdatePallet', {
-      url: '/Bagging_UpdatePallet',
-      templateUrl: 'templates/Bagging_UpdatePallet.html',
-      controller: 'Bagging_UpdatePalletCtrl'
+    .state('production_ReceiveRawMat', {
+      url: '/Production_ReceiveRawMat',
+      templateUrl: 'templates/Production_ReceiveRawMat.html',
+      controller: 'Production_ReceiveRawMatCtrl'
     })
 
-    /*Menu Transport*/
-    .state('Transport', {
+    .state('production_ReceiveRawMat_Selected', {
+      url: '/Production_ReceiveRawMat_Selected/{Order_Index}/{Order_No}',
+      templateUrl: 'templates/Production_ReceiveRawMat_Selected.html',
+      controller: 'Production_ReceiveRawMat_SelectedCtrl'
+    })
+
+    .state('production_IssueRawMat', {
+      url: '/Production_IssueRawMat',
+      templateUrl: 'templates/Production_IssueRawMat.html',
+      controller: 'Production_IssueRawMatCtrl'
+    })
+
+    /*Menu Shipping*/
+    .state('Shipping', {
       url: '/{menuPage}/{namePage}',
       templateUrl: 'templates/Menu.html',
       controller: 'MenuCtrl'
     })
 
-    .state('transport_PayProductGenaral', {
-      url: '/Transport_PayProductGenaral',
-      templateUrl: 'templates/Transport_PayProductGenaral.html',
-      controller: 'Transport_PayProductGenaralCtrl'
+    .state('shipping_Sale', {
+      url: '/Shipping_Sale',
+      templateUrl: 'templates/Shipping_Sale.html',
+      controller: 'Shipping_SaleCtrl'
     })
 
-    .state('transport_SHTransferToDockout', {
-      url: '/Transport_SHTransferToDockout',
-      templateUrl: 'templates/Transport_SHTransferToDockout.html',
-      controller: 'Transport_SHTransferToDockoutCtrl'
+    .state('shipping_NewInShipping', {
+      url: '/Shipping_NewInShipping',
+      templateUrl: 'templates/Shipping_NewInShipping.html',
+      controller: 'Shipping_NewInShippingCtrl'
     })
 
-    .state('transport_SHLoading', {
-      url: '/Transport_SHLoading',
-      templateUrl: 'templates/Transport_SHLoading.html',
-      controller: 'Transport_SHLoadingCtrl'
-    })
-
-    .state('transport_SHReceive', {
-      url: '/Transport_SHReceive',
-      templateUrl: 'templates/Transport_SHReceive.html',
-      controller: 'Transport_SHReceiveCtrl'
+    .state('shipping_CustomerReturn', {
+      url: '/Shipping_CustomerReturn',
+      templateUrl: 'templates/Shipping_CustomerReturn.html',
+      controller: 'Shipping_CustomerReturnCtrl'
     })
 
     /*Menu Additional*/
@@ -265,7 +293,13 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
       controller: 'MenuCtrl'
     })
 
-    /*.state('additional_MovePallet', {
+    .state('additional_MoveRoll', {
+      url: '/Additional_MoveRoll',
+      templateUrl: 'templates/Additional_MoveRoll.html',
+      controller: 'Additional_MoveRollCtrl'
+    })
+
+    .state('additional_MovePallet', {
       url: '/Additional_MovePallet',
       templateUrl: 'templates/Additional_MovePallet.html',
       controller: 'Additional_MovePalletCtrl'
@@ -275,7 +309,13 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
       url: '/Additional_MoveLocation',
       templateUrl: 'templates/Additional_MoveLocation.html',
       controller: 'Additional_MoveLocationCtrl'
-    })*/
+    })
+
+    .state('additional_CheckRollPallet', {
+      url: '/Additional_CheckRollPallet',
+      templateUrl: 'templates/Additional_CheckRollPallet.html',
+      controller: 'Additional_CheckRollPalletCtrl'
+    })
 
     .state('additional_CheckLocation', {
       url: '/Additional_CheckLocation',
@@ -283,24 +323,6 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
       controller: 'Additional_CheckLocationCtrl'
     })
 
-    .state('additional_CheckPallet', {
-      url: '/Additional_CheckPallet',
-      templateUrl: 'templates/Additional_CheckPallet.html',
-      controller: 'Additional_CheckPalletCtrl'
-    })
-
-    .state('additional_AddPalletToTag', {
-      url: '/Additional_AddPalletToTag',
-      templateUrl: 'templates/Additional_AddPalletToTag.html',
-      controller: 'Additional_AddPalletToTagCtrl'
-    })
-
-    .state('additional_MovePalletToLocation', {
-      url: '/Additional_MovePalletToLocation',
-      templateUrl: 'templates/Additional_MovePalletToLocation.html',
-      controller: 'Additional_MovePalletToLocationCtrl'
-    })
-   
     /*Menu Pallet*/
     .state('Pallet', {
       url: '/{menuPage}/{namePage}',
@@ -326,136 +348,18 @@ angular.module('starter', ['ionic', 'ngCordova', 'angularSoap', 'angular-md5', '
       controller: 'Pallet_CombinePalletCtrl'
     })
 
-    /*Menu Film*/
-    .state('Film', {
+    /*Menu Tumbling Mix*/
+    .state('TumblingMix', {
       url: '/{menuPage}/{namePage}',
       templateUrl: 'templates/Menu.html',
       controller: 'MenuCtrl'
     })
 
-    .state('film_NewIn', {
-      url: '/Film_NewIn',
-      templateUrl: 'templates/Film_NewIn.html',
-      controller: 'Film_NewInCtrl'
+    .state('tumblingmix_MixRawMat', {
+      url: '/TumblingMix_MixRawMat',
+      templateUrl: 'templates/TumblingMix_MixRawMat.html',
+      controller: 'TumblingMix_MixRawMatCtrl'
     })
-
-    .state('film_ProductGeneral', {
-      url: '/Film_ProductGeneral',
-      templateUrl: 'templates/Film_ProductGeneral.html',
-      controller: 'Film_ProductGeneralCtrl'
-    })
-
-    .state('film_ProductGeneral_Selected', {
-      url: '/Film_ProductGeneral_Selected/{Order_Index}/{Order_No}',
-      templateUrl: 'templates/Film_ProductGeneral_Selected.html',
-      controller: 'Film_ProductGeneral_SelectedCtrl'
-    })
-
-    .state('film_NoNewIn', {
-      url: '/Film_NoNewIn',
-      templateUrl: 'templates/Film_NoNewIn.html',
-      controller: 'Film_NoNewInCtrl'
-    })
-
-    /*Menu Receive*/
-    .state('Receive', {
-      url: '/{menuPage}/{namePage}',
-      templateUrl: 'templates/Menu.html',
-      controller: 'MenuCtrl'
-    })
-
-    .state('receive_NewIn', {
-      url: '/Receive_NewIn',
-      templateUrl: 'templates/Receive_NewIn.html',
-      controller: 'Receive_NewInCtrl'
-    })
-
-    .state('receive_ProductGeneral', {
-      url: '/Receive_ProductGeneral',
-      templateUrl: 'templates/Receive_ProductGeneral.html',
-      controller: 'Receive_ProductGeneralCtrl'
-    })
-
-    .state('receive_ProductGeneral_Selected', {
-      url: '/Receive_ProductGeneral_Selected/{Order_Index}/{Order_No}',
-      templateUrl: 'templates/Receive_ProductGeneral_Selected.html',
-      controller: 'Receive_ProductGeneral_SelectedCtrl'
-    })
-
-    .state('receive_NoNewIn', {
-      url: '/Receive_NoNewIn',
-      templateUrl: 'templates/Receive_NoNewIn.html',
-      controller: 'Receive_NoNewInCtrl'
-    })
-
-    .state('receive_NoNewIn_Selected', {
-      url: '/Receive_NoNewIn_Selected/{Order_Index}/{Order_No}',
-      templateUrl: 'templates/Receive_NoNewIn_Selected.html',
-      controller: 'Receive_NoNewIn_SelectedCtrl'
-    })
-
-    .state('receive_NewIn_Auto', {
-      url: '/Receive_NewIn_Auto',
-      templateUrl: 'templates/Receive_NewIn_Auto.html',
-      controller: 'Receive_NewIn_AutoCtrl'
-    })
-
-
-    /*Menu RS*/
-    .state('RS', {
-      url: '/{menuPage}/{namePage}',
-      templateUrl: 'templates/Menu.html',
-      controller: 'MenuCtrl'
-    })
-
-    .state('rs_ReceiveDM', {
-      url: '/RS_ReceiveDM/{TypeTOW}/{isAssing}/{isDammage}',
-      templateUrl: 'templates/RS_ReceiveDM.html',
-      controller: 'RS_ReceiveDMCtrl'
-    })
-
-    .state('rs_TranferPick', {
-      url: '/RS_TransferOwnerMain/{TypeTOW}/{isAssing}/{isDammage}',
-      templateUrl: 'templates/RS_TransferOwnerMain.html',
-      controller: 'RS_TransferOwnerMainCtrl'
-    })
-
-    .state('rs_TranferPut', {
-      url: '/RS_TransferOwnerMain/{TypeTOW}/{isAssing}/{isDammage}',
-      templateUrl: 'templates/RS_TransferOwnerMain.html',
-      controller: 'RS_TransferOwnerMainCtrl'
-    })
-
-    .state('rs_AssignPallet', {
-      url: '/RS_TransferOwnerMain/{TypeTOW}/{isAssing}/{isDammage}',
-      templateUrl: 'templates/RS_TransferOwnerMain.html',
-      controller: 'RS_TransferOwnerMainCtrl'
-    })
-
-    .state('rs_AssingRS_Selected', {
-      url: '/RS_AssingRS_Selected/{TransferOwner_Index}/{TransferOwner_No}/{Cus_Id}/{Cus_Id_New}',
-      templateUrl: 'templates/RS_AssingRS_Selected.html',
-      controller: 'RS_AssingRS_SelectedCtrl'
-    })
-
-    .state('rs_TransferOwnerOut_Selected', {
-      url: '/RS_TransferOwnerOut_Selected/{TransferOwner_Index}/{TransferOwner_No}/{Cus_Id}/{Cus_Id_New}',
-      templateUrl: 'templates/RS_TransferOwnerOut_Selected.html',
-      controller: 'RS_TransferOwnerOut_SelectedCtrl'
-    })
-
-    .state('rs_TransferOwnerIn_Selected', {
-      url: '/RS_TransferOwnerIn_Selected/{TransferOwner_Index}/{TransferOwner_No}/{Cus_Id}/{Cus_Id_New}',
-      templateUrl: 'templates/RS_TransferOwnerIn_Selected.html',
-      controller: 'RS_TransferOwnerIn_SelectedCtrl'
-    })
-
-    .state('rs_TransferOwnerIn_DM_New_Selected', {
-      url: '/RS_TransferOwnerIn_DM_New_Selected/{TransferOwner_Index}/{TransferOwner_No}/{Cus_Id}/{Cus_Id_New}',
-      templateUrl: 'templates/RS_TransferOwnerIn_DM_New_Selected.html',
-      controller: 'RS_TransferOwnerIn_DM_New_SelectedCtrl'
-    })
-    
 
     $urlRouterProvider.otherwise('/login');
 })

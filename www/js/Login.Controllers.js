@@ -89,7 +89,7 @@ angular.module('Login.Controllers', ['ionic'])
 				/* Set Global Dataset*/
 				LoginService.setLoginData('Version', '3.5.208.26');
 				LoginService.setLoginData('Branch_ID', login.database);
-				LoginService.setLoginData('ConnectionStr', "Data Source=192.168.23.60;Initial Catalog=WMS_Site_AS;User ID=sa; PWD=kascodb;");/*resDataSet2*/
+				LoginService.setLoginData('ConnectionStr', resDataSet2);/*"Data Source=192.168.23.60;Initial Catalog=WMS_Site_AS;User ID=sa; PWD=kascodb;"*/
 				LoginService.setLoginData('Userindex', resDataSet.user_index);
 				LoginService.setLoginData('Username', resDataSet.userName);
 				LoginService.setLoginData('UserFullName', resDataSet.userFullName);

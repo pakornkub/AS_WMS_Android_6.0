@@ -5,3010 +5,3244 @@
  */
 angular.module('Main.Controllers', ['ionic'])
 
+.controller('Main_NewInUnwireCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
 
-	.controller('Main_RackCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
-
-		/*--------------------------------------
-		Data Function
-		--------------------------------------*/
-		$scope.data = {};
-
-		let Tag_No = {};
-		let Palletstatus_Index = {};
-		let Qty = {};
-
-		let rd = null;
-		let fl = null;
-		let fw = null;
-
-		let keyCnt = 0;
-
-		let clearData = () => {
-			$scope.data = {};
-			Tag_No = {};
-			Palletstatus_Index = {};
-			Qty = {};
-		};
-
-		let setFocus = (id) => {
-			AppService.focus(id);
-		}
-
-		let findByValue = (key, value, isOptions) => {
-			return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
-		};
-
-		clearData();
-
-		$scope.$on('$ionicView.enter', function () {
-			setFocus('PalletNo');
-		});
-
-		$scope.data.PalletStatusTo = 'RD';
-
-
-		/*--------------------------------------
-		Scan Barcode Function
-		------------------------------------- */
-		$scope.scanPalletNo = (id) => {
-			$cordovaBarcodeScanner.scan().then(function (imageData) {
-				if (!imageData.cancelled) {
-					$scope['data'][id] = imageData.text.toUpperCase();
-					$scope.search(angular.copy($scope['data'][id]), '');
-				}
-			}, function (error) {
-				AppService.err('scanPalletNo', error);
-			});
-		};
-
-		/*--------------------------------------
-		Event Function search
-		------------------------------------- */
-		$scope.search = (dataSearch, id, searchType) => {
-
-			/*if (!dataSearch) {
-				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'PalletNo');
-				return;
-			}*/
-
-			/*if (searchType == 'read location no' || searchType == 'read pallet no') {
-				keyCnt += 1;
-				var curTextCount = dataSearch == null ? 0 : dataSearch.length;
-				//console.log('current inut text length: ' + curTextCount);
-				//console.log('current inut keyCnt: ' + keyCnt);
-				if (keyCnt == 1 && curTextCount > 1) {
-				//console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
-				$scope.data.PalletSearchFlag = "yes";
-				} else {
-				$scope.data.PalletSearchFlag = "no"; // set flag to stop search
-				}
-				//console.log('flag is ' + $scope.data.PalletSearchFlag);
-				if ($scope.data.PalletSearchFlag == 'no') {
-				$scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
-				//console.log('exit seach');
-				return;
-				}
-			}
-	
-			keyCnt = 0;*/
-
-			if (id != 'Location') {
-				if (!$scope.data.PalletNo) {
-					AppService.err('แจ้งเตื่อน', 'กรุณาป้อน Pallet 1 !', 'PalletNo');
-					return;
-				}
-
-				if (id == 'PalletNo2' && !dataSearch) {
-					setFocus('Location');
-					return;
-				}
-
-				if (id == 'PalletNo2' && dataSearch && dataSearch == $scope.data.PalletNo) {
-					$ionicPopup.confirm({
-						title: 'Confirm',
-						template: 'ต้องการจัดเก็บพาเลทเดียวหรือไม่ ?'
-					}).then(function (res) {
+    /*--------------------------------------
+    Data Function
+    --------------------------------------*/
+    $scope.data = {};
+    $scope.getOrderTopicList = {};
+    $scope.getTagOrderIndexList = {};
+    $scope.getTagOrderIndexListLength = 0;
+    $scope.isDisable = false;
+    $scope.isDisable_TF = false;
 
-						if (!res) {
-							$scope.data.PalletNo2 = null;
-							setFocus('PalletNo2');
-							return;
-						}
-						else {
+    $scope.data.PalletCount_itemPutAway = 0;
+    $scope.data.PalletCount_itemALL = 0;
 
-							$ionicLoading.show();
+    var BGOrder_index = '';
+    var Qty_Per_Tag = 0;
+    var HoldFlag = '';
 
-							searchPallet(dataSearch, id);
+    var keyCnt = 0;
 
-							$ionicLoading.hide(); //ติดปัญหา loading ไม่ hide เลยต้องใส่ hide เพิ่ม
-						}
+    var clearData = function () {
+        $scope.data = {};
+        $scope.getOrderTopicList = {};
+        $scope.getTagOrderIndexList = {};
+        $scope.getTagOrderIndexListLength = 0;
+        $scope.isDisable = false;
+        $scope.isDisable_TF = false;
 
-					}); //End Confirm Popup
-				}
-				else {
-					searchPallet(dataSearch, id);
-				}
+        $scope.data.PalletCount_itemPutAway = 0;
+        $scope.data.PalletCount_itemALL = 0;
+    };
 
-			}
-			else {
-				searchLocation();
-			}
+    var setFocus = function (id) {
+        AppService.focus(id);
+    }
 
+    var findByValue = function (key, value, isOptions) {
+        return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
+    };
 
-		};
+    clearData();
 
-		async function searchPallet(dataSearch, id) {
-			try {
+    $scope.$on('$ionicView.enter', function () {
+        setFocus('PalletNo');
+    });
 
-				$ionicLoading.show();
+    $scope.DisplayFlag = 0
 
-				AppService.blur();
+    $scope.changeDisplay = function (value) {
 
-				let objsession = angular.copy(LoginService.getLoginData());
+        $scope.DisplayFlag = value;
 
-				if (id == 'PalletNo2') {
+    };
 
-					const res_getPalletTagTORD = await getPalletTagTORD(objsession, dataSearch);
+    /*--------------------------------------
+    Call API GetOrderTopic
+    ------------------------------------- */
+    $scope.GetOrderTopic_API = function () {
 
-					let resDataSet = (!res_getPalletTagTORD['diffgr:diffgram']) ? {} : res_getPalletTagTORD['diffgr:diffgram'].NewDataSet.Table1;
+        $ionicLoading.show();
 
-					if (Object.keys(resDataSet).length <= 0) {
-						$scope.data.PalletNo2 = null;
-						AppService.err('แจ้งเตือน', 'ไม่พบ ' + ((id == 'PalletNo') ? 'Pallet 1' : 'Pallet 2') + ' นี้!', id);
-						return;
-					}
+        var pstrWhere = " And Brand_Index in  ('0010000000001') And (ms_DocumentType.DocumentType_Index IN ('0010000000002','0010000000003')) and ((select count(*) from tb_Tag where tb_Order.Order_Index = tb_tag.Order_Index and Tag_Status <> -1) > 0) " +
+            " and tb_Order.Customer_Index in (select  Customer_Index from x_Department_Customer where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and IsUse = 1 ) ";
 
-					for (let x in resDataSet) {
+        App.API('GetOrderTopic', {
+            objsession: angular.copy(LoginService.getLoginData()),
+            pstrWhere: pstrWhere
+        }).then(function (res) {
 
-						if (resDataSet[x].TAG_No != Tag_No['PalletNo']) {
-							if ($scope.data.SKU == resDataSet[x].Sku_Id && $scope.data.Lot == resDataSet[x].PLot) {
-								Tag_No[id] = resDataSet[0].TAG_No;
-								Palletstatus_Index[id] = resDataSet[0].PalletStatus_Index;
-								Qty[id] = resDataSet[0].Qty_per_TAG;
-							}
-							else {
-								$scope.data.PalletNo2 = null;
-								AppService.err('แจ้งเตื่อน', 'Pallet 2 SKU และ Lot ไม่ตรงกับ Pallet 1 !', 'PalletNo2');
-								return;
-							}
-						}
+            var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
 
-					}
+            if (Object.keys(resDataSet).length > 0) {
 
-					setFocus('Location');
-					$ionicLoading.hide();
-					return;
+                $scope.getOrderTopicList = resDataSet;
 
-				}
+                $scope.changeTF(resDataSet[0].Order_Index);
 
-				const res_getPalletTagTORD = await getPalletTagTORD(objsession, dataSearch);
+            }
 
-				let resDataSet = (!res_getPalletTagTORD['diffgr:diffgram']) ? {} : res_getPalletTagTORD['diffgr:diffgram'].NewDataSet.Table1;
 
-				if (Object.keys(resDataSet).length <= 0) {
-					$scope.data.PalletNo = null;
-					AppService.err('แจ้งเตือน', 'ไม่พบ ' + ((id == 'PalletNo') ? 'Pallet 1' : 'Pallet 2') + ' นี้!', id);
-					return;
-				}
+        }).catch(function (res) {
+            AppService.err('GetOrderTopic', res);
+        }).finally(function (res) {
+            $ionicLoading.hide();
+        });
+    };
 
-				$scope.data.SKU = resDataSet[0].Sku_Id;
-				$scope.data.Lot = resDataSet[0].PLot;
-				$scope.data.TotalQty = resDataSet[0].Qty_per_TAG
-				$scope.data.PackageQty = parseFloat(resDataSet[0].Qty_per_TAG) / parseFloat(25);
-				$scope.data.OrderDate = $filter('date')(resDataSet[0].Order_Date, 'dd/MM/yyyy');
-				$scope.data.OrderNo = resDataSet[0].Order_No;
-				$scope.data.PalletStatusFrom = resDataSet[0].PalletStatus_Id;
-				$scope.data.Remark = resDataSet[0].Ref_No1;
-				$scope.data.SysWH = resDataSet[0].Warehouse;
-				$scope.data.SysLocation = resDataSet[0].Location;
-				$scope.data.LocationReally = resDataSet[0].Location_Alias_Really;
-				$scope.data.WorkRec = resDataSet[0].rd + '/' + resDataSet[0].FL + '/' + resDataSet[0].fullwork;
+    $scope.GetOrderTopic_API();
 
-				Tag_No[id] = resDataSet[0].TAG_No;
-				Palletstatus_Index[id] = resDataSet[0].PalletStatus_Index;
-				Qty[id] = resDataSet[0].Qty_per_TAG;
+    /*--------------------------------------
+    Event Function changeTF 
+    ------------------------------------- */
+    $scope.changeTF = function (Order_Index) {
 
-				rd = resDataSet[0].rd;
-				fl = resDataSet[0].FL;
-				fw = resDataSet[0].fullwork;
+        $scope.data.TF = Order_Index;
 
-				setFocus('PalletNo2');
+        loadTF(Order_Index);
 
-				$ionicLoading.hide();
+    };
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+    function loadTF(Order_Index) {
+        try {
 
-		let searchLocation = () => {
+            $ionicLoading.show();
 
-			savePallet();
-		}
+            var objsession = angular.copy(LoginService.getLoginData());
 
-		let getPalletTagTORD = (objsession, pPallet_No) => {
-			return new Promise((resolve, reject) => {
+            if (!Order_Index) {
 
-				App.API('getPalletTagTORD', {
-					objsession: objsession,
-					pPallet_No: pPallet_No
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('getPalletTagTORD', res));
-				});
+                $scope.data = {};
 
-			})
-		}
+                $ionicLoading.hide();
 
-		/*--------------------------------------
-		Event Function save
-		------------------------------------- */
-		$scope.save = () => {
+                return;
 
-			savePallet();
+            } else {
 
-		};
+                var res_GetDetailOrder = GetDetailOrder(objsession, Order_Index);
 
-		async function savePallet() {
-			try {
+                var res_getTag_OrderIndex_TPIPL = getTag_OrderIndex_TPIPL(objsession, Order_Index);
 
-				$ionicLoading.show();
+                Promise.all([res_GetDetailOrder, res_getTag_OrderIndex_TPIPL]).then(function (res) {
 
-				AppService.blur();
+                    var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
 
-				let objsession = angular.copy(LoginService.getLoginData());
+                    var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
 
-				if (!$scope.data.PalletNo && !$scope.data.PalletNo2) {
-					AppService.err('แจ้งเตือน', 'กรุณาป้อน Pallet No!', 'PalletNo');
-					return;
-				}
+                    if (Object.keys(resDataSet).length != -1) {
+                        $scope.data.Ref_No1 = resDataSet[0].Ref_No1;
+                        $scope.data.PalletCount_itemPutAway = resDataSet[0].itemPutAway;
+                        $scope.data.PalletCount_itemALL = resDataSet[0].itemALL;
+                        BGOrder_index = (resDataSet[0].baggingorder_index) ? resDataSet[0].baggingorder_index : '';
+
+                        if ($scope.data.PalletCount_itemPutAway == $scope.data.PalletCount_itemALL) {
+                            AppService.succ('จัดเก็บเรียบร้อย', '');
+                            $scope.isDisable = true;
+                        }
+                    }
+
+                    if (Object.keys(resDataSet2).length > 0) {
+                        $scope.getTagOrderIndexList = resDataSet2;
+                        $scope.getTagOrderIndexListLength = Object.keys(resDataSet2).length;
+                    }
+
+                    setFocus('PalletNo');
+
+                    $ionicLoading.hide();
 
-				if (!$scope.data.PalletNo) {
-					AppService.err('แจ้งเตือน', 'กรุณาป้อน Pallet 1 !', 'PalletNo');
-					return;
-				}
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
 
-				if (!$scope.data.Location) {
-					AppService.err('แจ้งเตือน', 'กรุณาป้อน ตำแหน่งจัดเก็บ!', 'Location');
-					return;
-				}
+            }
 
-				const res_GetLocation_Index = await GetLocation_Index(objsession, $scope.data.Location);
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
 
-				if (!res_GetLocation_Index) {
-					$scope.data.Location = null;
-					AppService.err('แจ้งเตือน', 'ไม่พบ ตำแหน่งจัดเก็บนี้ในระบบ!', 'Location');
-					return;
-				}
+    var GetDetailOrder = function (objsession, Order_Index) {
+        return new Promise(function (resolve, reject) {
 
-				if ($scope.data.SysLocation != $scope.data.Location) {
-					$ionicPopup.confirm({
-						title: 'Confirm',
-						template: 'ตำแหน่งไม่ตรงกับตำแหน่งแนะนำ ต้องการจัดเก็บหรือไม่ ?'
-					}).then(res => {
+            var pstrWhere = " and tb_Order.Order_Index ='" + Order_Index + "' ";
 
-						if (!res) {
-							$scope.data.Location = null;
-							setFocus('Location');
-							return false;
-						}
-						else {
+            App.API('GetDetailOrder', {
+                objsession: objsession,
+                pstrWhere: pstrWhere
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('GetDetailOrder', res));
+            });
 
-							$ionicLoading.show();
-							
-							return saveSubmit();
-						}
+        })
+    }
 
-					}).then(res2 => {
+    var getTag_OrderIndex_TPIPL = function (objsession, pOrder_Index) {
+        return new Promise(function (resolve, reject) {
 
-						$ionicLoading.hide();
-						
-						if (res2) {
-							clearData();
-							AppService.succ('ย้ายเรียบร้อย', 'PalletNo');
-						}
-
-					}); //End Confirm Popup
-
-				}
-				else {
-					const res_saveSubmit = await saveSubmit();
-
-					if (res_saveSubmit) {
-						clearData();
-						AppService.succ('ย้ายเรียบร้อย', 'PalletNo');
-					}
+            App.API('getTag_OrderIndex_TPIPL', {
+                objsession: objsession,
+                pOrder_Index: pOrder_Index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_OrderIndex_TPIPL', res));
+            });
 
-				}
+        })
+    }
 
-				$ionicLoading.hide();
+    /*--------------------------------------
+    Scan Barcode Function
+    ------------------------------------- */
+    $scope.scanPalletNo = function () {
+        $cordovaBarcodeScanner.scan().then(function (imageData) {
+            if (!imageData.cancelled) {
+                $scope.data.PalletNo = imageData.text.toUpperCase();
+                $scope.search(angular.copy($scope.data.PalletNo), '');
+            }
+        }, function (error) {
+            AppService.err('scanPalletNo', error);
+        });
+    };
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+    /*--------------------------------------
+    Event Function search
+    ------------------------------------- */
+    $scope.search = function (dataSearch, searchType) {
 
-		async function saveSubmit() {
-			try {
+        if (!dataSearch) {
+            AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'PalletNo');
+            return;
+        }
 
-				let objsession = angular.copy(LoginService.getLoginData());
+        if (searchType == 'read pallet no') {
+            keyCnt += 1;
+            var curTextCount = dataSearch == null ? 0 : dataSearch.length;
+            //console.log('current inut text length: ' + curTextCount);
+            //console.log('current inut keyCnt: ' + keyCnt);
+            if (keyCnt == 1 && curTextCount > 1) {
+                //console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
+                $scope.data.PalletSearchFlag = "yes";
+            } else {
+                $scope.data.PalletSearchFlag = "no"; // set flag to stop search
+            }
+            //console.log('flag is ' + $scope.data.PalletSearchFlag);
+            if ($scope.data.PalletSearchFlag == 'no') {
+                $scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
+                //console.log('exit seach');
+                return;
+            }
+        }
 
-				let Itemstatus = "";
-				let pcs = 1;
+        keyCnt = 0;
 
-				if (Palletstatus_Index['PalletNo'] != '0010000000012') {
-					Palletstatus_Index['PalletNo'] = '0010000000004';
-					Itemstatus = '0010000000001';
-				}
-				else {
-					Itemstatus = '0010000000005';
-				}
+        searchPallet(dataSearch);
 
-				const res_saveRelocate = await saveRelocate(objsession, Tag_No['PalletNo'], '', Qty['PalletNo'], $scope.data.Location, Itemstatus, Palletstatus_Index['PalletNo']);
-
-				if (res_saveRelocate != 'True') {
-					return false;
-				}
+    };
 
-				if (Tag_No['PalletNo2'] && Tag_No['PalletNo'] != Tag_No['PalletNo2']) {
-					if (Palletstatus_Index['PalletNo2'] != '0010000000012') {
-						Palletstatus_Index['PalletNo2'] = '0010000000004';
-						Itemstatus = '0010000000001';
-					}
-					else {
-						Itemstatus = '0010000000005';
-					}
-
-					const res_saveRelocate2 = await saveRelocate(objsession, Tag_No['PalletNo2'], '', Qty['PalletNo2'], $scope.data.Location, Itemstatus, Palletstatus_Index['PalletNo2']);
-
-					if (res_saveRelocate2 != 'True') {
-						return false;
-					}
-
-					pcs++;
-				}
-
-				$scope.data.WorkRec = String(parseFloat(rd) + parseFloat(pcs)) + '/' + fl + '/' + fw
-
-				return true;
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		let GetLocation_Index = (objsession, pstrLocation) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('GetLocation_Index', {
-					objsession: objsession,
-					pstrLocation: pstrLocation
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('GetLocation_Index', res));
-				});
+    function searchPallet(dataSearch) {
+        try {
 
-			})
-		}
+            $ionicLoading.show();
 
-		let saveRelocate = (objsession, OldTag_No, NewPallet_No, dblQtyMove, pstrNewLocation_Ailas, pstrNewItemStatus_Index, pstrNewPalletStatus_Index) => {
-			return new Promise((resolve, reject) => {
+            AppService.blur();
 
-				App.API('saveRelocate', {
-					objsession: objsession,
-					OldTag_No: OldTag_No,
-					NewPallet_No: NewPallet_No,
-					dblQtyMove: dblQtyMove,
-					pstrNewLocation_Ailas: pstrNewLocation_Ailas,
-					pstrNewItemStatus_Index: pstrNewItemStatus_Index,
-					pstrNewPalletStatus_Index: pstrNewPalletStatus_Index
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('saveRelocate', res));
-				});
+            var objsession = angular.copy(LoginService.getLoginData());
 
-			})
-		}
+            if (!$scope.data.TF) {
+                $scope.data.PalletNo = null;
+                AppService.err('แจ้งเตือน', 'กรุณาเลือกใบรับสินค้า!', 'PalletNo');
+                return;
+            }
 
+            if ($scope.getTagOrderIndexList.length <= 0) {
+                $scope.data.PalletNo = null;
+                AppService.err('แจ้งเตือน', 'ไม่มีรายการในใบรับนี้ กรุณาจัดการ Tag ก่อน', '');
+                return;
+            }
 
-	})
+            var res_getTagByPallet = getTagByPallet(objsession, dataSearch);
 
-	.controller('Main_PickingRackCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
+            var res_getQtyPerPallet_BY_BGorder_TPIPL = getQtyPerPallet_BY_BGorder_TPIPL(objsession, dataSearch, BGOrder_index);
 
-		/*--------------------------------------
-		Data Function
-		--------------------------------------*/
-		$scope.data = {};
-		$scope.datatablesList = {};
-		$scope.datatablesListLength = 0;
-		$scope.lbQTYWithdraw = 0;
+            Promise.all([res_getTagByPallet, res_getQtyPerPallet_BY_BGorder_TPIPL]).then(function (res) {
 
-		$scope.selectedWithdraw_Index = null;
-		$scope.selectedWithdraw_No = null;
+                var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
 
-		let keyCnt = 0;
+                var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
 
-		let clearData = () => {
-			$scope.data = {};
-			$scope.datatablesList = {};
-			$scope.datatablesListLength = 0;
-			$scope.lbQTYWithdraw = 0;
-		};
+                if (Object.keys(resDataSet).length > 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'Pallet นี้กำลังใช้งาน', 'PalletNo');
+                    return;
+                }
 
-		let setFocus = (id) => {
-			AppService.focus(id);
-		}
+                if (Object.keys(resDataSet2).length <= 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'Pallet นี้ ไม่อยู่ในใบ Bag Out Order หรือจัดเก็บไปแล้ว', 'PalletNo');
+                    return;
+                }
 
-		let findByValue = (key, value, isOptions) => {
-			return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
-		};
+                Qty_Per_Tag = resDataSet2[0].Total_Qty;
+                HoldFlag = resDataSet2[0].HoldFlag;
 
-		clearData();
+                var res_FindLocationAndInsert_NewIn = FindLocationAndInsert_NewIn(objsession, dataSearch, $scope.data.TF, Qty_Per_Tag, HoldFlag);
 
-		$scope.$on('$ionicView.enter', function () {
-			setFocus('TMno');
-		});
+                var res_getTag_Detail_Putaway_TPIPL = getTag_Detail_Putaway_TPIPL(objsession, $scope.data.TF);
 
-		/*--------------------------------------
-		Event Function setSelected
-		------------------------------------- */
-		$scope.setSelected = (Index, No) => {
-			$scope.selectedWithdraw_Index = Index;
-			$scope.selectedWithdraw_No = No;
-		};
+                var res_getTag_Sum = getTag_Sum(objsession, $scope.data.TF, dataSearch);
 
-		/*--------------------------------------
-		Event Function selected
-		------------------------------------- */
-		$scope.selected = function (selectedWithdraw_Index, selectedWithdraw_No) {
+                Promise.all([res_FindLocationAndInsert_NewIn, res_getTag_Detail_Putaway_TPIPL,res_getTag_Sum]).then(function (res) {
 
-			$ionicLoading.show();
+                    if (res[0] != 'True') {
+                        AppService.err('แจ้งเตือน', res[0], '');
+                        return;
+                    }
+
+                    //AppService.succ('เก็บเรียบร้อย','');
+
+                    $scope.isDisable_TF = true;
+                    $scope.data.Pallet_No = dataSearch;
+                    $scope.data.PalletNo = null;
+                    setFocus('PalletNo');
+
+                    loadTF($scope.data.TF);
 
-			if (!selectedWithdraw_Index) {
-				AppService.err('แจ้งเตือน', 'ยังไม่ได้เลือกรายการ', '');
-				return;
-			}
-			else {
+                    var resDataSet3 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
+
+                    if (Object.keys(resDataSet3).length >= 0) {
+                        $scope.data.SKU = resDataSet3[0].sku_Id;
+                        $scope.data.Lot = resDataSet3[0].plot;
+                        $scope.data.OrderDate = $filter('date')(resDataSet3[0].Order_Date, 'dd/MM/yyyy');
+                        $scope.data.Remark = (HoldFlag) ? HoldFlag : '';
+
+                        $scope.data.PackageQty = parseFloat(resDataSet3[0].qty_per_tag) / parseFloat(resDataSet3[0].QTY_per_Bag);
+                        $scope.data.SysLocation = resDataSet3[0].location_alias;
+                        $scope.data.TotalQty = resDataSet3[0].qty_per_tag
+                        $scope.data.ItemStatusFrom = 'BG';
+                        $scope.data.ItemStatusTo = 'WH';
+                    }
+
+                    var resDataSet4 = (!res[2]['diffgr:diffgram']) ? {} : res[2]['diffgr:diffgram'].NewDataSet.Table1;
+
+                    if(Object.keys(resDataSet4).length >= 0)
+                    {
+                        $scope.data.Roll = resDataSet4[0].Count_Tag;
+                        $scope.data.Weight = resDataSet4[0].Weight_Tag;
+                        $scope.data.Length = resDataSet4[0].Qty_Tag;
+
+                        updatePalletSumWeight(objsession, dataSearch, $scope.data.Length, $scope.data.Weight, 'NewIn_V2', ' ', ' ');
+                    }
+
+                    $ionicLoading.hide();
+
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    var getTagByPallet = function (objsession, pPallet_No) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTagByPallet', {
+                objsession: objsession,
+                pPallet_No: pPallet_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTagByPallet', res));
+            });
+
+        })
+    }
+
+    var getQtyPerPallet_BY_BGorder_TPIPL = function (objsession, pPallet_No, pBGOrder_index) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getQtyPerPallet_BY_BGorder_TPIPL', {
+                objsession: objsession,
+                pPallet_No: pPallet_No,
+                pBGOrder_index: pBGOrder_index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getQtyPerPallet_BY_BGorder_TPIPL', res));
+            });
+
+        })
+    }
+
+    var FindLocationAndInsert_NewIn = function (objsession, pstrPallet_No, pstrOrder_Index, pdblQty_Per_Tag, pstrHoldFlag) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('FindLocationAndInsert_NewIn', {
+                objsession: objsession,
+                pstrPallet_No: pstrPallet_No,
+                pstrOrder_Index: pstrOrder_Index,
+                pdblQty_Per_Tag: pdblQty_Per_Tag,
+                pstrHoldFlag: pstrHoldFlag
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('FindLocationAndInsert_NewIn', res));
+            });
+
+        })
+    }
+
+    var getTag_Detail_Putaway_TPIPL = function (objsession, pOrder_Index) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTag_Detail_Putaway_TPIPL', {
+                objsession: objsession,
+                pOrder_Index: pOrder_Index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_Detail_Putaway_TPIPL', res));
+            });
+
+        })
+    }
+
+    var getTag_Sum = function (objsession, pOrder_Index, Pallet_No) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTag_Sum', {
+                objsession: objsession,
+                pOrder_Index: pOrder_Index,
+                Pallet_No: Pallet_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_Sum', res));
+            });
+
+        })
+    }
 
-				//function not async ต้องเรียก function แบบ Promise
-				const res_selectedWitdraw = selectedWitdraw(selectedWithdraw_Index);
+    var updatePalletSumWeight = function (objsession, pallet_no, count, weight, fag, lot, sku) {
+        return new Promise(function (resolve, reject) {
 
-				res_selectedWitdraw.then(res => {
+            App.API('updatePalletSumWeight', {
+                objsession: objsession,
+                pallet_no: pallet_no,
+                count: count,
+                weight: weight,
+                fag: fag,
+                lot: lot,
+                sku: sku
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('updatePalletSumWeight', res));
+            });
 
-					if (!res) {
-						return;
-					}
+        })
+    }
 
-					$state.go('main_PickingRack_Selected', { Withdraw_Index: selectedWithdraw_Index, Withdraw_No: selectedWithdraw_No });
 
-					$ionicLoading.hide();
+})
 
-				}).catch(error => {
-					console.log("Error occurred");
-					AppService.err('Error', 'Error occurred', '');
-					return;
-				});
+.controller('Main_NewInUnwireBPCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
 
-			}
-
-			$ionicLoading.hide();
-		};
-
-		async function selectedWitdraw(selectedWithdraw_Index) {
-			try {
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				const res_getOrderStatus_inWitdraw = await getOrderStatus_inWitdraw(objsession, selectedWithdraw_Index);
-
-				let resDataSet = (!res_getOrderStatus_inWitdraw['diffgr:diffgram']) ? {} : res_getOrderStatus_inWitdraw['diffgr:diffgram'].NewDataSet.Table1;
-
-				if (Object.keys(resDataSet).length > 0) {
-					AppService.err('แจ้งเตือน', 'ใบรับ' + resDataSet[0].Order_No_T + 'นี้ที่อ้างอิงกับ Item ในใบเบิกนี้ยังไม่เสร็จสิ้นตักลงจาก Rack ไม่ได้', '');
-
-					return false;
-				}
-				else {
-					return true;
-				}
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		let getOrderStatus_inWitdraw = (objsession, pstrWithDraw_index) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('getOrderStatus_inWitdraw', {
-					objsession: objsession,
-					pstrWithDraw_index: pstrWithDraw_index
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('getOrderStatus_inWitdraw', res));
-				});
-
-			})
-		}
-
-		/*--------------------------------------
-		Call API GetWithdraw_No
-		------------------------------------- */
-		let GetWithdraw_No = () => {
-
-			$ionicLoading.show();
-
-			let strWhere = " and w.DocumentType_Index in ('0010000000006') ";
-
-			if ($scope.data.TMno && $scope.data.WithdrawNo) {
-				strWhere += "  and W.WithDraw_No = '" + $scope.data.WithdrawNo + "'and (tm.TransportManifest_No = '" + $scope.data.TMno + "') ";
-			}
-
-			if ($scope.data.TMno && !$scope.data.WithdrawNo) {
-				strWhere += "  and (tm.TransportManifest_No = '" + $scope.data.TMno + "') ";
-			}
-
-			if (!$scope.data.TMno && $scope.data.WithdrawNo) {
-				strWhere += "  and (W.WithDraw_No = '" + $scope.data.WithdrawNo + "') ";
-			}
-
-			strWhere += " and w.Customer_Index in (select  Customer_Index from x_Department_Customer where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and IsUse = 1) "
-
-			App.API('GetWithdraw_No', {
-				objsession: angular.copy(LoginService.getLoginData()),
-				pstrWhere: strWhere
-			}).then(function (res) {
-				let resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
-
-				if (Object.keys(resDataSet).length > 0) {
-					$scope.datatablesList = resDataSet;
-					$scope.datatablesListLength = Object.keys(resDataSet).length;
-					$scope.lbQTYWithdraw = $scope.datatablesListLength;
-
-				}
-
-			}).catch(function (res) {
-				AppService.err('GetWithdraw_No', res);
-			}).finally(function (res) {
-				$ionicLoading.hide();
-			});
-		};
-
-		GetWithdraw_No();
-
-		/*--------------------------------------
-		Scan Barcode Function
-		------------------------------------- */
-		$scope.scanPalletNo = (id) => {
-			$cordovaBarcodeScanner.scan().then(function (imageData) {
-				if (!imageData.cancelled) {
-					$scope['data'][id] = imageData.text.toUpperCase();
-					$scope.search(angular.copy($scope['data'][id]), '');
-				}
-			}, function (error) {
-				AppService.err('scanPalletNo', error);
-			});
-		};
-
-		/*--------------------------------------
-		Event Function search
-		------------------------------------- */
-		$scope.search = (dataSearch, id, searchType) => {
-
-			/*if (!dataSearch) {
-				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'PalletNo');
-				return;
-			}*/
-
-			/*if (searchType == 'read location no' || searchType == 'read pallet no') {
-				keyCnt += 1;
-				var curTextCount = dataSearch == null ? 0 : dataSearch.length;
-				//console.log('current inut text length: ' + curTextCount);
-				//console.log('current inut keyCnt: ' + keyCnt);
-				if (keyCnt == 1 && curTextCount > 1) {
-				//console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
-				$scope.data.PalletSearchFlag = "yes";
-				} else {
-				$scope.data.PalletSearchFlag = "no"; // set flag to stop search
-				}
-				//console.log('flag is ' + $scope.data.PalletSearchFlag);
-				if ($scope.data.PalletSearchFlag == 'no') {
-				$scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
-				//console.log('exit seach');
-				return;
-				}
-			}
-	
-			keyCnt = 0;*/
-
-			GetWithdraw_No();
-
-		};
-
-	})
-
-	.controller('Main_PickingRack_SelectedCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $stateParams, $ionicModal, $ionicHistory) {
-
-		/*--------------------------------------
-		Modal Function
-		--------------------------------------*/
-		$ionicModal.fromTemplateUrl('my-modal.html', {
-			scope: $scope,
-			animation: 'slide-in-right'
-		}).then(function (modal) {
-			$scope.modal = modal;
-		});
-
-		/*--------------------------------------
-		Data Function
-		--------------------------------------*/
-		$scope.data = {};
-		$scope.modal_data = {};
-		$scope.datatablesList = {};
-		$scope.datatablesListLength = 0;
-		$scope.lbQty = 0;
-		$scope.lbTotal = 0;
-
-		$scope.isDisable = false;
-
-		let Withdraw_Index = $stateParams.Withdraw_Index;
-		let Withdraw_No = $stateParams.Withdraw_No;
-
-		let Tag_No = null;
-		let isSales = false;
-		let booAssing = false;
-		let _CONST_HEADERTYPE = 'MOBILE RD TO MT';
-
-		let keyCnt = 0;
-
-		let clearData = () => {
-			$scope.data = {};
-			$scope.modal_data = {};
-			$scope.datatablesList = {};
-			$scope.datatablesListLength = 0;
-			$scope.lbQty = 0;
-			$scope.lbTotal = 0;
-		};
-
-		let clearData_Modal = () => {
-			$scope.modal_data = {};
-		};
-
-		let setFocus = (id) => {
-			AppService.focus(id);
-		}
-
-		let findByValue = (key, value, isOptions) => {
-			return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
-		};
-
-		clearData();
-
-		$scope.$on('$ionicView.enter', function () {
-			setFocus('PalletNo');
-		});
-
-		$scope.data.WithdrawNo = Withdraw_No;
-
-		/*--------------------------------------
-		Call API GetWithdrawItem
-		------------------------------------- */
-		let GetWithdrawItem = () => {
-
-			$ionicLoading.show();
-
-			App.API('GetWithdrawItem', {
-				objsession: angular.copy(LoginService.getLoginData()),
-				pstrWithdraw_Index: Withdraw_Index
-			}).then(function (res) {
-				let resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
-
-				if (Object.keys(resDataSet).length > 0) {
-					$scope.datatablesList = resDataSet;
-					$scope.datatablesListLength = Object.keys(resDataSet).length;
-
-					let countStatus = 0;
-
-					for (let x in $scope.datatablesList) {
-						if ($scope.datatablesList[x]['WITHDRAWITEM-STATUS'] == -9 || $scope.datatablesList[x]['WITHDRAWITEM-STATUS'] == -10) {
-							countStatus++;
-						}
-					}
-
-					$scope.lbQty = countStatus;
-					$scope.lbTotal = $scope.datatablesListLength;
-
-				}
-
-			}).catch(function (res) {
-				AppService.err('GetWithdrawItem', res);
-			}).finally(function (res) {
-				$ionicLoading.hide();
-			});
-		};
-
-		if (!$scope.data.WithdrawNo) {
-			AppService.err('แจ้งเตือน', 'ไม่พบข้อมูลการเบิก', '');
-			return;
-		}
-		else {
-			GetWithdrawItem();
-		}
-
-		/*--------------------------------------
-		Scan Barcode Function
-		------------------------------------- */
-		$scope.scanPalletNo = (id) => {
-			$cordovaBarcodeScanner.scan().then(function (imageData) {
-				if (!imageData.cancelled) {
-					$scope['data'][id] = imageData.text.toUpperCase();
-					$scope.search(angular.copy($scope['data'][id]), '');
-				}
-			}, function (error) {
-				AppService.err('scanPalletNo', error);
-			});
-		};
-
-		/*--------------------------------------
-		Event Function search
-		------------------------------------- */
-		$scope.search = (dataSearch, id, searchType) => {
-
-			if (!dataSearch) {
-				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'PalletNo');
-				return;
-			}
-
-			if (searchType == 'read pallet no') {
-				keyCnt += 1;
-				var curTextCount = dataSearch == null ? 0 : dataSearch.length;
-				//console.log('current inut text length: ' + curTextCount);
-				//console.log('current inut keyCnt: ' + keyCnt);
-				if (keyCnt == 1 && curTextCount > 1) {
-					//console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
-					$scope.data.PalletSearchFlag = "yes";
-				} else {
-					$scope.data.PalletSearchFlag = "no"; // set flag to stop search
-				}
-				//console.log('flag is ' + $scope.data.PalletSearchFlag);
-				if ($scope.data.PalletSearchFlag == 'no') {
-					$scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
-					//console.log('exit seach');
-					return;
-				}
-			}
-
-			keyCnt = 0;
-
-			searchPallet(dataSearch, id);
-
-		};
-
-		async function searchPallet(dataSearch, id) {
-			try {
-
-				$ionicLoading.show();
-
-				AppService.blur();
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				let datatables = {};
-				let i = 0;
-
-				for (let x in $scope.datatablesList) {
-
-					if ($scope.datatablesList[x]['PALLET_x0020_NO'] == dataSearch) {
-
-						datatables[i] = $scope.datatablesList[x];
-
-						i++;
-					}
-				}
-
-				if (Object.keys(datatables).length <= 0) {
-					//กรณียังไม่มีเลขพาเลท
-					const res_AssingPallet_No_To_Tag = await AssingPallet_No_To_Tag(dataSearch);
-
-					if (res_AssingPallet_No_To_Tag) {
-						$scope.data.PalletNo = null;
-						setFocus('PalletNo');
-						$ionicLoading.hide();
-						return;
-					}
-
-					//กรณีเลขพาเลทไม่ใช่พาเลทที่อยู่ในใบเบิก
-					const res_SwapPallet = await SwapPallet(dataSearch);
-
-					if (res_SwapPallet) {
-						$scope.data.PalletNo = null;
-						setFocus('PalletNo');
-						$ionicLoading.hide();
-						return;
-					}
-
-					$scope.data.PalletNo = null;
-					setFocus('PalletNo');
-					$ionicLoading.hide();
-					return;
-				}
-
-				for (let x in datatables) {
-					//check Local realtime befor
-					if (datatables[x]['WITHDRAWITEM-STATUS'] == -9 || datatables[x]['WITHDRAWITEM-STATUS'] == -10) {
-						$scope.data.PalletNo = null;
-						AppService.err('แจ้งเตือน', 'Pallet ' + dataSearch + ' ถูกเบิกแล้ว!', id);
-						return;
-					}
-
-					if (datatables[x]['Qty_Bal'] != datatables[x]['QTY']) {
-						AppService.err('แจ้งเตือน', 'จำนวนสินค้าที่เบิกไม่มีในรายการนี้ !', id);
-						return;
-					}
-					else {
-						//check Online real befor
-						const res_CHEKPICK_WITHDRAWITEM_STATUS = await CHEKPICK_WITHDRAWITEM_STATUS(objsession, datatables[x]['WithdrawItem_Index']);//return boolean
-
-						if (res_CHEKPICK_WITHDRAWITEM_STATUS) {
-							$scope.data.PalletNo = null;
-							AppService.err('แจ้งเตือน', 'Pallet ' + dataSearch + ' ถูกเบิกแล้ว!', id);
-							return;
-						}
-						else {
-							let Location = datatables[x]['Location_Alias'];
-							if (Location.substring(0, 1) != 'Y') {
-								Location = Location.substring(0, 1) + '-FLOOR';
-							}
-
-							//Update Status and Swap WithdrawItem . (Not Insert Transfer and Transaction)
-							const res_SavePickItem_Withdraw = await SavePickItem_Withdraw(objsession, datatables[x]['TAG_x0020_NO'], datatables[x]['QTY'], Location, '0010000000001', '0010000000007', Withdraw_No, Withdraw_Index, datatables[x]['WithdrawItem_Index'], _CONST_HEADERTYPE, true);//return string
-
-							if (res_SavePickItem_Withdraw != 'PASS') {
-								AppService.err('แจ้งเตือน', 'ผิดพลาด : ในการย้าย Pallet', id);
-								return;
-							}
-
-							//update real ui and Sort new
-							for (let y in $scope.datatablesList) {
-								if ($scope.datatablesList[y]['WithdrawItem_Index'] == datatables[x]['WithdrawItem_Index']) {
-									$scope.datatablesList[y]['STATE'] = 'เบิกแล้ว';
-									$scope.datatablesList[y]['WITHDRAWITEM-STATUS'] = -9;
-									$scope.datatablesList[y]['PICKINGQTY'] = datatables[x]['QTY'];
-									$scope.datatablesList[y]['Location_Alias'] = Location;
-									$scope.datatablesList[y]['LOCATION'] = Location;
-								}
-							}
-
-							let countSTATE = 0;
-
-							for (let y in $scope.datatablesList) {
-								if ($scope.datatablesList[y]['WITHDRAWITEM-STATUS'] == -9 || $scope.datatablesList[y]['WITHDRAWITEM-STATUS'] == -10) {
-									countSTATE++;
-								}
-							}
-
-							$scope.lbQty = countSTATE;
-							$scope.lbTotal = $scope.datatablesListLength;
-
-
-							$scope.data.PalletNo = null;
-							setFocus('PalletNo');
-
-						}
-					}
-
-
-				}
-
-				$ionicLoading.hide();
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		async function AssingPallet_No_To_Tag(dataSearch) {
-			try {
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				const res_getPalletInBGPallet = await getPalletInBGPallet(objsession, dataSearch);
-
-				let resDataSet = (!res_getPalletInBGPallet['diffgr:diffgram']) ? {} : res_getPalletInBGPallet['diffgr:diffgram'].NewDataSet.Table1;
-
-				if (Object.keys(resDataSet).length > 0) {
-					if (resDataSet[0].PalletStatus_Index == '0010000000000') {
-						let datatables = {};
-						let i = 0;
-
-						for (let x in $scope.datatablesList) {
-
-							if ($scope.datatablesList[x]['PALLET_x0020_NO'] == '') {
-
-								datatables[i] = $scope.datatablesList[x];
-
-								i++;
-							}
-						}
-
-						if (Object.keys(datatables).length > 0) {
-							SwapPallet_ModalLoad();
-
-							return true;
-						}
-					}
-				}
-
-				return false;
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		async function SwapPallet(dataSearch) {
-			try {
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				const res_chk_Pallet_IN_Withdraw_IS_Picked = await chk_Pallet_IN_Withdraw_IS_Picked(objsession, dataSearch);//return boolean
-
-				if (res_chk_Pallet_IN_Withdraw_IS_Picked) {
-					AppService.err('แจ้งเตือน', 'พาเลทนี้ถูกหยิบในใบเบิกอื่นแล้ว!', 'PalletNo');
-					return false;
-				}
-
-				const res_getVIEW_TAG_TPIPL = await getVIEW_TAG_TPIPL(objsession, dataSearch);
-
-				let resDataSet2 = (!res_getVIEW_TAG_TPIPL['diffgr:diffgram']) ? {} : res_getVIEW_TAG_TPIPL['diffgr:diffgram'].NewDataSet.Table1;
-
-				if (Object.keys(resDataSet2).length <= 0) {
-					AppService.err('แจ้งเตือน', 'ไม่พบพาเลทนี้ในระบบ !', 'PalletNo');
-					return false;
-				}
-
-				if (resDataSet2[0].Customer_Index != datatablesList[0].Customer_Index) {
-					AppService.err('ลูกค้าไม่ตรง !', 'พาเลท ' + $scope.data.PalletNo + 'ไม่ใช่ลูกค้าคนนี้', 'PalletNo');
-					return false;
-				}
-
-				let datatables = {};
-				let i = 0;
-
-				for (let x in $scope.datatablesList) {
-
-					if ($scope.datatablesList[x]['LOT_x002F_BATCH'] == resDataSet2[0].PLot && $scope.datatablesList[x]['SKU_x0020_ID'] == resDataSet2[0].Sku_Id && $scope.datatablesList[x]['WITHDRAWITEM-STATUS'] == 1 && $scope.datatablesList[x]['Location_Alias'] == resDataSet2[0].Location_Alias) {
-
-						datatables[i] = $scope.datatablesList[x];
-
-						i++;
-					}
-				}
-
-				if (Object.keys(datatables).length <= 0) {
-					AppService.err('แจ้งเตือน', 'ไม่สามารถเบิกพาเลทนี้แทนได้เนื่องจาก Grade ,Lot,ตำแหน่ง  ไม่ตรงกับใบเบิก !', 'PalletNo');
-					return false;
-				}
-
-
-				const res_SwapPalletInWithDraw = await SwapPalletInWithDraw(objsession, datatables[0].WithdrawItem_Index, dataSearch, Withdraw_Index);//return boolean
-
-				if (!res_SwapPalletInWithDraw) {
-					AppService.err('แจ้งเตือน', 'ไม่สามารถ Swap ได้ เนื่องจาก <br/> - จำนวนหรือ Status Item ไม่ตรงกัน <br/> - พาเลทที่จะ Swap มีอยู่ใน DO หลายใบ', 'PalletNo');
-					return false;
-				}
-
-				AppService.succ('เปลี่ยน Pallet ' + dataSearch + '  เรียบร้อย!', 'PalletNo');
-
-				GetWithdrawItem();
-
-				searchPallet($scope.data.PalletNo);
-
-				return true;
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		let CHEKPICK_WITHDRAWITEM_STATUS = (objsession, WithdrawItem_Index, Status) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('CHEKPICK_WITHDRAWITEM_STATUS', {
-					objsession: objsession,
-					WithdrawItem_Index: WithdrawItem_Index,
-					Status: Status
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('CHEKPICK_WITHDRAWITEM_STATUS', res));
-				});
-
-			})
-		}
-
-		let SavePickItem_Withdraw = (objsession, pstrTag_No, pdblQtyMove, pstrNewLocation_Ailas, pstrNewItemStatus_Index, pstrNewPalletStatus_Index, Document_No, Document_Index, Documentitem_Index, Description, isPicking) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('SavePickItem_Withdraw', {
-					objsession: objsession,
-					pstrTag_No: pstrTag_No,
-					pdblQtyMove: pdblQtyMove,
-					pstrNewLocation_Ailas: pstrNewLocation_Ailas,
-					pstrNewItemStatus_Index: pstrNewItemStatus_Index,
-					pstrNewPalletStatus_Index: pstrNewPalletStatus_Index,
-					Document_No: Document_No,
-					Document_Index: Document_Index,
-					Documentitem_Index: Documentitem_Index,
-					Description: Description,
-					isPicking: isPicking
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('SavePickItem_Withdraw', res));
-				});
-
-			})
-		}
-
-		let getPalletInBGPallet = (objsession, Pallet_No) => {
-			return new Promise((resolve, reject) => {
-
-				let strWhere = " and PALLET_No='" + Pallet_No + "' ";
-
-				App.API('getPalletInBGPallet', {
-					objsession: objsession,
-					pstrWhere: strWhere
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('getPalletInBGPallet', res));
-				});
-
-			})
-		}
-
-		let chk_Pallet_IN_Withdraw_IS_Picked = (objsession, pstrPalletNo) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('chk_Pallet_IN_Withdraw_IS_Picked', {
-					objsession: objsession,
-					pstrPalletNo: pstrPalletNo
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('chk_Pallet_IN_Withdraw_IS_Picked', res));
-				});
-
-			})
-		}
-
-		let getVIEW_TAG_TPIPL = (objsession, Pallet_No) => {
-			return new Promise((resolve, reject) => {
-
-				let strWhere = " and PALLET_No='" + Pallet_No + "' and Qty_Bal>0 ";
-
-				App.API('getVIEW_TAG_TPIPL', {
-					objsession: objsession,
-					pstrWhere: strWhere
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('getVIEW_TAG_TPIPL', res));
-				});
-
-			})
-		}
-
-		let SwapPalletInWithDraw = (objsession, pstrWithdrawItem_Index, pstrPalletNo, pstrWithdraw_Index) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('SwapPalletInWithDraw', {
-					objsession: objsession,
-					pstrWithdrawItem_Index: pstrWithdrawItem_Index,
-					pstrPalletNo: pstrPalletNo,
-					pstrWithdraw_Index: pstrWithdraw_Index
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('SwapPalletInWithDraw', res));
-				});
-
-			})
-		}
-
-
-		/*--------------------------------------
-		Event Function save
-		------------------------------------- */
-		$scope.save = () => {
-
-			savePallet();
-
-		};
-
-		async function savePallet() {
-			try {
-
-				$ionicLoading.show();
-
-				//AppService.blur();
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				//การยืนยันไม่ควรตรวจสอบจากหน้าจอควร Query ใหม่แบบ RealTime หรือ Load Detail ใหม่
-				GetWithdrawItem();//Reload
-
-				//Check picking
-				let countSTATE = 0;
-
-				if ($scope.datatablesListLength > 0) {
-					for (let x in $scope.datatablesList) {
-						if ($scope.datatablesList[x]['WITHDRAWITEM-STATUS'] != -9 && $scope.datatablesList[x]['WITHDRAWITEM-STATUS'] != -10) {
-							countSTATE++;
-						}
-					}
-
-					if (countSTATE > 0) {
-						$scope.data.PalletNo = null;
-						AppService.err('แจ้งเตือน', 'หยิบไม่ครบรายการ', 'PalletNo');
-						return;
-					}
-				}
-
-
-				await waitConfirmWithdrawStatus_Confirm_TranferStatus(objsession, Withdraw_Index, 6, _CONST_HEADERTYPE);
-
-				AppService.succ('หยิบครบทุกรายการแล้ว (รอการยืนยันการหยิบสินค้า)', '');
-
-				$ionicLoading.hide();
-
-				$ionicHistory.goBack();
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		let waitConfirmWithdrawStatus_Confirm_TranferStatus = (objsession, Withdraw_Index, Status, phRemark) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('waitConfirmWithdrawStatus_Confirm_TranferStatus', {
-					objsession: objsession,
-					Withdraw_Index: Withdraw_Index,
-					Status: Status,
-					phRemark: phRemark
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('waitConfirmWithdrawStatus_Confirm_TranferStatus', res));
-				});
-
-			})
-		}
-
-
-
-		/*--------------------------------------
-		Modal Function SwapPallet_ModalLoad
-		------------------------------------- */
-		async function SwapPallet_ModalLoad() {
-
-			$scope.modal.show();
-
-			$scope.modal_data.PalletNo = $scope.data.PalletNo;
-
-			if (!$scope.modal_data.PalletNo) {
-				setFocus('Modal_PalletNo');
-			}
-			else {
-				$scope.isDisable = true;
-				isSales = true;
-				setFocus('Modal_Location');
-			}
-
-		}
-
-		/*--------------------------------------
-		Scan Barcode Modal Function
-		------------------------------------- */
-		$scope.scanPalletNo_Modal = (id) => {
-			$cordovaBarcodeScanner.scan().then(function (imageData) {
-				if (!imageData.cancelled) {
-					$scope['modal_data'][id] = imageData.text.toUpperCase();
-					$scope.search_modal(angular.copy($scope['modal_data'][id]), '');
-				}
-			}, function (error) {
-				AppService.err('scanPalletNo_Modal', error);
-			});
-		};
-
-		/*--------------------------------------
-		Event Function search_modal
-		------------------------------------- */
-		$scope.search_modal = (dataSearch, id, searchType) => {
-
-			let str = (id == 'Modal_PalletNo') ? 'กรุณา Scan Pallet No.' : 'กรุณา Scan Location';
-
-			if (!dataSearch) {
-				AppService.err('แจ้งเตื่อน', str, id);
-				return;
-			}
-
-			if (searchType == 'read location no' || searchType == 'read pallet no') {
-				keyCnt += 1;
-				var curTextCount = dataSearch == null ? 0 : dataSearch.length;
-				//console.log('current inut text length: ' + curTextCount);
-				//console.log('current inut keyCnt: ' + keyCnt);
-				if (keyCnt == 1 && curTextCount > 1) {
-					//console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
-					$scope.data.PalletSearchFlag = "yes";
-				} else {
-					$scope.data.PalletSearchFlag = "no"; // set flag to stop search
-				}
-				//console.log('flag is ' + $scope.data.PalletSearchFlag);
-				if ($scope.data.PalletSearchFlag == 'no') {
-					$scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
-					//console.log('exit seach');
-					return;
-				}
-			}
-
-			keyCnt = 0;
-
-			if (id == 'Modal_Location') {
-				searchLocation_Modal(dataSearch, id);
-			}
-			else {
-				searchPallet_Modal(dataSearch, id);
-			}
-
-		};
-
-		async function searchPallet_Modal(dataSearch, id) {
-			try {
-
-				$ionicLoading.show();
-
-				AppService.blur();
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				const res_getPalletInBGPallet = await getPalletInBGPallet(objsession, dataSearch);
-
-				let resDataSet = (!res_getPalletInBGPallet['diffgr:diffgram']) ? {} : res_getPalletInBGPallet['diffgr:diffgram'].NewDataSet.Table1;
-
-				if (Object.keys(resDataSet).length <= 0) {
-					$scope['modal_data'][id] = null;
-					AppService.err('แจ้งเตือน', 'ไม่พบ Pallet No ในระบบ', id);
-					return;
-				}
-
-				if (resDataSet[0].PalletStatus_Index != '0010000000000') {
-					$scope['modal_data'][id] = null;
-					AppService.err('แจ้งเตือน', 'Pallet นี้ไม่อยู่ในสถานะ EM', id);
-					return;
-				}
-
-				$scope.isDisable = true;
-				setFocus('Modal_Location');
-
-				$ionicLoading.hide();
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		async function searchLocation_Modal(dataSearch, id) {
-			try {
-
-				$ionicLoading.show();
-
-				AppService.blur();
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				if (isSales) {
-					let datatables = {};
-					let i = 0;
-
-					for (let x in $scope.datatablesList) {
-
-						if ($scope.datatablesList[x]['Location_Alias'] == dataSearch) {
-
-							datatables[i] = $scope.datatablesList[x];
-
-							i++;
-						}
-					}
-
-					if (Object.keys(datatables).length <= 0) {
-						$scope['modal_data'][id] = null;
-						AppService.err('แจ้งเตือน', 'ไม่พบ Location นี้ในใบเบิก', id);
-						return;
-					}
-
-					$scope.modal_data.SKU = datatables[0].SKU_x0020_ID;
-					$scope.modal_data.Lot = datatables[0].LOT_x002F_BATCH;
-					Tag_No = datatables[0].TAG_x0020_NO;
-				}
-				else {
-					const res_Find_GradeLot_IN_location = await Find_GradeLot_IN_location(objsession, dataSearch);
-
-					let resDataSet = (!res_Find_GradeLot_IN_location['diffgr:diffgram']) ? {} : res_Find_GradeLot_IN_location['diffgr:diffgram'].NewDataSet.Table1;
-
-					if (Object.keys(resDataSet).length > 0) {
-						$scope.modal_data.SKU = resDataSet[0].sku_id;
-						$scope.modal_data.Lot = resDataSet[0].plot;
-						Tag_No = resDataSet[0].tag_no;
-					}
-
-				}
-
-				$ionicLoading.hide();
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		let Find_GradeLot_IN_location = (objsession, pstrLocationAlias) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('Find_GradeLot_IN_location', {
-					objsession: objsession,
-					pstrLocationAlias: pstrLocationAlias
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('Find_GradeLot_IN_location', res));
-				});
-
-			})
-		}
-
-		/*--------------------------------------
-		Event Function save_modal
-		------------------------------------- */
-		$scope.save_modal = () => {
-
-			if (!$scope.modal_data.PalletNo) {
-				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'Modal_PalletNo');
-				return;
-			}
-			else {
-				searchPallet_Modal($scope.modal_data.PalletNo, 'Modal_PalletNo');
-			}
-
-
-			if (!$scope.modal_data.Location) {
-				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Location', 'Modal_Location');
-				return;
-			}
-			else {
-				searchLocation_Modal($scope.modal_data.Location, 'Modal_Location');
-			}
-
-			savePallet_Modal();
-
-		};
-
-		async function savePallet_Modal() {
-			try {
-
-				$ionicLoading.show();
-
-				AppService.blur();
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				let Palletstatus = '0010000000004';
-
-				if (IsSales) {
-					Palletstatus = '0010000000005';
-				}
-
-				await updatePalletToTag(objsession, Tag_No, $scope.modal_data.PalletNo, $scope.modal_data.Lot, Palletstatus);
-
-				clearData_Modal();
-				booAssing = true;
-				$scope.isDisable = false;
-
-				if (IsSales) {
-					$scope.modal.hide();
-
-					//$ionicHistory.goBack();
-
-					AppService.succ('สแกน Pallet' + $scope.data.PalletNo + 'อีกครั้งเพื่อเบิกสินค้า!', '');
-
-					if (booAssing) {
-						GetWithdrawItem();
-
-						await searchPallet($scope.data.PalletNo);
-					}
-
-					$scope.data.PalletNo = null;
-					setFocus('PalletNo');
-
-				}
-				else {
-					setFocus('Modal_PalletNo');
-
-				}
-
-				$ionicLoading.hide();
-
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		let updatePalletToTag = (objsession, pstrTag_No, pstrPallet_No, PLot, pstrPalletstatus_index) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('updatePalletToTag', {
-					objsession: objsession,
-					pstrTag_No: pstrTag_No,
-					pstrPallet_No: pstrPallet_No,
-					PLot: PLot,
-					pstrPalletstatus_index: pstrPalletstatus_index,
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('updatePalletToTag', res));
-				});
-
-			})
-		}
-
-
-	})
-
-	.controller('Main_WHTransferToSHCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
-
-		/*--------------------------------------
-		Data Function
-		--------------------------------------*/
-		$scope.data = {};
-		$scope.datatablesList = {};
-		$scope.datatablesListLength = 0;
-
-		$scope.lbPalletCount = 0;
-		$scope.lbTotal = 0;
-		$scope.lbQty = 0;
-
-		let Tag_No = [];
-		let Qty = [];
-		let WithdrawItem_Index = [];
-		let Itemstatus = [];
-
-		let Customer_Index = null;
-		let ProductType_Index = null;
-		let ItemStatus_Index = null;
-		let DocumentType_Index = null;
-		let Location_Alias_Really = null;
-		let TransportManifest_Index = null;
-		let NewLocation_index = null;
-
-		let Withdraw_No = null;
-		let Withdraw_Index = null;
-		let SearchPallet_No = { 'PalletNo': false, 'PalletNo2': false };
-
-		let _CONST_HEADERTYPE = "MOBILE TO ZONE Y";
-
-		let keyCnt = 0;
-
-		let clearData = () => {
-
-			$scope.data = {};
-			$scope.datatablesList = {};
-			$scope.datatablesListLength = 0;
-
-			$scope.lbPalletCount = 0;
-			$scope.lbTotal = 0;
-			$scope.lbQty = 0;
+    /*--------------------------------------
+    Data Function
+    --------------------------------------*/
+    $scope.data = {};
+    $scope.getOrderTopicList = {};
+    $scope.getTagOrderIndexList = {};
+    $scope.getTagOrderIndexListLength = 0;
+    $scope.isDisable = false;
+    $scope.isDisable_TF = false;
 
-			Tag_No = [];
-			Qty = [];
-			WithdrawItem_Index = [];
-			Itemstatus = [];
+    $scope.data.PalletCount_itemPutAway = 0;
+    $scope.data.PalletCount_itemALL = 0;
 
-			Customer_Index = null;
-			ProductType_Index = null;
-			ItemStatus_Index = null;
-			DocumentType_Index = null;
-			Location_Alias_Really = null;
-			TransportManifest_Index = null;
-			NewLocation_index = null;
+    var BGOrder_index = '';
+    var Qty_Per_Tag = 0;
+    var HoldFlag = '';
 
-			SearchPallet_No = { 'PalletNo': false, 'PalletNo2': false };
+    var keyCnt = 0;
 
-		};
+    var clearData = function () {
+        $scope.data = {};
+        $scope.getOrderTopicList = {};
+        $scope.getTagOrderIndexList = {};
+        $scope.getTagOrderIndexListLength = 0;
+        $scope.isDisable = false;
+        $scope.isDisable_TF = false;
 
-		let setFocus = (id) => {
-			AppService.focus(id);
-		}
+        $scope.data.PalletCount_itemPutAway = 0;
+        $scope.data.PalletCount_itemALL = 0;
+    };
 
-		let findByValue = (key, value, isOptions) => {
-			return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
-		};
+    var setFocus = function (id) {
+        AppService.focus(id);
+    }
 
-		clearData();
+    var findByValue = function (key, value, isOptions) {
+        return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
+    };
 
-		$scope.$on('$ionicView.enter', function () {
-			setFocus('PalletNo');
-		});
+    clearData();
 
-		$scope.DisplayFlag = 0
+    $scope.$on('$ionicView.enter', function () {
+        setFocus('PalletNo');
+    });
 
-		$scope.changeDisplay = (value) => {
+    $scope.DisplayFlag = 0
 
-			$scope.DisplayFlag = value;
+    $scope.changeDisplay = function (value) {
 
-		};
+        $scope.DisplayFlag = value;
 
-		/*--------------------------------------
-		Call API GetWithdraw_No_WithoutTM
-		------------------------------------- */
-		let GetWithdraw_No_WithoutTM = () => {
+    };
 
-			$ionicLoading.show();
+    /*--------------------------------------
+    Call API GetOrderTopic
+    ------------------------------------- */
+    $scope.GetOrderTopic_API = function () {
 
-			let strWhere = " and status in (3,6) ";
+        $ionicLoading.show();
 
-			strWhere += " and tb_Withdraw.Customer_Index in (select  Customer_Index from x_Department_Customer where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and  IsUse = 1) ";
+        var pstrWhere = " And Brand_Index not in  ('0010000000001') And (ms_DocumentType.DocumentType_Index IN ('0010000000002','0010000000003')) and ((select count(*) from tb_Tag where tb_Order.Order_Index = tb_tag.Order_Index and Tag_Status <> -1) > 0) " +
+            " and tb_Order.Customer_Index in (select  Customer_Index from x_Department_Customer where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and IsUse = 1 ) ";
 
-			App.API('GetWithdraw_No_WithoutTM', {
-				objsession: angular.copy(LoginService.getLoginData()),
-				pstrWhere: strWhere
-			}).then(function (res) {
-				let resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
+        App.API('GetOrderTopic', {
+            objsession: angular.copy(LoginService.getLoginData()),
+            pstrWhere: pstrWhere
+        }).then(function (res) {
 
-				if (Object.keys(resDataSet).length > 0) {
-					$scope.getDOList = resDataSet;
+            var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
 
-					$scope.changeDO(resDataSet[0].Withdraw_Index + ',' + resDataSet[0].Withdraw_No);
+            if (Object.keys(resDataSet).length > 0) {
 
-					setFocus('PalletNo');
-				}
+                $scope.getOrderTopicList = resDataSet;
 
-			}).catch(function (res) {
-				AppService.err('GetWithdraw_No_WithoutTM', res);
-			}).finally(function (res) {
-				$ionicLoading.hide();
-			});
-		};
+                $scope.changeTF(resDataSet[0].Order_Index);
 
-		GetWithdraw_No_WithoutTM();
+            }
 
-		/*--------------------------------------
-		Event Function changeDO 
-		------------------------------------- */
-		$scope.changeDO = (strWithdraw) => {
 
-			//ปรับเป็นตัด string เนื่องจาก เปลี่ยนเป็น $scope.data.DO = pWithdraw_Index ในการ select ค่าแล้วทำให้ document.querySelector('#DO option:checked').dataset.no ค่าไม่ได้เพราะไม่มี selected ใน attribute 
-			$scope.data.DO = strWithdraw;
+        }).catch(function (res) {
+            AppService.err('GetOrderTopic', res);
+        }).finally(function (res) {
+            $ionicLoading.hide();
+        });
+    };
 
-			let Withdraw = strWithdraw.split(',');
+    $scope.GetOrderTopic_API();
 
-			Withdraw_Index = Withdraw[0];
-			Withdraw_No = Withdraw[1];
+    /*--------------------------------------
+    Event Function changeTF 
+    ------------------------------------- */
+    $scope.changeTF = function (Order_Index) {
 
-			if (!Withdraw_Index) {
-				clearData();
-				return;
-			}
+        $scope.data.TF = Order_Index;
 
-			//$scope.data.DO 	= pWithdraw_Index;
+        loadTF(Order_Index);
 
-			//Withdraw_No 		= document.querySelector('#DO option:checked').dataset.no;
-			//Withdraw_Index 	= pWithdraw_Index;
-
-			loadDO(Withdraw_Index, Withdraw_No);
-
-		};
-
-		async function loadDO(Withdraw_Index, Withdraw_No) {
-			try {
-
-				$ionicLoading.show();
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				const res_GetWithdrawItem = await GetWithdrawItem(objsession, Withdraw_Index);
-
-				let resDataSet = (!res_GetWithdrawItem['diffgr:diffgram']) ? {} : res_GetWithdrawItem['diffgr:diffgram'].NewDataSet.Table1;
-
-				if (Object.keys(resDataSet).length > 0) {
-					$scope.datatablesList = resDataSet;
-					$scope.datatablesListLength = Object.keys(resDataSet).length;
-
-					let datatables = {};
-					let i = 0;
-
-					for (let x in $scope.datatablesList) {
-
-						if ($scope.datatablesList[x]['Pallet_seq'] >= 8) {
-							datatables[i] = $scope.datatablesList[x];
-
-							i++;
-						}
-					}
-
-					$scope.lbTotal = $scope.datatablesListLength;
-					$scope.lbQty = Object.keys(datatables).length;
+    };
 
-				}
-
-				$ionicLoading.hide();
+    function loadTF(Order_Index) {
+        try {
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+            $ionicLoading.show();
 
-		let GetWithdrawItem = (objsession, pstrWithdraw_Index) => {
-			return new Promise((resolve, reject) => {
+            var objsession = angular.copy(LoginService.getLoginData());
 
-				App.API('GetWithdrawItem', {
-					objsession: objsession,
-					pstrWithdraw_Index: pstrWithdraw_Index
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('GetWithdrawItem', res));
-				});
+            if (!Order_Index) {
 
-			})
-		}
+                $scope.data = {};
 
+                $ionicLoading.hide();
 
-		/*--------------------------------------
-		Scan Barcode Function
-		------------------------------------- */
-		$scope.scanPalletNo = (id) => {
-			$cordovaBarcodeScanner.scan().then(function (imageData) {
-				if (!imageData.cancelled) {
+                return;
 
-					$scope['data'][id] = imageData.text.toUpperCase();
-					$scope.search(angular.copy($scope['data'][id]), '');
+            } else {
 
-				}
-			}, function (error) {
-				AppService.err('scanPalletNo', error);
-			});
-		};
+                var res_GetDetailOrder = GetDetailOrder(objsession, Order_Index);
 
-		/*--------------------------------------
-		Event Function search
-		------------------------------------- */
-		$scope.search = (dataSearch, id, searchType) => {
+                var res_getTag_OrderIndex_TPIPL = getTag_OrderIndex_TPIPL(objsession, Order_Index);
 
-			/*if (searchType == 'read pallet no') {
-			keyCnt += 1;
-			var curTextCount = dataSearch == null ? 0 : dataSearch.length;
-			//console.log('current inut text length: ' + curTextCount);
-			//console.log('current inut keyCnt: ' + keyCnt);
-			if (keyCnt == 1 && curTextCount > 1) {
-				//console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
-				$scope.data.PalletSearchFlag = "yes";
-			} else {
-				$scope.data.PalletSearchFlag = "no"; // set flag to stop search
-			}
-			//console.log('flag is ' + $scope.data.PalletSearchFlag);
-			if ($scope.data.PalletSearchFlag == 'no') {
-				$scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
-				//console.log('exit seach');
-				return;
-			}
-			}
-	
-			keyCnt = 0;*/
-
-			if (id == 'Location') {
-				if (!$scope.data.Location) {
-					AppService.err('แจ้งเตื่อน', 'กรุณา Scan Location', 'Location');
-					return;
-				}
-
-				searchLocation(dataSearch, id);
-			}
-			else {
-				if (!$scope.data.PalletNo && !$scope.data.PalletNo2) {
-					AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'PalletNo');
-					return;
-				}
-
-				searchPallet(dataSearch, id);
-			}
-
-		};
-
-		async function searchPallet(dataSearch, id) {
-			try {
+                Promise.all([res_GetDetailOrder, res_getTag_OrderIndex_TPIPL]).then(function (res) {
 
-				$ionicLoading.show();
+                    var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
 
-				AppService.blur();
+                    var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
 
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				if ((!dataSearch && id == 'PalletNo2' && $scope.data.PalletNo) || $scope.data.PalletNo == $scope.data.PalletNo2) {
-					setFocus('Location');
-					$ionicLoading.hide();
-					return;
-				}
+                    if (Object.keys(resDataSet).length != -1) {
+                        $scope.data.Ref_No1 = resDataSet[0].Ref_No1;
+                        $scope.data.PalletCount_itemPutAway = resDataSet[0].itemPutAway;
+                        $scope.data.PalletCount_itemALL = resDataSet[0].itemALL;
+                        BGOrder_index = (resDataSet[0].baggingorder_index) ? resDataSet[0].baggingorder_index : '';
 
-				let datatables = {};
-				let i = 0;
+                        if ($scope.data.PalletCount_itemPutAway == $scope.data.PalletCount_itemALL) {
+                            AppService.succ('จัดเก็บเรียบร้อย', '');
+                            $scope.isDisable = true;
+                        }
+                    }
 
-				for (let x in $scope.datatablesList) {
+                    if (Object.keys(resDataSet2).length > 0) {
+                        $scope.getTagOrderIndexList = resDataSet2;
+                        $scope.getTagOrderIndexListLength = Object.keys(resDataSet2).length;
+                    }
 
-					if ($scope.datatablesList[x]['PALLET_x0020_NO'] == dataSearch) {
-						datatables[i] = $scope.datatablesList[x];
+                    setFocus('PalletNo');
 
-						i++;
-					}
-				}
-
-				if (Object.keys(datatables).length <= 0) {
-					$scope['data'][id] = null;
-					AppService.err('แจ้งเตือน', 'ไม่พบ Pallet ในใบ DO นี้!', id);
-					return;
-				}
-
-				const res_getPalletTM = await getPalletTM(objsession, dataSearch);
-
-				let resDataSet = (!res_getPalletTM['diffgr:diffgram']) ? {} : res_getPalletTM['diffgr:diffgram'].NewDataSet.Table1;
-
-				if (Object.keys(resDataSet).length <= 0) {
-					const res_getPallet_Request = await getPallet_Request(objsession, dataSearch);
+                    $ionicLoading.hide();
 
-					resDataSet = (!res_getPallet_Request['diffgr:diffgram']) ? {} : res_getPallet_Request['diffgr:diffgram'].NewDataSet.Table1;
-				}
-
-				if (Object.keys(resDataSet).length <= 0) {
-					$scope['data'][id] = null;
-					AppService.err('แจ้งเตือน', 'ไม่พบ Pallet นี้!', id);
-					return;
-				}
-
-				if (resDataSet[0].PalletStatus_Index != '0010000000007') {
-					$scope['data'][id] = null;
-					AppService.err('แจ้งเตือน', 'Pallet ไม่อยู่ในสถานะ Move for Transfer', id);
-					return;
-				}
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
 
-				$scope.data.SKU = resDataSet[0].Sku_Id;
-				$scope.data.Lot = resDataSet[0].PLot;
-				$scope.data.TotalQty = resDataSet[0].QtyIn_Loc;
-				$scope.data.PackageQty = parseFloat(resDataSet[0].QtyIn_Loc) / 25;
-				$scope.data.CustomerShipping = resDataSet[0].Company_Name;
+            }
 
-				Tag_No[id] = resDataSet[0].TAG_No;
-				Qty[id] = resDataSet[0].QtyIn_Loc;
-				WithdrawItem_Index[id] = datatables[0].WithdrawItem_Index;
-				Itemstatus[id] = resDataSet[0].ItemStatus_Index;
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
 
-				Customer_Index = resDataSet[0].Customer_Index;
-				ProductType_Index = resDataSet[0].ProductType_Index;
-				ItemStatus_Index = resDataSet[0].ItemStatus_Index;
-				DocumentType_Index = resDataSet[0].DocumentType_Index;
-				Location_Alias_Really = resDataSet[0].Location_Alias_Really;
-				TransportManifest_Index = resDataSet[0].TransportManifest_Index;
-
-				if (id == 'PalletNo') {
-					setFocus('PalletNo2');
-					SearchPallet_No[id] = true;
-				}
-				else {
-					setFocus('Location');
-					SearchPallet_No[id] = true;
-				}
+    var GetDetailOrder = function (objsession, Order_Index) {
+        return new Promise(function (resolve, reject) {
 
-				$ionicLoading.hide();
+            var pstrWhere = " and tb_Order.Order_Index ='" + Order_Index + "' ";
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+            App.API('GetDetailOrder', {
+                objsession: objsession,
+                pstrWhere: pstrWhere
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('GetDetailOrder', res));
+            });
 
-		async function searchLocation(dataSearch, id) {
-			try {
+        })
+    }
 
-				$ionicLoading.show();
+    var getTag_OrderIndex_TPIPL = function (objsession, pOrder_Index) {
+        return new Promise(function (resolve, reject) {
 
-				AppService.blur();
+            App.API('getTag_OrderIndex_TPIPL', {
+                objsession: objsession,
+                pOrder_Index: pOrder_Index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_OrderIndex_TPIPL', res));
+            });
 
-				let objsession = angular.copy(LoginService.getLoginData());
+        })
+    }
 
-				const res_Location_By_Alias = await Location_By_Alias(objsession, dataSearch);
+    /*--------------------------------------
+    Scan Barcode Function
+    ------------------------------------- */
+    $scope.scanPalletNo = function () {
+        $cordovaBarcodeScanner.scan().then(function (imageData) {
+            if (!imageData.cancelled) {
+                $scope.data.PalletNo = imageData.text.toUpperCase();
+                $scope.search(angular.copy($scope.data.PalletNo), '');
+            }
+        }, function (error) {
+            AppService.err('scanPalletNo', error);
+        });
+    };
 
-				let resDataSet = (!res_Location_By_Alias['diffgr:diffgram']) ? {} : res_Location_By_Alias['diffgr:diffgram'].NewDataSet.Table1;
+    /*--------------------------------------
+    Event Function search
+    ------------------------------------- */
+    $scope.search = function (dataSearch, searchType) {
 
-				if (Object.keys(resDataSet).length <= 0) {
-					$scope['data'][id] = null;
-					AppService.err('แจ้งเตือน', 'ไม่พบ Location นี้!', id);
-					return;
-				}
+        if (!dataSearch) {
+            AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'PalletNo');
+            return;
+        }
 
-				NewLocation_index = resDataSet[0].Location_Index;
+        if (searchType == 'read pallet no') {
+            keyCnt += 1;
+            var curTextCount = dataSearch == null ? 0 : dataSearch.length;
+            //console.log('current inut text length: ' + curTextCount);
+            //console.log('current inut keyCnt: ' + keyCnt);
+            if (keyCnt == 1 && curTextCount > 1) {
+                //console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
+                $scope.data.PalletSearchFlag = "yes";
+            } else {
+                $scope.data.PalletSearchFlag = "no"; // set flag to stop search
+            }
+            //console.log('flag is ' + $scope.data.PalletSearchFlag);
+            if ($scope.data.PalletSearchFlag == 'no') {
+                $scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
+                //console.log('exit seach');
+                return;
+            }
+        }
 
-				if (SearchPallet_No['PalletNo'] || SearchPallet_No['PalletNo2']) {
+        keyCnt = 0;
 
-					if (!$scope.data.PalletNo && !$scope.data.PalletNo2) {
-						AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'PalletNo');
-						SearchPallet_No['PalletNo'] = false;
-						SearchPallet_No['PalletNo2'] = false;
-						return;
-					}
+        searchPallet(dataSearch);
 
-					if (!SearchPallet_No['PalletNo'] && !SearchPallet_No['PalletNo2']) {
-						AppService.err('แจ้งเตื่อน', 'กรุณา Scan ตรวจสอบข้อมูล Pallet No.', 'PalletNo');
-						SearchPallet_No['PalletNo'] = false;
-						SearchPallet_No['PalletNo2'] = false;
-						return;
-					}
+    };
 
-					if (SearchPallet_No['PalletNo']) {
-						//save one pallet
-						const resDataSet2 = await saveRelocate(Tag_No['PalletNo'], $scope.data.PalletNo, Qty['PalletNo'], WithdrawItem_Index['PalletNo'], Itemstatus['PalletNo']);
+    function searchPallet(dataSearch) {
+        try {
 
-						if (resDataSet2) {
-							Tag_No['PalletNo'] = null;
+            $ionicLoading.show();
 
-							//update ui real time
-							for (let x in $scope.datatablesList) {
+            AppService.blur();
 
-								if ($scope.datatablesList[x]['PALLET_x0020_NO'] == $scope.data.PalletNo && $scope.datatablesList[x]['WithdrawItem_Index'] == WithdrawItem_Index['PalletNo']) {
-									$scope.datatablesList[x]['Pallet_seq'] = 8;
-									$scope.datatablesList[x]['Location_Alias'] = $scope.data.Location;
-								}
-							}
+            var objsession = angular.copy(LoginService.getLoginData());
 
-						}
-						else {
-							$ionicLoading.hide();
-							return;
-						}
+            if (!$scope.data.TF) {
+                $scope.data.PalletNo = null;
+                AppService.err('แจ้งเตือน', 'กรุณาเลือกใบรับสินค้า!', 'PalletNo');
+                return;
+            }
 
+            if ($scope.getTagOrderIndexList.length <= 0) {
+                $scope.data.PalletNo = null;
+                AppService.err('แจ้งเตือน', 'ไม่มีรายการในใบรับนี้ กรุณาจัดการ Tag ก่อน', '');
+                return;
+            }
 
-					}
+            var res_getTagByPallet = getTagByPallet(objsession, dataSearch);
 
-					if (SearchPallet_No['PalletNo2'] && $scope.data.PalletNo2 && $scope.data.PalletNo2 != $scope.data.PalletNo) {
-						//save one pallet
-						const resDataSet3 = await saveRelocate(Tag_No['PalletNo2'], $scope.data.PalletNo2, Qty['PalletNo2'], WithdrawItem_Index['PalletNo2'], Itemstatus['PalletNo2']);
+            var res_getQtyPerPallet_BY_BGorder_TPIPL = getQtyPerPallet_BY_BGorder_TPIPL(objsession, dataSearch, BGOrder_index);
 
-						if (resDataSet3) {
-							Tag_No['PalletNo2'] = null;
+            Promise.all([res_getTagByPallet, res_getQtyPerPallet_BY_BGorder_TPIPL]).then(function (res) {
 
-							//update ui real time
-							for (let x in $scope.datatablesList) {
+                var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
 
-								if ($scope.datatablesList[x]['PALLET_x0020_NO'] == $scope.data.PalletNo2 && $scope.datatablesList[x]['WithdrawItem_Index'] == WithdrawItem_Index['PalletNo2']) {
-									$scope.datatablesList[x]['Pallet_seq'] = 8;
-									$scope.datatablesList[x]['Location_Alias'] = $scope.data.Location;
-								}
-							}
+                var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
 
-						}
-						else {
-							$ionicLoading.hide();
-							return;
-						}
+                if (Object.keys(resDataSet).length > 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'Pallet นี้กำลังใช้งาน', 'PalletNo');
+                    return;
+                }
 
+                if (Object.keys(resDataSet2).length <= 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'Pallet นี้ ไม่อยู่ในใบ Bag Out Order หรือจัดเก็บไปแล้ว', 'PalletNo');
+                    return;
+                }
 
-					}
+                Qty_Per_Tag = resDataSet2[0].Total_Qty;
+                HoldFlag = resDataSet2[0].HoldFlag;
 
-					//update after save
-					let datatables = {};
-					let i = 0;
+                var res_FindLocationAndInsert_NewIn = FindLocationAndInsert_NewIn(objsession, dataSearch, $scope.data.TF, Qty_Per_Tag, HoldFlag);
 
-					for (let x in $scope.datatablesList) {
+                var res_getTag_Detail_Putaway_TPIPL = getTag_Detail_Putaway_TPIPL(objsession, $scope.data.TF);
 
-						if ($scope.datatablesList[x]['Pallet_seq'] >= 8) {
-							datatables[i] = $scope.datatablesList[x];
+                var res_getTag_Sum = getTag_Sum(objsession, $scope.data.TF, dataSearch);
 
-							i++;
-						}
-					}
-
-					$scope.lbQty = Object.keys(datatables).length;
-
-					if ($scope.lbQty == $scope.lbTotal) {
-						await waitConfirmWithdrawStatus_Confirm_TranferStatus(objsession, Withdraw_Index, 5, _CONST_HEADERTYPE);
-						GetWithdraw_No_WithoutTM();
-						AppService.succ('ย้ายของครบแล้วในใบขนนี้', '');
-					}
-
-				}
-
-				clearData();
-				setFocus('PalletNo');
-
-				$ionicLoading.hide();
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		async function saveRelocate(Tag_No, Pallet_No, Qty, WithdrawItem_Index, Itemstatus) {
-			try {
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				const res_SavePickItem_Withdraw = await SavePickItem_Withdraw(objsession, Tag_No, Qty, $scope.data.Location, Itemstatus, '0010000000008', Withdraw_No, Withdraw_Index, WithdrawItem_Index, _CONST_HEADERTYPE, false);
-
-				if (res_SavePickItem_Withdraw != 'PASS') {
-					AppService.err('ผิดพลาด', 'ในการย้าย Pallet ลองอีกครั้ง!', '');
-					return false;
-				}
-
-				$scope.lbPalletCount = parseFloat($scope.lbPalletCount) + 1;
-				return true;
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		let getPalletTM = (objsession, pPallet_No) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('getPalletTM', {
-					objsession: objsession,
-					pPallet_No: pPallet_No
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('getPalletTM', res));
-				});
-
-			})
-		}
-
-		let getPallet_Request = (objsession, pPallet_No) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('getPallet_Request', {
-					objsession: objsession,
-					pPallet_No: pPallet_No
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('getPallet_Request', res));
-				});
-
-			})
-		}
-
-		let Location_By_Alias = (objsession, pstrLocation_Alias) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('Location_By_Alias', {
-					objsession: objsession,
-					pstrLocation_Alias: pstrLocation_Alias
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('Location_By_Alias', res));
-				});
-
-			})
-		}
-
-		let SavePickItem_Withdraw = (objsession, pstrTag_No, pdblQtyMove, pstrNewLocation_Ailas, pstrNewItemStatus_Index, pstrNewPalletStatus_Index, Document_No, Document_Index, Documentitem_Index, Description, isPicking) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('SavePickItem_Withdraw', {
-					objsession: objsession,
-					pstrTag_No: pstrTag_No,
-					pdblQtyMove: pdblQtyMove,
-					pstrNewLocation_Ailas: pstrNewLocation_Ailas,
-					pstrNewItemStatus_Index: pstrNewItemStatus_Index,
-					pstrNewPalletStatus_Index: pstrNewPalletStatus_Index,
-					Document_No: Document_No,
-					Document_Index: Document_Index,
-					Documentitem_Index: Documentitem_Index,
-					Description: Description,
-					isPicking: isPicking
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('SavePickItem_Withdraw', res));
-				});
-
-			})
-		}
-
-		let waitConfirmWithdrawStatus_Confirm_TranferStatus = (objsession, Withdraw_Index, Status, phRemark) => {
-			return new Promise((resolve, reject) => {
-
-				App.API('waitConfirmWithdrawStatus_Confirm_TranferStatus', {
-					objsession: objsession,
-					Withdraw_Index: Withdraw_Index,
-					Status: Status,
-					phRemark: phRemark
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('waitConfirmWithdrawStatus_Confirm_TranferStatus', res));
-				});
-
-			})
-		}
-
-		/*--------------------------------------
-		Event Function save
-		------------------------------------- */
-		$scope.save = () => {
-
-			if (!$scope.data.Location) {
-				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Location', 'Location');
-				return;
-			}
-
-			$scope.changeDO(Withdraw_Index+','+Withdraw_No);
-
-			if ($scope.lbQty != $scope.lbTotal) {
-				AppService.err('แจ้งเตือน', 'กรุณาย้ายของให้ครบ ! ', '');
-			}
-
-			searchLocation($scope.data.Location, 'Location');
-
-		};
-
-	})
-
-	.controller('Main_WHIssueDamageCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
-
-		/*--------------------------------------
-		Data Function
-		--------------------------------------*/
-		$scope.data = {};
-		$scope.modal_data = {};
-		$scope.datatablesList = {};
-		$scope.datatablesListLength = 0;
-		$scope.lbQty = 0;
-		$scope.lbTotal = 0;
+                Promise.all([res_FindLocationAndInsert_NewIn, res_getTag_Detail_Putaway_TPIPL,res_getTag_Sum]).then(function (res) {
 
-		$scope.isDisable = false;
+                    if (res[0] != 'True') {
+                        AppService.err('แจ้งเตือน', res[0], '');
+                        return;
+                    }
 
-		let Withdraw_No = null;
-		let Withdraw_Index = null;
+                    //AppService.succ('เก็บเรียบร้อย','');
 
-		let Tag_No = null;
-		let isSales = false;
-		let booAssing = false;
-		let _CONST_HEADERTYPE = "MOBILE DAMAGE RD TO MT";
+                    $scope.isDisable_TF = true;
+                    $scope.data.Pallet_No = dataSearch;
+                    $scope.data.PalletNo = null;
+                    setFocus('PalletNo');
 
-		let keyCnt = 0;
+                    loadTF($scope.data.TF);
 
-		let clearData = () => {
-			$scope.data = {};
-			$scope.modal_data = {};
-			$scope.datatablesList = {};
-			$scope.datatablesListLength = 0;
-			$scope.lbQty = 0;
-			$scope.lbTotal = 0;
-		};
+                    var resDataSet3 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
 
-		let clearData_Modal = () => {
-			$scope.modal_data = {};
-		};
+                    if (Object.keys(resDataSet3).length >= 0) {
+                        $scope.data.SKU = resDataSet3[0].sku_Id;
+                        $scope.data.Lot = resDataSet3[0].plot;
+                        $scope.data.OrderDate = $filter('date')(resDataSet3[0].Order_Date, 'dd/MM/yyyy');
+                        $scope.data.Remark = (HoldFlag) ? HoldFlag : '';
 
-		let setFocus = (id) => {
-			AppService.focus(id);
-		}
+                        $scope.data.PackageQty = parseFloat(resDataSet3[0].qty_per_tag) / parseFloat(resDataSet3[0].QTY_per_Bag);
+                        $scope.data.SysLocation = resDataSet3[0].location_alias;
+                        $scope.data.TotalQty = resDataSet3[0].qty_per_tag
+                        $scope.data.ItemStatusFrom = 'BG';
+                        $scope.data.ItemStatusTo = 'WH';
+                    }
 
-		let findByValue = (key, value, isOptions) => {
-			return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
-		};
+                    var resDataSet4 = (!res[2]['diffgr:diffgram']) ? {} : res[2]['diffgr:diffgram'].NewDataSet.Table1;
 
-		clearData();
+                    if(Object.keys(resDataSet4).length >= 0)
+                    {
+                        $scope.data.Roll = resDataSet4[0].Count_Tag;
+                        $scope.data.Weight = resDataSet4[0].Weight_Tag;
+                        $scope.data.Length = resDataSet4[0].Qty_Tag;
+
+                        updatePalletSumWeight(objsession, dataSearch, $scope.data.Length, $scope.data.Weight, 'NewIn_V2', ' ', ' ');
+                    }
+
+                    $ionicLoading.hide();
 
-		$scope.$on('$ionicView.enter', function () {
-			setFocus('PalletNo');
-		});
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    var getTagByPallet = function (objsession, pPallet_No) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTagByPallet', {
+                objsession: objsession,
+                pPallet_No: pPallet_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTagByPallet', res));
+            });
+
+        })
+    }
+
+    var getQtyPerPallet_BY_BGorder_TPIPL = function (objsession, pPallet_No, pBGOrder_index) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getQtyPerPallet_BY_BGorder_TPIPL', {
+                objsession: objsession,
+                pPallet_No: pPallet_No,
+                pBGOrder_index: pBGOrder_index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getQtyPerPallet_BY_BGorder_TPIPL', res));
+            });
+
+        })
+    }
+
+    var FindLocationAndInsert_NewIn = function (objsession, pstrPallet_No, pstrOrder_Index, pdblQty_Per_Tag, pstrHoldFlag) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('FindLocationAndInsert_NewIn', {
+                objsession: objsession,
+                pstrPallet_No: pstrPallet_No,
+                pstrOrder_Index: pstrOrder_Index,
+                pdblQty_Per_Tag: pdblQty_Per_Tag,
+                pstrHoldFlag: pstrHoldFlag
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('FindLocationAndInsert_NewIn', res));
+            });
+
+        })
+    }
+
+    var getTag_Detail_Putaway_TPIPL = function (objsession, pOrder_Index) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTag_Detail_Putaway_TPIPL', {
+                objsession: objsession,
+                pOrder_Index: pOrder_Index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_Detail_Putaway_TPIPL', res));
+            });
 
-		/*--------------------------------------
-		Call API GetWithdraw_Request
-		------------------------------------- */
-		let GetWithdraw_Request = () => {
+        })
+    }
 
-			$ionicLoading.show();
+    var getTag_Sum = function (objsession, pOrder_Index, Pallet_No) {
+        return new Promise(function (resolve, reject) {
 
-			let strWhere = " and Status IN (1,3) ";
+            App.API('getTag_Sum', {
+                objsession: objsession,
+                pOrder_Index: pOrder_Index,
+                Pallet_No: Pallet_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_Sum', res));
+            });
 
-			strWhere += " and Customer_Index in (select  Customer_Index from x_Department_Customer where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and  IsUse = 1) ";
+        })
+    }
 
-			App.API('GetWithdraw_Request', {
-				objsession: angular.copy(LoginService.getLoginData()),
-				pstrWhere: strWhere,
-				pbooDamage: true
-			}).then(function (res) {
-				let resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
+    var updatePalletSumWeight = function (objsession, pallet_no, count, weight, fag, lot, sku) {
+        return new Promise(function (resolve, reject) {
 
-				if (Object.keys(resDataSet).length > 0) {
-					$scope.getDOList = resDataSet;
+            App.API('updatePalletSumWeight', {
+                objsession: objsession,
+                pallet_no: pallet_no,
+                count: count,
+                weight: weight,
+                fag: fag,
+                lot: lot,
+                sku: sku
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('updatePalletSumWeight', res));
+            });
 
-					$scope.changeDO(resDataSet[0].Withdraw_Index + ',' + resDataSet[0].Withdraw_No);
+        })
+    }
 
-					setFocus('PalletNo');
-				}
 
-			}).catch(function (res) {
-				AppService.err('GetWithdraw_Request', res);
-			}).finally(function (res) {
-				$ionicLoading.hide();
-			});
-		};
+})
 
-		GetWithdraw_Request();
+.controller('Main_UserCustomerReturnCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
 
-		/*--------------------------------------
-		Event Function changeDO 
-		------------------------------------- */
-		$scope.changeDO = (strWithdraw) => {
+    /*--------------------------------------
+    Data Function
+    --------------------------------------*/
+    $scope.data = {};
+    $scope.getOrderTopicList = {};
+    $scope.getTagOrderIndexList = {};
+    $scope.getTagOrderIndexListLength = 0;
+    $scope.isDisable = false;
+    $scope.isDisable_TF = false;
 
-			//ปรับเป็นตัด string เนื่องจาก เปลี่ยนเป็น $scope.data.DO = pWithdraw_Index ในการ select ค่าแล้วทำให้ document.querySelector('#DO option:checked').dataset.no ค่าไม่ได้เพราะไม่มี selected ใน attribute 
-			$scope.data.DO = strWithdraw;
+    $scope.data.PalletCount_itemPutAway = 0;
+    $scope.data.PalletCount_itemALL = 0;
 
-			let Withdraw = strWithdraw.split(',');
+    var BGOrder_index = '';
+    var Qty_Per_Tag = 0;
+    var HoldFlag = '';
 
-			Withdraw_Index = Withdraw[0];
-			Withdraw_No = Withdraw[1];
+    var keyCnt = 0;
 
-			if (!Withdraw_Index) {
-				clearData();
-				return;
-			}
-
-			//$scope.data.DO 	= pWithdraw_Index;
-
-			//Withdraw_No 		= document.querySelector('#DO option:checked').dataset.no;
-			//Withdraw_Index 	= pWithdraw_Index;
-
-			loadDO(Withdraw_Index, Withdraw_No);
-
-		};
-
-		async function loadDO(Withdraw_Index, Withdraw_No) {
-			try {
-
-				$ionicLoading.show();
-
-				let objsession = angular.copy(LoginService.getLoginData());
+    var clearData = function () {
+        $scope.data = {};
+        $scope.getOrderTopicList = {};
+        $scope.getTagOrderIndexList = {};
+        $scope.getTagOrderIndexListLength = 0;
+        $scope.isDisable = false;
+        $scope.isDisable_TF = false;
 
-				const res_GetWithdrawItem = await GetWithdrawItem(objsession, Withdraw_Index);
+        $scope.data.PalletCount_itemPutAway = 0;
+        $scope.data.PalletCount_itemALL = 0;
+    };
 
-				let resDataSet = (!res_GetWithdrawItem['diffgr:diffgram']) ? {} : res_GetWithdrawItem['diffgr:diffgram'].NewDataSet.Table1;
+    var setFocus = function (id) {
+        AppService.focus(id);
+    }
 
-				if (Object.keys(resDataSet).length > 0) {
-					$scope.datatablesList = resDataSet;
-					$scope.datatablesListLength = Object.keys(resDataSet).length;
+    var findByValue = function (key, value, isOptions) {
+        return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
+    };
 
-					let countSTATE = 0;
+    clearData();
 
-					for (let x in $scope.datatablesList) {
+    $scope.$on('$ionicView.enter', function () {
+        setFocus('PalletNo');
+    });
 
-						if ($scope.datatablesList[x]['STATE'] != '') {
-							countSTATE++;
-						}
-					}
+    $scope.DisplayFlag = 0
 
-					$scope.lbTotal = $scope.datatablesListLength;
-					$scope.lbQty = countSTATE;
+    $scope.changeDisplay = function (value) {
 
-				}
+        $scope.DisplayFlag = value;
 
-				$ionicLoading.hide();
+    };
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+    /*--------------------------------------
+    Call API GetOrderTopic
+    ------------------------------------- */
+    $scope.GetOrderTopic_API = function () {
 
-		let GetWithdrawItem = (objsession, pstrWithdraw_Index) => {
-			return new Promise((resolve, reject) => {
+        $ionicLoading.show();
 
-				App.API('GetWithdrawItem', {
-					objsession: objsession,
-					pstrWithdraw_Index: pstrWithdraw_Index
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('GetWithdrawItem', res));
-				});
+        var pstrWhere = " And (ms_DocumentType.DocumentType_Index IN ('0010000000055','0010000000088','0010000000060')) and ((select count(*) from tb_Tag where tb_Order.Order_Index = tb_tag.Order_Index and Tag_Status <> -1) > 0) " +
+            " and tb_Order.Customer_Index in (select  Customer_Index from x_Department_Customer where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and IsUse = 1 ) ";
 
-			})
-		}
+        App.API('GetOrderTopic', {
+            objsession: angular.copy(LoginService.getLoginData()),
+            pstrWhere: pstrWhere
+        }).then(function (res) {
 
-		/*--------------------------------------
-		Scan Barcode Function
-		------------------------------------- */
-		$scope.scanPalletNo = (id) => {
-			$cordovaBarcodeScanner.scan().then(function (imageData) {
-				if (!imageData.cancelled) {
+            var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
 
-					$scope['data'][id] = imageData.text.toUpperCase();
-					$scope.search(angular.copy($scope['data'][id]), '');
+            if (Object.keys(resDataSet).length > 0) {
 
-				}
-			}, function (error) {
-				AppService.err('scanPalletNo', error);
-			});
-		};
-
-		/*--------------------------------------
-		Event Function search
-		------------------------------------- */
-		$scope.search = (dataSearch, id, searchType) => {
-
-			if (!dataSearch) {
-				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', id);
-				return;
-			}
-
-			if (searchType == 'read pallet no') {
-				keyCnt += 1;
-				var curTextCount = dataSearch == null ? 0 : dataSearch.length;
-				//console.log('current inut text length: ' + curTextCount);
-				//console.log('current inut keyCnt: ' + keyCnt);
-				if (keyCnt == 1 && curTextCount > 1) {
-					//console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
-					$scope.data.PalletSearchFlag = "yes";
-				} else {
-					$scope.data.PalletSearchFlag = "no"; // set flag to stop search
-				}
-				//console.log('flag is ' + $scope.data.PalletSearchFlag);
-				if ($scope.data.PalletSearchFlag == 'no') {
-					$scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
-					//console.log('exit seach');
-					return;
-				}
-			}
-
-			keyCnt = 0;
-
-			searchPallet(dataSearch, id);
-
-
-		};
-
-		async function searchPallet(dataSearch, id) {
-			try {
-
-				$ionicLoading.show();
-
-				AppService.blur();
-
-				let objsession = angular.copy(LoginService.getLoginData());
-
-				//find in Withdraw Item (on load withdraw no)
-				let datatables = {};
-				let i = 0;
-
-				for (let x in $scope.datatablesList) {
-
-					if ($scope.datatablesList[x]['PALLET_x0020_NO'] == dataSearch) {
-						datatables[i] = $scope.datatablesList[x];
-
-						i++;
-					}
-				}
+                $scope.getOrderTopicList = resDataSet;
 
-				if (Object.keys(datatables).length <= 0) {
+                $scope.changeTF(resDataSet[0].Order_Index);
 
-					//กรณียังไม่มีเลขพาเลท
-					const res_AssingPallet_No_To_Tag = await AssingPallet_No_To_Tag(dataSearch);
+            }
 
-					if (res_AssingPallet_No_To_Tag) {
-						$scope.data.PalletNo = null;
-						setFocus('PalletNo');
-						$ionicLoading.hide();
-						return;
-					}
 
-					//กรณีเลขพาเลทไม่ใช่พาเลทที่อยู่ในใบเบิก
-					const res_SwapPallet = await SwapPallet(dataSearch);
+        }).catch(function (res) {
+            AppService.err('GetOrderTopic', res);
+        }).finally(function (res) {
+            $ionicLoading.hide();
+        });
+    };
 
-					if (res_SwapPallet) {
-						$scope.data.PalletNo = null;
-						setFocus('PalletNo');
-						$ionicLoading.hide();
-						return;
-					}
+    $scope.GetOrderTopic_API();
 
-					$scope.data.PalletNo = null;
-					setFocus('PalletNo');
-					$ionicLoading.hide();
-					return;
-				}
+    /*--------------------------------------
+    Event Function changeTF 
+    ------------------------------------- */
+    $scope.changeTF = function (Order_Index) {
 
-				for (let x in datatables) {
-					//check Local realtime befor
-					if (datatables[x]['WITHDRAWITEM-STATUS'] == -9 || datatables[x]['WITHDRAWITEM-STATUS'] == -10) {
-						$scope.data.PalletNo = null;
-						AppService.err('แจ้งเตือน', 'Pallet ' + dataSearch + ' ถูกเบิกแล้ว!', id);
-						return;
-					}
+        $scope.data.TF = Order_Index;
 
-					if (datatables[x]['Qty_Bal'] != datatables[x]['QTY']) {
-						AppService.err('แจ้งเตือน', 'จำนวนสินค้าที่เบิกไม่มีในรายการนี้ !', id);
-						return;
-					}
-					else {
-						//check Online real befor
-						const res_CHEKPICK_WITHDRAWITEM_STATUS = await CHEKPICK_WITHDRAWITEM_STATUS(objsession, datatables[x]['WithdrawItem_Index']);//return boolean
+        loadTF(Order_Index);
 
-						if (res_CHEKPICK_WITHDRAWITEM_STATUS) {
-							$scope.data.PalletNo = null;
-							AppService.err('แจ้งเตือน', 'Pallet ' + dataSearch + ' ถูกเบิกแล้ว!', id);
-							return;
-						}
-						else {
-							let Location = datatables[x]['Location_Alias'];
-							if (Location.substring(0, 1) != 'Y') {
-								Location = Location.substring(0, 1) + '-FLOOR';
-							}
+    };
 
-							//Update Status and Swap WithdrawItem . (Not Insert Transfer and Transaction)
-							const res_SavePickItem_Withdraw = await SavePickItem_Withdraw(objsession, datatables[x]['TAG_x0020_NO'], datatables[x]['QTY'], Location, '0010000000001', '0010000000007', Withdraw_No, Withdraw_Index, datatables[x]['WithdrawItem_Index'], _CONST_HEADERTYPE, true);//return string
+    function loadTF(Order_Index) {
+        try {
 
-							if (res_SavePickItem_Withdraw != 'PASS') {
-								AppService.err('แจ้งเตือน', 'ผิดพลาด : ในการย้าย Pallet ' + dataSearch + ' ลองอีกครั้ง!', id);
-								return;
-							}
+            $ionicLoading.show();
 
-							//update real ui and Sort new
-							for (let y in $scope.datatablesList) {
-								if ($scope.datatablesList[y]['WithdrawItem_Index'] == datatables[x]['WithdrawItem_Index']) {
-									$scope.datatablesList[y]['STATE'] = 'เบิกแล้ว';
-									$scope.datatablesList[y]['WITHDRAWITEM-STATUS'] = -9;
-									$scope.datatablesList[y]['PICKINGQTY'] = datatables[x]['QTY'];
-									$scope.datatablesList[y]['Location_Alias'] = Location;
-									$scope.datatablesList[y]['LOCATION'] = Location;
-								}
-							}
+            var objsession = angular.copy(LoginService.getLoginData());
 
-							let countSTATE = 0;
+            if (!Order_Index) {
 
-							for (let y in $scope.datatablesList) {
-								if ($scope.datatablesList[y]['WITHDRAWITEM-STATUS'] == -9 || $scope.datatablesList[y]['WITHDRAWITEM-STATUS'] == -10) {
-									countSTATE++;
-								}
-							}
+                $scope.data = {};
 
-							$scope.lbQty = countSTATE;
-							$scope.lbTotal = $scope.datatablesListLength;
+                $ionicLoading.hide();
 
+                return;
 
-							$scope.data.PalletNo = null;
-							setFocus('PalletNo');
+            } else {
 
-						}
-					}
+                var res_GetDetailOrder = GetDetailOrder(objsession, Order_Index);
 
+                var res_getTag_OrderIndex_TPIPL = getTag_OrderIndex_TPIPL(objsession, Order_Index);
 
-				}
+                Promise.all([res_GetDetailOrder, res_getTag_OrderIndex_TPIPL]).then(function (res) {
 
+                    var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
 
+                    var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
 
-				$ionicLoading.hide();
+                    if (Object.keys(resDataSet).length != -1) {
+                        $scope.data.Ref_No1 = resDataSet[0].Ref_No1;
+                        $scope.data.PalletCount_itemPutAway = resDataSet[0].itemPutAway;
+                        $scope.data.PalletCount_itemALL = resDataSet[0].itemALL;
+                        BGOrder_index = (resDataSet[0].baggingorder_index) ? resDataSet[0].baggingorder_index : '';
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+                        if ($scope.data.PalletCount_itemPutAway == $scope.data.PalletCount_itemALL) {
+                            AppService.succ('จัดเก็บเรียบร้อย', '');
+                            $scope.isDisable = true;
+                        }
+                    }
 
-		async function AssingPallet_No_To_Tag(dataSearch) {
-			try {
+                    if (Object.keys(resDataSet2).length > 0) {
+                        $scope.getTagOrderIndexList = resDataSet2;
+                        $scope.getTagOrderIndexListLength = Object.keys(resDataSet2).length;
+                    }
 
-				let objsession = angular.copy(LoginService.getLoginData());
+                    setFocus('PalletNo');
 
-				const res_getPalletInBGPallet = await getPalletInBGPallet(objsession, dataSearch);
+                    $ionicLoading.hide();
 
-				let resDataSet = (!res_getPalletInBGPallet['diffgr:diffgram']) ? {} : res_getPalletInBGPallet['diffgr:diffgram'].NewDataSet.Table1;
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
 
-				if (Object.keys(resDataSet).length > 0) {
-					if (resDataSet[0].PalletStatus_Index == '0010000000000') {
-						let datatables = {};
-						let i = 0;
+            }
 
-						for (let x in $scope.datatablesList) {
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
 
-							if ($scope.datatablesList[x]['PALLET_x0020_NO'] == '') {
+    var GetDetailOrder = function (objsession, Order_Index) {
+        return new Promise(function (resolve, reject) {
 
-								datatables[i] = $scope.datatablesList[x];
+            var pstrWhere = " and tb_Order.Order_Index ='" + Order_Index + "' ";
 
-								i++;
-							}
-						}
+            App.API('GetDetailOrder', {
+                objsession: objsession,
+                pstrWhere: pstrWhere
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('GetDetailOrder', res));
+            });
 
-						if (Object.keys(datatables).length > 0) {
-							SwapPallet_ModalLoad();
+        })
+    }
 
-							return true;
-						}
-					}
-				}
+    var getTag_OrderIndex_TPIPL = function (objsession, pOrder_Index) {
+        return new Promise(function (resolve, reject) {
 
-				return false;
+            App.API('getTag_OrderIndex_TPIPL', {
+                objsession: objsession,
+                pOrder_Index: pOrder_Index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_OrderIndex_TPIPL', res));
+            });
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+        })
+    }
 
-		async function SwapPallet(dataSearch) {
-			try {
+    /*--------------------------------------
+    Scan Barcode Function
+    ------------------------------------- */
+    $scope.scanPalletNo = function () {
+        $cordovaBarcodeScanner.scan().then(function (imageData) {
+            if (!imageData.cancelled) {
+                $scope.data.PalletNo = imageData.text.toUpperCase();
+                $scope.search(angular.copy($scope.data.PalletNo), '');
+            }
+        }, function (error) {
+            AppService.err('scanPalletNo', error);
+        });
+    };
 
-				let objsession = angular.copy(LoginService.getLoginData());
+    /*--------------------------------------
+    Event Function search
+    ------------------------------------- */
+    $scope.search = function (dataSearch, searchType) {
 
-				const res_chk_Pallet_IN_Withdraw_IS_Picked = await chk_Pallet_IN_Withdraw_IS_Picked(objsession, dataSearch);//return boolean
+        if (!dataSearch) {
+            AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'PalletNo');
+            return;
+        }
 
-				if (res_chk_Pallet_IN_Withdraw_IS_Picked) {
-					AppService.err('แจ้งเตือน', 'พาเลทนี้ถูกหยิบในใบเบิกอื่นแล้ว!', 'PalletNo');
-					return false;
-				}
+        if (searchType == 'read pallet no') {
+            keyCnt += 1;
+            var curTextCount = dataSearch == null ? 0 : dataSearch.length;
+            //console.log('current inut text length: ' + curTextCount);
+            //console.log('current inut keyCnt: ' + keyCnt);
+            if (keyCnt == 1 && curTextCount > 1) {
+                //console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
+                $scope.data.PalletSearchFlag = "yes";
+            } else {
+                $scope.data.PalletSearchFlag = "no"; // set flag to stop search
+            }
+            //console.log('flag is ' + $scope.data.PalletSearchFlag);
+            if ($scope.data.PalletSearchFlag == 'no') {
+                $scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
+                //console.log('exit seach');
+                return;
+            }
+        }
 
-				const res_getVIEW_TAG_TPIPL = await getVIEW_TAG_TPIPL(objsession, dataSearch);
+        keyCnt = 0;
 
-				let resDataSet2 = (!res_getVIEW_TAG_TPIPL['diffgr:diffgram']) ? {} : res_getVIEW_TAG_TPIPL['diffgr:diffgram'].NewDataSet.Table1;
+        searchPallet(dataSearch);
 
-				if (Object.keys(resDataSet2).length <= 0) {
-					AppService.err('แจ้งเตือน', 'ไม่พบพาเลทนี้ในรายการ !', 'PalletNo');
-					return false;
-				}
+    };
 
-				if (resDataSet2[0].Customer_Index != datatablesList[0].Customer_Index) {
-					AppService.err('ลูกค้าไม่ตรง !', 'พาเลท ' + $scope.data.PalletNo + 'ไม่ใช่ลูกค้าคนนี้', 'PalletNo');
-					return false;
-				}
+    function searchPallet(dataSearch) {
+        try {
 
-				let datatables = {};
-				let i = 0;
+            $ionicLoading.show();
 
-				for (let x in $scope.datatablesList) {
+            AppService.blur();
 
-					if ($scope.datatablesList[x]['LOT_x002F_BATCH'] == resDataSet2[0].PLot && $scope.datatablesList[x]['SKU_x0020_ID'] == resDataSet2[0].Sku_Id && $scope.datatablesList[x]['WITHDRAWITEM-STATUS'] == 1) {
+            var objsession = angular.copy(LoginService.getLoginData());
 
-						datatables[i] = $scope.datatablesList[x];
+            if (!$scope.data.TF) {
+                $scope.data.PalletNo = null;
+                AppService.err('แจ้งเตือน', 'กรุณาเลือกใบรับสินค้า!', 'PalletNo');
+                return;
+            }
 
-						i++;
-					}
-				}
+            if ($scope.getTagOrderIndexList.length <= 0) {
+                $scope.data.PalletNo = null;
+                AppService.err('แจ้งเตือน', 'ไม่มีรายการในใบรับนี้ กรุณาจัดการ Tag ก่อน', '');
+                return;
+            }
 
-				if (Object.keys(datatables).length <= 0) {
-					AppService.err('แจ้งเตือน', 'ไม่สามารถเบิกพาเลทนี้แทนได้เนื่องจาก Grade ,Lot,ตำแหน่ง  ไม่ตรงกับใบเบิก !', 'PalletNo');
-					return false;
-				}
+            var res_getTagByPallet = getTagByPallet(objsession, dataSearch);
 
+            var res_getQtyPerPallet_BY_Order_AS_Shipping = getQtyPerPallet_BY_Order_AS_Shipping(objsession, dataSearch, $scope.data.TF);
 
-				const res_SwapPalletInWithDraw = await SwapPalletInWithDraw(objsession, datatables[0].WithdrawItem_Index, dataSearch, Withdraw_Index);//return boolean
+            Promise.all([res_getTagByPallet, res_getQtyPerPallet_BY_Order_AS_Shipping]).then(function (res) {
 
-				if (!res_SwapPalletInWithDraw) {
-					AppService.err('แจ้งเตือน', 'ไม่สามารถ Swap ได้ เนื่องจาก <br/> - จำนวนหรือ Status Item ไม่ตรงกัน <br/> - พาเลทที่จะ Swap มีอยู่ใน DO หลายใบ', 'PalletNo');
-					return false;
-				}
+                var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
 
-				AppService.succ('เปลี่ยน Pallet ' + dataSearch + '  เรียบร้อย!', 'PalletNo');
+                var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
 
-				loadDO(Withdraw_Index, Withdraw_No);
+                if (Object.keys(resDataSet).length > 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'Pallet นี้กำลังใช้งาน', 'PalletNo');
+                    return;
+                }
 
-				await searchPallet($scope.data.PalletNo);
+                if (Object.keys(resDataSet2).length <= 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'Pallet นี้ ไม่อยู่ในใบรับนี้', 'PalletNo');
+                    return;
+                }
 
-				return true;
+                Qty_Per_Tag = resDataSet2[0].Qty_per_TAG;
+                HoldFlag = '';
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+                var res_FindLocationAndInsert_NewIn = FindLocationAndInsert_NewIn(objsession, dataSearch, $scope.data.TF, Qty_Per_Tag, HoldFlag);
 
-		let CHEKPICK_WITHDRAWITEM_STATUS = (objsession, WithdrawItem_Index, Status) => {
-			return new Promise((resolve, reject) => {
+                var res_getTag_Detail_Putaway_TPIPL = getTag_Detail_Putaway_TPIPL(objsession, $scope.data.TF);
 
-				App.API('CHEKPICK_WITHDRAWITEM_STATUS', {
-					objsession: objsession,
-					WithdrawItem_Index: WithdrawItem_Index,
-					Status: Status
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('CHEKPICK_WITHDRAWITEM_STATUS', res));
-				});
+                var res_getTag_Sum = getTag_Sum(objsession, $scope.data.TF, dataSearch);
 
-			})
-		}
+                Promise.all([res_FindLocationAndInsert_NewIn, res_getTag_Detail_Putaway_TPIPL,res_getTag_Sum]).then(function (res) {
 
-		let SavePickItem_Withdraw = (objsession, pstrTag_No, pdblQtyMove, pstrNewLocation_Ailas, pstrNewItemStatus_Index, pstrNewPalletStatus_Index, Document_No, Document_Index, Documentitem_Index, Description, isPicking) => {
-			return new Promise((resolve, reject) => {
+                    if (res[0] != 'True') {
+                        AppService.err('แจ้งเตือน', res[0], '');
+                        return;
+                    }
 
-				App.API('SavePickItem_Withdraw', {
-					objsession: objsession,
-					pstrTag_No: pstrTag_No,
-					pdblQtyMove: pdblQtyMove,
-					pstrNewLocation_Ailas: pstrNewLocation_Ailas,
-					pstrNewItemStatus_Index: pstrNewItemStatus_Index,
-					pstrNewPalletStatus_Index: pstrNewPalletStatus_Index,
-					Document_No: Document_No,
-					Document_Index: Document_Index,
-					Documentitem_Index: Documentitem_Index,
-					Description: Description,
-					isPicking: isPicking
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('SavePickItem_Withdraw', res));
-				});
+                    //AppService.succ('เก็บเรียบร้อย','');
 
-			})
-		}
+                    $scope.isDisable_TF = true;
+                    $scope.data.Pallet_No = dataSearch;
+                    $scope.data.PalletNo = null;
+                    setFocus('PalletNo');
 
-		let getPalletInBGPallet = (objsession, Pallet_No) => {
-			return new Promise((resolve, reject) => {
+                    loadTF($scope.data.TF);
 
-				let strWhere = " and PALLET_No='" + Pallet_No + "' ";
+                    var resDataSet3 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
 
-				App.API('getPalletInBGPallet', {
-					objsession: objsession,
-					pstrWhere: strWhere
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('getPalletInBGPallet', res));
-				});
+                    if (Object.keys(resDataSet3).length >= 0) {
+                        $scope.data.SKU = resDataSet3[0].sku_Id;
+                        $scope.data.Lot = resDataSet3[0].plot;
+                        $scope.data.OrderDate = $filter('date')(resDataSet3[0].Order_Date, 'dd/MM/yyyy');
+                        $scope.data.Remark = (HoldFlag) ? HoldFlag : '';
 
-			})
-		}
+                        $scope.data.PackageQty = parseFloat(resDataSet3[0].qty_per_tag) / parseFloat(resDataSet3[0].QTY_per_Bag);
+                        $scope.data.SysLocation = resDataSet3[0].location_alias;
+                        $scope.data.TotalQty = resDataSet3[0].qty_per_tag
+                        $scope.data.ItemStatusFrom = 'BG';
+                        $scope.data.ItemStatusTo = 'WH';
+                    }
 
-		let chk_Pallet_IN_Withdraw_IS_Picked = (objsession, pstrPalletNo) => {
-			return new Promise((resolve, reject) => {
+                    var resDataSet4 = (!res[2]['diffgr:diffgram']) ? {} : res[2]['diffgr:diffgram'].NewDataSet.Table1;
 
-				App.API('chk_Pallet_IN_Withdraw_IS_Picked', {
-					objsession: objsession,
-					pstrPalletNo: pstrPalletNo
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('chk_Pallet_IN_Withdraw_IS_Picked', res));
-				});
+                    if(Object.keys(resDataSet4).length >= 0)
+                    {
+                        $scope.data.Roll = resDataSet4[0].Count_Tag;
+                        $scope.data.Weight = resDataSet4[0].Weight_Tag;
+                        $scope.data.Length = resDataSet4[0].Qty_Tag;
 
-			})
-		}
+                        updatePalletSumWeight(objsession, dataSearch, $scope.data.Length, $scope.data.Weight, 'NewIn_V2', ' ', ' ');
+                    }
 
-		let getVIEW_TAG_TPIPL = (objsession, Pallet_No) => {
-			return new Promise((resolve, reject) => {
+                    $ionicLoading.hide();
 
-				let strWhere = " and PALLET_No='" + Pallet_No + "' and Qty_Bal>0 ";
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
 
-				App.API('getVIEW_TAG_TPIPL', {
-					objsession: objsession,
-					pstrWhere: strWhere
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('getVIEW_TAG_TPIPL', res));
-				});
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
 
-			})
-		}
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    var getTagByPallet = function (objsession, pPallet_No) {
+        return new Promise(function (resolve, reject) {
 
-		let SwapPalletInWithDraw = (objsession, pstrWithdrawItem_Index, pstrPalletNo, pstrWithdraw_Index) => {
-			return new Promise((resolve, reject) => {
+            App.API('getTagByPallet', {
+                objsession: objsession,
+                pPallet_No: pPallet_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTagByPallet', res));
+            });
 
-				App.API('SwapPalletInWithDraw', {
-					objsession: objsession,
-					pstrWithdrawItem_Index: pstrWithdrawItem_Index,
-					pstrPalletNo: pstrPalletNo,
-					pstrWithdraw_Index: pstrWithdraw_Index
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('SwapPalletInWithDraw', res));
-				});
+        })
+    }
 
-			})
-		}
+    var getQtyPerPallet_BY_Order_AS_Shipping = function (objsession, pPallet_No, pOrder_No) {
+        return new Promise(function (resolve, reject) {
 
-		/*--------------------------------------
-		Event Function save
-		------------------------------------- */
-		$scope.save = () => {
+            App.API('getQtyPerPallet_BY_Order_AS_Shipping', {
+                objsession: objsession,
+                pPallet_No: pPallet_No,
+                pOrder_No: pOrder_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getQtyPerPallet_BY_Order_AS_Shipping', res));
+            });
+
+        })
+    }
+
+    var FindLocationAndInsert_NewIn = function (objsession, pstrPallet_No, pstrOrder_Index, pdblQty_Per_Tag, pstrHoldFlag) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('FindLocationAndInsert_NewIn', {
+                objsession: objsession,
+                pstrPallet_No: pstrPallet_No,
+                pstrOrder_Index: pstrOrder_Index,
+                pdblQty_Per_Tag: pdblQty_Per_Tag,
+                pstrHoldFlag: pstrHoldFlag
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('FindLocationAndInsert_NewIn', res));
+            });
 
-			savePallet();
+        })
+    }
+
+    var getTag_Detail_Putaway_TPIPL = function (objsession, pOrder_Index) {
+        return new Promise(function (resolve, reject) {
 
-		};
+            App.API('getTag_Detail_Putaway_TPIPL', {
+                objsession: objsession,
+                pOrder_Index: pOrder_Index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_Detail_Putaway_TPIPL', res));
+            });
+
+        })
+    }
+
+    var getTag_Sum = function (objsession, pOrder_Index, Pallet_No) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTag_Sum', {
+                objsession: objsession,
+                pOrder_Index: pOrder_Index,
+                Pallet_No: Pallet_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_Sum', res));
+            });
+
+        })
+    }
+
+    var updatePalletSumWeight = function (objsession, pallet_no, count, weight, fag, lot, sku) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('updatePalletSumWeight', {
+                objsession: objsession,
+                pallet_no: pallet_no,
+                count: count,
+                weight: weight,
+                fag: fag,
+                lot: lot,
+                sku: sku
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('updatePalletSumWeight', res));
+            });
+
+        })
+    }
+
+
+})
+
+.controller('Main_ProductGeneralCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
+
+    /*--------------------------------------
+    Data Function
+    --------------------------------------*/
+    $scope.orderTopicList = {};
+    $scope.orderTopicListLength = 0;
 
-		async function savePallet() {
-			try {
+    $scope.selectedOrder_Index = null;
+    $scope.selectedOrder_No = null;
 
-				$ionicLoading.show();
+    /*--------------------------------------
+    Event Function setSelected
+    ------------------------------------- */
+    $scope.setSelected = function (Order_Index, Order_No) {
+        $scope.selectedOrder_Index = Order_Index;
+        $scope.selectedOrder_No = Order_No;
+    };
 
-				//AppService.blur();
+    /*--------------------------------------
+    Event Function selected
+    ------------------------------------- */
+    $scope.selected = function (selectedOrder_Index, selectedOrder_No) {
+        if (!selectedOrder_Index) {
+            AppService.err('แจ้งเตือน', 'ยังไม่ได้เลือกรายการ', '');
+        } else {
+            $state.go('main_ProductGeneral_Selected', { Order_Index: selectedOrder_Index, Order_No: selectedOrder_No });
+        }
+    };
 
-				let objsession = angular.copy(LoginService.getLoginData());
+    /*--------------------------------------
+    Call API GetOrderTopic
+    ------------------------------------- */
+    var GetOrderTopic = function () {
 
-				//การยืนยันไม่ควรตรวจสอบจากหน้าจอควร Query ใหม่แบบ RealTime หรือ Load Detail ใหม่
-				loadDO(Withdraw_Index, Withdraw_No);//Reload
+        $ionicLoading.show();
 
-				//Check picking
-				let countSTATE = 0;
+        var strWhere = " And (ms_DocumentType.DocumentType_Index not IN ('0010000000002','0010000000044')) and tb_Order.Customer_Index in ( select  Customer_Index from x_Department_Customer ";
 
-				if ($scope.datatablesListLength > 0) {
-					for (let x in $scope.datatablesList) {
-						if ($scope.datatablesList[x]['WITHDRAWITEM-STATUS'] != -9) {
-							countSTATE++;
-						}
-					}
-
-					if (countSTATE > 0) {
-						$scope.data.PalletNo = null;
-						AppService.err('แจ้งเตือน', 'หยิบไม่ครบรายการ', 'PalletNo');
-						return;
-					}
-				}
-
-
-				await waitConfirmWithdrawStatus_Confirm_TranferStatus(objsession, Withdraw_Index, 2, _CONST_HEADERTYPE);
-
-				AppService.succ('หยิบครบทุกรายการแล้ว (รอการยืนยันการหยิบสินค้า)', '');
-
-				$ionicLoading.hide();
-
-				$ionicHistory.goBack();
-
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
-
-		let waitConfirmWithdrawStatus_Confirm_TranferStatus = (objsession, Withdraw_Index, Status, phRemark) => {
-			return new Promise((resolve, reject) => {
+        strWhere += " where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and IsUse = 1) ";
 
-				App.API('waitConfirmWithdrawStatus_Confirm_TranferStatus', {
-					objsession: objsession,
-					Withdraw_Index: Withdraw_Index,
-					Status: Status,
-					phRemark: phRemark
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('waitConfirmWithdrawStatus_Confirm_TranferStatus', res));
-				});
+        App.API('GetOrderTopic', {
+            objsession: angular.copy(LoginService.getLoginData()),
+            pstrWhere: strWhere
+        }).then(function (res) {
 
-			})
-		}
+            var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
 
+            if (Object.keys(resDataSet).length > 0) {
+                $scope.orderTopicList = resDataSet;
+                $scope.orderTopicListLength = Object.keys(resDataSet).length;
+            }
+            else {
+                AppService.err('แจ้งเตือน', 'ไม่มีรายการรับสินค้า', '');
+                return;
+            }
 
-		/*--------------------------------------
-		Modal Function SwapPallet_ModalLoad
-		------------------------------------- */
-		async function SwapPallet_ModalLoad() {
+        }).catch(function (res) {
+            AppService.err('GetOrderTopic', res);
+        }).finally(function (res) {
+            $ionicLoading.hide();
+        });
+    };
 
-			$scope.modal.show();
+    GetOrderTopic();
 
-			$scope.modal_data.PalletNo = $scope.data.PalletNo;
+})
 
-			if (!$scope.modal_data.PalletNo) {
-				setFocus('Modal_PalletNo');
-			}
-			else {
-				$scope.isDisable = true;
-				isSales = true;
-				setFocus('Modal_Location');
-			}
+.controller('Main_ProductGeneral_SelectedCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $stateParams, $ionicHistory) {
 
-		}
+    /*--------------------------------------
+    Data Function
+    --------------------------------------*/
+    $scope.data = {};
+    $scope.datatablesList = {};
+    $scope.datatablesListLength = 0;
+    var Tag_No = null;
 
-		/*--------------------------------------
-		Scan Barcode Modal Function
-		------------------------------------- */
-		$scope.scanPalletNo_Modal = (id) => {
-			$cordovaBarcodeScanner.scan().then(function (imageData) {
-				if (!imageData.cancelled) {
-					$scope['modal_data'][id] = imageData.text.toUpperCase();
-					$scope.search_modal(angular.copy($scope['modal_data'][id]), '');
-				}
-			}, function (error) {
-				AppService.err('scanPalletNo_Modal', error);
-			});
-		};
+    var Order_Index = $stateParams.Order_Index;
+    var Order_No = $stateParams.Order_No;
+    var Sysloc = (Order_No) ? Order_No.substring(0, 2) : null;
 
-		/*--------------------------------------
-		Event Function search_modal
-		------------------------------------- */
-		$scope.search_modal = (dataSearch, id, searchType) => {
+    var keyCnt = 0;
 
-			let str = (id == 'Modal_PalletNo') ? 'กรุณา Scan Pallet No.' : 'กรุณา Scan Location';
+    var clearData = function () {
+        $scope.data = {};
+        $scope.datatablesList = {};
+        $scope.datatablesListLength = 0;
+        Tag_No = null;
+    };
 
-			if (!dataSearch) {
-				AppService.err('แจ้งเตื่อน', str, id);
-				return;
-			}
+    var setFocus = function (id) {
+        AppService.focus(id);
+    }
 
-			if (searchType == 'read location no' || searchType == 'read pallet no') {
-				keyCnt += 1;
-				var curTextCount = dataSearch == null ? 0 : dataSearch.length;
-				//console.log('current inut text length: ' + curTextCount);
-				//console.log('current inut keyCnt: ' + keyCnt);
-				if (keyCnt == 1 && curTextCount > 1) {
-					//console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
-					$scope.data.PalletSearchFlag = "yes";
-				} else {
-					$scope.data.PalletSearchFlag = "no"; // set flag to stop search
-				}
-				//console.log('flag is ' + $scope.data.PalletSearchFlag);
-				if ($scope.data.PalletSearchFlag == 'no') {
-					$scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
-					//console.log('exit seach');
-					return;
-				}
-			}
+    var findByValue = function (key, value, isOptions) {
+        return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
+    };
 
-			keyCnt = 0;
+    clearData();
 
-			if (id == 'Modal_Location') {
-				searchLocation_Modal(dataSearch, id);
-			}
-			else {
-				searchPallet_Modal(dataSearch, id);
-			}
+    $scope.$on('$ionicView.enter', function () {
+        setFocus('PalletNo');
+    });
+
+    $scope.DisplayFlag = 0
 
-		};
+    $scope.changeDisplay = function (value) {
+
+        $scope.DisplayFlag = value;
 
-		async function searchPallet_Modal(dataSearch, id) {
-			try {
+    };
+
+    $scope.data.Order_No = $stateParams.Order_No;
+    $scope.data.PalletCount = '0/0';
+    $scope.data.SysLocation = (Sysloc == 'WH') ? 'WH14' : 'RM_FLOOR';
+
+
+    /*--------------------------------------
+    Call API getTag_Receive
+    --------------------------------------*/
+    var getTag_Receive = function () {
+
+        $ionicLoading.show();
+
+        App.API('getTag_Receive', {
+            objsession: angular.copy(LoginService.getLoginData()),
+            pstrorder_index: Order_Index
+        }).then(function (res) {
+
+            var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
+
+            if (Object.keys(resDataSet).length <= 0) {
+                AppService.err('แจ้งเตือน', 'กรุณาจัดการ TAG ก่อนรับเข้า', '');
+                Tag_No = null;
+                clearData();
+                $ionicHistory.goBack();
+            }
+
+            $scope.datatablesList = resDataSet;
+            $scope.datatablesListLength = Object.keys(resDataSet).length;
+
+            var datatables = {}
+            var i = 0;
+
+            for (var x in $scope.datatablesList) {
+                if ($scope.datatablesList[x].itemstatus == 1) {
+                    datatables[i] = $scope.datatablesList[x];
+
+                    i++;
+                }
+            }
+
+            if (Object.keys(datatables).length <= 0) {
+                Tag_No = null;
+                AppService.err('แจ้งเตือน', 'จัดเก็บรายการเรียบร้อยแล้ว', '');
+                $ionicHistory.goBack();
+            }
 
-				$ionicLoading.show();
+            $scope.data.SKU = datatables[0].Str1_T;
+            $scope.data.Lot = datatables[0].PLot;
+            $scope.data.TotalQty = datatables[0].Qty_per_TAG;
+            $scope.data.PackageQty = parseFloat(datatables[0].Qty_per_TAG) / parseFloat(datatables[0].UnitWeight_Index);
+            Tag_No = datatables[0].TAG_No;
 
-				AppService.blur();
+            var countStatus = 0;
 
-				let objsession = angular.copy(LoginService.getLoginData());
+            for (var x in $scope.datatablesList) {
+                if ($scope.datatablesList[x].itemstatus == 2) {
+                    countStatus++;
+                }
+            }
 
-				const res_getPalletInBGPallet = await getPalletInBGPallet(objsession, dataSearch);
+            $scope.data.PalletCount = countStatus + '/' + $scope.datatablesListLength;
 
-				let resDataSet = (!res_getPalletInBGPallet['diffgr:diffgram']) ? {} : res_getPalletInBGPallet['diffgr:diffgram'].NewDataSet.Table1;
+            $scope.data.PalletNo = null;
+            setFocus('PalletNo');
 
-				if (Object.keys(resDataSet).length <= 0) {
-					$scope['modal_data'][id] = null;
-					AppService.err('แจ้งเตือน', 'ไม่พบ Pallet No ในระบบ', id);
-					return;
-				}
 
-				if (resDataSet[0].PalletStatus_Index != '0010000000000') {
-					$scope['modal_data'][id] = null;
-					AppService.err('แจ้งเตือน', 'Pallet นี้ไม่อยู่ในสถานะ EM', id);
-					return;
-				}
+        }).catch(function (res) {
+            AppService.err('getTag_Receive', res);
+        }).finally(function (res) {
+            $ionicLoading.hide();
+        });
 
-				$scope.isDisable = true;
-				setFocus('Modal_Location');
+    }
 
-				$ionicLoading.hide();
+    if (Order_Index && Order_No) {
+        getTag_Receive();
+    }
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+    /*--------------------------------------
+    Scan Barcode Function
+    ------------------------------------- */
+    $scope.scanPalletNo = function () {
+        $cordovaBarcodeScanner.scan().then(function (imageData) {
+            if (!imageData.cancelled) {
+                $scope.data.PalletNo = imageData.text.toUpperCase();
+                $scope.search(angular.copy($scope.data.PalletNo), '');
+            }
+        }, function (error) {
+            AppService.err('scanPalletNo', error);
+        });
+    };
 
-		async function searchLocation_Modal(dataSearch, id) {
-			try {
+    /*--------------------------------------
+    Event Function search
+    ------------------------------------- */
+    $scope.search = function (dataSearch, searchType) {
 
-				$ionicLoading.show();
+        if (!dataSearch) {
+            AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'PalletNo');
+            return;
+        }
 
-				AppService.blur();
+        if (searchType == 'read pallet no') {
+            keyCnt += 1;
+            var curTextCount = dataSearch == null ? 0 : dataSearch.length;
+            //console.log('current inut text length: ' + curTextCount);
+            //console.log('current inut keyCnt: ' + keyCnt);
+            if (keyCnt == 1 && curTextCount > 1) {
+                //console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
+                $scope.data.PalletSearchFlag = "yes";
+            } else {
+                $scope.data.PalletSearchFlag = "no"; // set flag to stop search
+            }
+            //console.log('flag is ' + $scope.data.PalletSearchFlag);
+            if ($scope.data.PalletSearchFlag == 'no') {
+                $scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
+                //console.log('exit seach');
+                return;
+            }
+        }
+
+        keyCnt = 0;
+
+        searchPallet(dataSearch);
+
+    };
 
-				let objsession = angular.copy(LoginService.getLoginData());
+    function searchPallet(dataSearch) {
+        try {
+
+            $ionicLoading.show();
+
+            AppService.blur();
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            var res_getTagByPallet = getTagByPallet(objsession, dataSearch);
+
+            var res_getQtyPerPallet_TPIPL = getQtyPerPallet_TPIPL(objsession, dataSearch);
+
+            Promise.all([res_getTagByPallet, res_getQtyPerPallet_TPIPL]).then(function (res) {
+
+                var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
+
+                var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
+
+                if (Object.keys(resDataSet).length > 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'Pallet นี้กำลังใช้งาน', 'PalletNo');
+                    return;
+                }
+
+                if (Object.keys(resDataSet2).length <= 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'ไม่มี Pallet นี้ในระบบ!', 'PalletNo');
+                    return;
+                }
+
+                var res_FindLocationAndInsert_Receive_V2 = FindLocationAndInsert_Receive_V2(objsession, dataSearch, $scope.data.TotalQty, '0010000000004', Tag_No, $scope.data.Lot, $scope.data.SysLocation);
+
+                res_FindLocationAndInsert_Receive_V2.then(function (res) {
+
+                    if (res != 'True') {
+                        AppService.err('แจ้งเตือน', res, '');
+                        return;
+                    }
+
+                    getTag_Receive();
+
+                    $scope.data.PalletNo = null;
+                    AppService.succ('เก็บเรียบร้อย', 'PalletNo');
+
+                    $ionicLoading.hide();
+
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    var getTagByPallet = function (objsession, pPallet_No) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTagByPallet', {
+                objsession: objsession,
+                pPallet_No: pPallet_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTagByPallet', res));
+            });
+
+        })
+    }
+
+    var getQtyPerPallet_TPIPL = function (objsession, pPallet_No) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getQtyPerPallet_TPIPL', {
+                objsession: objsession,
+                pPallet_No: pPallet_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getQtyPerPallet_TPIPL', res));
+            });
 
-				if (isSales) {
-					let datatables = {};
-					let i = 0;
+        })
+    }
 
-					for (let x in $scope.datatablesList) {
+    var FindLocationAndInsert_Receive_V2 = function (objsession, pPallet_No, pQtyPerPallet, pstrNewPalletStatus_Index, pstrTag_no, plot, plocation_Alias) {
+        return new Promise(function (resolve, reject) {
 
-						if ($scope.datatablesList[x]['Location_Alias'] == dataSearch) {
+            App.API('FindLocationAndInsert_Receive_V2', {
+                objsession: objsession,
+                pPallet_No: pPallet_No,
+                pQtyPerPallet: pQtyPerPallet,
+                pstrNewPalletStatus_Index: pstrNewPalletStatus_Index,
+                pstrTag_no: pstrTag_no,
+                plot: plot,
+                plocation_Alias: plocation_Alias
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('FindLocationAndInsert_Receive_V2', res));
+            });
 
-							datatables[i] = $scope.datatablesList[x];
+        })
+    }
 
-							i++;
-						}
-					}
 
-					if (Object.keys(datatables).length <= 0) {
-						$scope['modal_data'][id] = null;
-						AppService.err('แจ้งเตือน', 'ไม่พบ Location นี้ในใบเบิก', id);
-						return;
-					}
+})
 
-					$scope.modal_data.SKU = datatables[0].SKU_x0020_ID;
-					$scope.modal_data.Lot = datatables[0].LOT_x002F_BATCH;
-					Tag_No = datatables[0].TAG_x0020_NO;
-				}
-				else {
-					const res_Find_GradeLot_IN_location = await Find_GradeLot_IN_location(objsession, dataSearch);
+.controller('Main_PayProductGenaralCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter) {
 
-					let resDataSet = (!res_Find_GradeLot_IN_location['diffgr:diffgram']) ? {} : res_Find_GradeLot_IN_location['diffgr:diffgram'].NewDataSet.Table1;
+    /*--------------------------------------
+    Data Function
+    ------------------------------------- */
+    $scope.data = {};
+    $scope.modal_data = {};
+    $scope.datatablesList = {};
+    $scope.datatablesListLength = 0;
+    $scope.lbQty = 0;
+    $scope.lbTotal = 0;
 
-					if (Object.keys(resDataSet).length > 0) {
-						$scope.modal_data.SKU = resDataSet[0].sku_id;
-						$scope.modal_data.Lot = resDataSet[0].plot;
-						Tag_No = resDataSet[0].tag_no;
-					}
+    $scope.isDisable = false;
 
-				}
+    var Withdraw_No = null;
+    var Withdraw_Index = null;
 
-				$ionicLoading.hide();
+    var Tag_No = null;
+    var isSales = false;
+    var booAssing = false;
+    var _CONST_HEADERTYPE = "MOBILE DAMAGE RD TO MT";
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+    var keyCnt = 0;
 
-		let Find_GradeLot_IN_location = (objsession, pstrLocationAlias) => {
-			return new Promise((resolve, reject) => {
+    var clearData = function () {
+        $scope.data = {};
+        $scope.modal_data = {};
+        $scope.datatablesList = {};
+        $scope.datatablesListLength = 0;
+        $scope.lbQty = 0;
+        $scope.lbTotal = 0;
+    };
 
-				App.API('Find_GradeLot_IN_location', {
-					objsession: objsession,
-					pstrLocationAlias: pstrLocationAlias
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('Find_GradeLot_IN_location', res));
-				});
+    var clearData_Modal = function () {
+        $scope.modal_data = {};
+    };
 
-			})
-		}
 
-		/*--------------------------------------
-		Event Function save_modal
-		------------------------------------- */
-		$scope.save_modal = () => {
+    var setFocus = function (id) {
+        AppService.focus(id);
+    }
 
-			if (!$scope.modal_data.PalletNo) {
-				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'Modal_PalletNo');
-				return;
-			}
-			else {
-				searchPallet_Modal($scope.modal_data.PalletNo, 'Modal_PalletNo');
-			}
+    var findByValue = function (key, value, isOptions) {
+        return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
+    };
 
+    clearData();
 
-			if (!$scope.modal_data.Location) {
-				AppService.err('แจ้งเตื่อน', 'กรุณา Scan Location', 'Modal_Location');
-				return;
-			}
-			else {
-				searchLocation_Modal($scope.modal_data.Location, 'Modal_Location');
-			}
+    $scope.$on('$ionicView.enter', function () {
+        setFocus('PalletNo');
+    });
 
-			savePallet_Modal();
+    /*--------------------------------------
+    Call API GetWithdraw_Request
+    ------------------------------------- */
+    $scope.GetWithdraw_Request = function () {
 
-		};
+        $ionicLoading.show();
 
-		async function savePallet_Modal() {
-			try {
+        var pstrWhere = " and DocumentType_Index <> '0010000000006' and Status IN (1,3) and Customer_Index in (select  Customer_Index from x_Department_Customer where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and IsUse = 1) ";
 
-				$ionicLoading.show();
+        App.API('GetWithdraw_Request', {
+            objsession: angular.copy(LoginService.getLoginData()),
+            pstrWhere: pstrWhere,
+            pbooDamage: false
+        }).then(function (res) {
 
-				AppService.blur();
+            var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
 
-				let objsession = angular.copy(LoginService.getLoginData());
+            if (Object.keys(resDataSet).length > 0) {
 
-				let Palletstatus = '0010000000004';
+                $scope.getDOList = resDataSet;
 
-				if (IsSales) {
-					Palletstatus = '0010000000005';
-				}
+                $scope.changeDO(resDataSet[0].Withdraw_Index + ',' + resDataSet[0].Withdraw_No);
 
-				await updatePalletToTag(objsession, Tag_No, $scope.modal_data.PalletNo, $scope.modal_data.Lot, Palletstatus);
+                setFocus('PalletNo');
 
-				clearData_Modal();
-				booAssing = true;
-				$scope.isDisable = false;
+            }
 
-				if (IsSales) {
-					$scope.modal.hide();
+        }).catch(function (res) {
+            AppService.err('GetWithdraw_Request', res);
+        }).finally(function (res) {
+            $ionicLoading.hide();
+        });
+    };
 
-					//$ionicHistory.goBack();
+    $scope.GetWithdraw_Request();
 
-					//AppService.succ('สแกน Pallet' + $scope.data.PalletNo + 'อีกครั้งเพื่อเบิกสินค้า!', '');
+    /*--------------------------------------
+    Event Function changeDO 
+    ------------------------------------- */
+    $scope.changeDO = function (strWithdraw) {
 
-					if (booAssing) {
-						loadDO(Withdraw_Index, Withdraw_No);
+        $scope.data.DO = strWithdraw;
 
-						await searchPallet($scope.data.PalletNo);
-					}
+        var Withdraw = strWithdraw.split(',');
 
-					$scope.data.PalletNo = null;
-					setFocus('PalletNo');
+        Withdraw_Index = Withdraw[0];
+        Withdraw_No = Withdraw[1];
 
-				}
-				else {
-					setFocus('Modal_PalletNo');
+        if (!Withdraw_Index) {
+            clearData();
+            return;
+        }
 
-				}
+        loadDO(Withdraw_Index, Withdraw_No);
 
-				$ionicLoading.hide();
+    };
 
+    function loadDO(Withdraw_Index, Withdraw_No) {
+        try {
 
-			} catch (error) {
-				console.log("Error occurred");
-				AppService.err('Error', 'Error occurred', '');
-				return;
-			}
-		}
+            $ionicLoading.show();
 
-		let updatePalletToTag = (objsession, pstrTag_No, pstrPallet_No, PLot, pstrPalletstatus_index) => {
-			return new Promise((resolve, reject) => {
+            var objsession = angular.copy(LoginService.getLoginData());
 
-				App.API('updatePalletToTag', {
-					objsession: objsession,
-					pstrTag_No: pstrTag_No,
-					pstrPallet_No: pstrPallet_No,
-					PLot: PLot,
-					pstrPalletstatus_index: pstrPalletstatus_index,
-				}).then(function (res) {
-					resolve(res);
-				}).catch(function (res) {
-					reject(AppService.err('updatePalletToTag', res));
-				});
+            if (!Withdraw_Index) {
 
-			})
-		}
+                $ionicLoading.hide();
+                return;
 
+            } else {
 
-	});
+                var res_GetWithdraw_Request = GetWithdraw_Request2(objsession, " and Withdraw_Index = '" + Withdraw_Index + "' ", false);
 
+                var res_GetWithdrawItem = GetWithdrawItem(objsession, Withdraw_Index);
+
+                Promise.all([res_GetWithdraw_Request, res_GetWithdrawItem]).then(function (res) {
+
+                    var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
+
+                    var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
+
+                    if (Object.keys(resDataSet).length > 0) {
+
+                        $scope.data.Department_Id = (resDataSet[0].Department_Id) ? resDataSet[0].Department_Id : 'ไม่ระบุ';
+                        $scope.data.Withdraw_Date = (resDataSet[0].Withdraw_Date) ? $filter('date')(resDataSet[0].Withdraw_Date, 'dd/MM/yyyy') : 'ไม่ระบุ';
+
+                        if (resDataSet[0].DocumentType_Id) {
+
+                            $scope.data.DocumentType_Id = resDataSet[0].DocumentType_Id;
+                            $scope.data.DocumentType = resDataSet[0].DocumentType;
+
+                        }
+
+                        $scope.datatablesList = resDataSet2;
+                        $scope.datatablesListLength = Object.keys(resDataSet2).length;
+
+                        var countSTATE = 0;
+
+                        if ($scope.datatablesListLength > 0) {
+                            for (var x in $scope.datatablesList) {
+                                if ($scope.datatablesList[x]['STATE'] != null) {
+                                    countSTATE++;
+                                }
+                            }
+
+                            $scope.lbTotal = $scope.datatablesListLength;
+                            $scope.lbQty = countSTATE;
+
+                        }
+
+                        setFocus('PalletNo');
+
+                        $ionicLoading.hide();
+
+                    } else {
+
+                        clearData();
+                        AppService.err('แจ้งเตือน', 'ไม่มีรายละเอียดของใบเบิกนี้', 'PalletNo');
+                        return;
+                    }
+
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
+
+            }
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    var GetWithdraw_Request2 = function (objsession, pstrWhere, pbooDamage) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('GetWithdraw_Request', {
+                objsession: objsession,
+                pstrWhere: pstrWhere,
+                pbooDamage: pbooDamage
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('GetWithdraw_Request', res));
+            });
+
+        })
+    }
+
+    var GetWithdrawItem = function (objsession, pstrWithdraw_Index) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('GetWithdrawItem', {
+                objsession: objsession,
+                pstrWithdraw_Index: pstrWithdraw_Index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('GetWithdrawItem', res));
+            });
+
+        })
+    }
+
+    /*--------------------------------------
+    Scan Barcode Function
+    ------------------------------------- */
+    $scope.scanPalletNo = function (id) {
+        $cordovaBarcodeScanner.scan().then(function (imageData) {
+            if (!imageData.cancelled) {
+
+                $scope['data'][id] = imageData.text.toUpperCase();
+                $scope.search(angular.copy($scope['data'][id]), '');
+
+            }
+        }, function (error) {
+            AppService.err('scanPalletNo', error);
+        });
+    };
+
+    /*--------------------------------------
+    Event Function search
+    ------------------------------------- */
+    $scope.search = function (dataSearch, id, searchType) {
+
+        if (!dataSearch) {
+            AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', id);
+            return;
+        }
+
+        if (searchType == 'read pallet no') {
+            keyCnt += 1;
+            var curTextCount = dataSearch == null ? 0 : dataSearch.length;
+            //console.log('current inut text length: ' + curTextCount);
+            //console.log('current inut keyCnt: ' + keyCnt);
+            if (keyCnt == 1 && curTextCount > 1) {
+                //console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
+                $scope.data.PalletSearchFlag = "yes";
+            } else {
+                $scope.data.PalletSearchFlag = "no"; // set flag to stop search
+            }
+            //console.log('flag is ' + $scope.data.PalletSearchFlag);
+            if ($scope.data.PalletSearchFlag == 'no') {
+                $scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
+                //console.log('exit seach');
+                return;
+            }
+        }
+
+        keyCnt = 0;
+
+        searchPallet(dataSearch, id);
+
+    };
+
+    function searchPallet(dataSearch, id) {
+
+        try {
+
+            $ionicLoading.show();
+
+            AppService.blur();
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            var datatables = {};
+            var i = 0;
+
+            for (var x in $scope.datatablesList) {
+
+                if ($scope.datatablesList[x]['PALLET_x0020_NO'] == dataSearch) {
+
+                    datatables[i] = $scope.datatablesList[x];
+
+                    i++;
+                }
+            }
+
+            if (Object.keys(datatables).length <= 0) {
+
+                //กรณียังไม่มีเลขพาเลท
+                var res_AssingPallet_No_To_Tag = AssingPallet_No_To_Tag(dataSearch);
+
+                res_AssingPallet_No_To_Tag.then(function (res) {
+
+                    if (res) {
+
+                        return res;
+                    }
+                    else {
+                        //กรณีเลขพาเลทไม่ใช่พาเลทที่อยู่ในใบเบิก
+                        return SwapPallet(dataSearch);
+                    }
+
+                }).then(function (res2) {
+
+                    $scope.data.PalletNo = null;
+                    setFocus('PalletNo');
+                    $ionicLoading.hide();
+                    return;
+
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
+
+            }
+            else {
+
+                for (var x in datatables) {
+                    //check Local realtime befor
+                    if (datatables[x]['WITHDRAWITEM-STATUS'] == -9 || datatables[x]['WITHDRAWITEM-STATUS'] == -10) {
+                        $scope.data.PalletNo = null;
+                        AppService.err('แจ้งเตือน', 'Pallet ' + dataSearch + ' ถูกเบิกแล้ว!', id);
+                        return;
+                    }
+
+                    if (datatables[x]['Qty_Bal'] != datatables[x]['QTY']) {
+                        AppService.err('แจ้งเตือน', 'จำนวนสินค้าที่เบิกไม่มีในรายการนี้ !', id);
+                        return;
+                    }
+                    else {
+
+                        //check Online real befor
+                        var res_CHEKPICK_WITHDRAWITEM_STATUS = CHEKPICK_WITHDRAWITEM_STATUS(objsession, datatables[x]['WithdrawItem_Index']);//return boolean
+
+                        var Location = datatables[x]['Location_Alias'];
+                        if (Location.substring(0, 1) != 'Y') {
+                            Location = Location.substring(0, 1) + '-FLOOR';
+                        }
+
+                        res_CHEKPICK_WITHDRAWITEM_STATUS.then(function (res) {
+
+                            if (res) {
+
+                                return 'True1';
+                            }
+                            else {
+
+                                //Update Status and Swap WithdrawItem . (Not Insert Transfer and Transaction)
+                                return SavePickItem_Withdraw(objsession, datatables[x]['TAG_x0020_NO'], datatables[x]['QTY'], Location, '0010000000001', '0010000000007', Withdraw_No, Withdraw_Index, datatables[x]['WithdrawItem_Index'], _CONST_HEADERTYPE, true);//return string
+
+                            }
+
+
+                        }).then(function (res2) {
+
+
+                            if (res2 == 'True1') {
+                                $scope.data.PalletNo = null;
+                                AppService.err('แจ้งเตือน', 'Pallet ' + dataSearch + ' ถูกเบิกแล้ว!', id);
+                                return;
+                            }
+                            else {
+
+                                if (res2 != 'PASS') {
+                                    AppService.err('แจ้งเตือน', 'ผิดพลาด : ในการย้าย Pallet ' + dataSearch + ' ลองอีกครั้ง!', id);
+                                    return;
+                                }
+
+                                //update real ui and Sort new
+                                for (var y in $scope.datatablesList) {
+                                    if ($scope.datatablesList[y]['WithdrawItem_Index'] == datatables[x]['WithdrawItem_Index']) {
+                                        $scope.datatablesList[y]['STATE'] = 'เบิกแล้ว';
+                                        $scope.datatablesList[y]['WITHDRAWITEM-STATUS'] = -9;
+                                        $scope.datatablesList[y]['PICKINGQTY'] = datatables[x]['QTY'];
+                                        $scope.datatablesList[y]['Location_Alias'] = Location;
+                                        $scope.datatablesList[y]['LOCATION'] = Location;
+                                    }
+                                }
+
+                                var countSTATE = 0;
+
+                                for (var y in $scope.datatablesList) {
+                                    if ($scope.datatablesList[y]['WITHDRAWITEM-STATUS'] == -9 || $scope.datatablesList[y]['WITHDRAWITEM-STATUS'] == -10) {
+                                        countSTATE++;
+                                    }
+                                }
+
+                                $scope.lbQty = countSTATE;
+                                $scope.lbTotal = $scope.datatablesListLength;
+
+
+                                $scope.data.PalletNo = null;
+                                setFocus(id);
+
+                                $ionicLoading.hide();
+
+                            }
+
+                        }).catch(function (error) {
+                            console.log("Error occurred");
+                            AppService.err('Error', 'Error occurred', '');
+                            return;
+                        });
+
+                    }
+
+                }
+
+            }
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    function AssingPallet_No_To_Tag(dataSearch) {
+        try {
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            var res_getPalletInBGPallet = getPalletInBGPallet(objsession, dataSearch);
+
+            return res_getPalletInBGPallet.then(function (res) {
+
+                var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
+
+                if (Object.keys(resDataSet).length > 0) {
+
+                    if (resDataSet[0].PalletStatus_Index == '0010000000000') {
+
+                        var datatables = {};
+                        var i = 0;
+
+                        for (var x in $scope.datatablesList) {
+
+                            if ($scope.datatablesList[x]['PALLET_x0020_NO'] == '') {
+
+                                datatables[i] = $scope.datatablesList[x];
+
+                                i++;
+                            }
+                        }
+
+                        if (Object.keys(datatables).length > 0) {
+
+                            SwapPallet_ModalLoad();
+
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
+
+        }
+        catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    function SwapPallet(dataSearch) {
+        try {
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            var res_chk_Pallet_IN_Withdraw_IS_Picked = chk_Pallet_IN_Withdraw_IS_Picked(objsession, dataSearch);//return boolean
+
+            var res_getVIEW_TAG_TPIPL = getVIEW_TAG_TPIPL(objsession, dataSearch);
+
+            return Promise.all([res_chk_Pallet_IN_Withdraw_IS_Picked, res_getVIEW_TAG_TPIPL]).then(function (res) {
+
+                if (res[0]) {
+                    AppService.err('แจ้งเตือน', 'พาเลทนี้ถูกหยิบในใบเบิกอื่นแล้ว!', 'PalletNo');
+                    return 'True1';
+                }
+
+                var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
+
+                if (Object.keys(resDataSet2).length <= 0) {
+                    AppService.err('แจ้งเตือน', 'ไม่พบพาเลทนี้ในรายการ !', 'PalletNo');
+                    return 'True1';
+                }
+
+                if (resDataSet2[0].Customer_Index != datatablesList[0].Customer_Index) {
+                    AppService.err('ลูกค้าไม่ตรง !', 'พาเลท ' + $scope.data.PalletNo + 'ไม่ใช่ลูกค้าคนนี้', 'PalletNo');
+                    return 'True1';
+                }
+
+                var datatables = {};
+                var i = 0;
+
+                for (var x in $scope.datatablesList) {
+
+                    if ($scope.datatablesList[x]['LOT_x002F_BATCH'] == resDataSet2[0].PLot && $scope.datatablesList[x]['SKU_x0020_ID'] == resDataSet2[0].Sku_Id && $scope.datatablesList[x]['WITHDRAWITEM-STATUS'] == 1 && $scope.datatablesList[x]['Location_Alias'] == resDataSet2[0].Location_Alias && $scope.datatablesList[x]['STATUS'] == resDataSet2[0].Description) {
+
+                        datatables[i] = $scope.datatablesList[x];
+
+                        i++;
+                    }
+                }
+
+                if (Object.keys(datatables).length <= 0) {
+                    AppService.err('แจ้งเตือน', 'ไม่สามารถเบิกพาเลทนี้แทนได้เนื่องจาก Grade ,Lot,ตำแหน่ง  ไม่ตรงกับใบเบิก !', 'PalletNo');
+                    return 'True1';
+                }
+
+                return SwapPalletInWithDraw(objsession, datatables[0].WithdrawItem_Index, dataSearch, Withdraw_Index);//return boolean
+
+            }).then(function (res2) {
+
+                if (res2 == 'True1') {
+                    return false;
+                }
+
+                if (!res2) {
+
+                    AppService.err('แจ้งเตือน', 'ไม่สามารถ Swap ได้ เนื่องจาก <br/> - จำนวนหรือ Status Item ไม่ตรงกัน <br/> - พาเลทที่จะ Swap มีอยู่ใน DO หลายใบ', 'PalletNo');
+                    return false;
+
+                }
+
+                AppService.succ('เปลี่ยน Pallet ' + dataSearch + '  เรียบร้อย!', 'PalletNo');
+
+                loadDO(Withdraw_Index, Withdraw_No);
+
+                searchPallet($scope.data.PalletNo);
+
+                return true;
+
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
+
+        }
+        catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    var CHEKPICK_WITHDRAWITEM_STATUS = function (objsession, WithdrawItem_Index, Status) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('CHEKPICK_WITHDRAWITEM_STATUS', {
+                objsession: objsession,
+                WithdrawItem_Index: WithdrawItem_Index,
+                Status: Status
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('CHEKPICK_WITHDRAWITEM_STATUS', res));
+            });
+
+        })
+    }
+
+    var SavePickItem_Withdraw = function (objsession, pstrTag_No, pdblQtyMove, pstrNewLocation_Ailas, pstrNewItemStatus_Index, pstrNewPalletStatus_Index, Document_No, Document_Index, Documentitem_Index, Description, isPicking) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('SavePickItem_Withdraw', {
+                objsession: objsession,
+                pstrTag_No: pstrTag_No,
+                pdblQtyMove: pdblQtyMove,
+                pstrNewLocation_Ailas: pstrNewLocation_Ailas,
+                pstrNewItemStatus_Index: pstrNewItemStatus_Index,
+                pstrNewPalletStatus_Index: pstrNewPalletStatus_Index,
+                Document_No: Document_No,
+                Document_Index: Document_Index,
+                Documentitem_Index: Documentitem_Index,
+                Description: Description,
+                isPicking: isPicking
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('SavePickItem_Withdraw', res));
+            });
+
+        })
+    }
+
+    var getPalletInBGPallet = function (objsession, Pallet_No) {
+        return new Promise(function (resolve, reject) {
+
+            var strWhere = " and PALLET_No='" + Pallet_No + "' ";
+
+            App.API('getPalletInBGPallet', {
+                objsession: objsession,
+                pstrWhere: strWhere
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getPalletInBGPallet', res));
+            });
+
+        })
+    }
+
+    var chk_Pallet_IN_Withdraw_IS_Picked = function (objsession, pstrPalletNo) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('chk_Pallet_IN_Withdraw_IS_Picked', {
+                objsession: objsession,
+                pstrPalletNo: pstrPalletNo
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('chk_Pallet_IN_Withdraw_IS_Picked', res));
+            });
+
+        })
+    }
+
+    var getVIEW_TAG_TPIPL = function (objsession, Pallet_No) {
+        return new Promise(function (resolve, reject) {
+
+            var strWhere = " and PALLET_No='" + Pallet_No + "' and Qty_Bal>0 ";
+
+            App.API('getVIEW_TAG_TPIPL', {
+                objsession: objsession,
+                pstrWhere: strWhere
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getVIEW_TAG_TPIPL', res));
+            });
+
+        })
+    }
+
+    var SwapPalletInWithDraw = function (objsession, pstrWithdrawItem_Index, pstrPalletNo, pstrWithdraw_Index) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('SwapPalletInWithDraw', {
+                objsession: objsession,
+                pstrWithdrawItem_Index: pstrWithdrawItem_Index,
+                pstrPalletNo: pstrPalletNo,
+                pstrWithdraw_Index: pstrWithdraw_Index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('SwapPalletInWithDraw', res));
+            });
+
+        })
+    }
+
+    /*--------------------------------------
+    Event Function save
+    ------------------------------------- */
+    $scope.save = function () {
+
+        savePallet();
+
+    };
+
+    function savePallet() {
+        try {
+
+            $ionicLoading.show();
+
+            //AppService.blur();
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            //การยืนยันไม่ควรตรวจสอบจากหน้าจอควร Query ใหม่แบบ RealTime หรือ Load Detail ใหม่
+            loadDO(Withdraw_Index, Withdraw_No)
+
+            //Check picking
+            var countSTATE = 0;
+
+            if ($scope.datatablesListLength > 0) {
+                for (var x in $scope.datatablesList) {
+                    if ($scope.datatablesList[x]['WITHDRAWITEM-STATUS'] != -9) {
+                        countSTATE++;
+                    }
+                }
+
+                if (countSTATE > 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'หยิบไม่ครบรายการ', 'PalletNo');
+                    return;
+                }
+            }
+
+            var res_waitConfirmWithdrawStatus_Confirm_TranferStatus = waitConfirmWithdrawStatus_Confirm_TranferStatus(objsession, Withdraw_Index, 2, _CONST_HEADERTYPE);
+
+            res_waitConfirmWithdrawStatus_Confirm_TranferStatus.then(function (res) {
+
+                AppService.succ('หยิบครบทุกรายการแล้ว (รอการยืนยันการหยิบสินค้า)', '');
+
+                $ionicLoading.hide();
+
+                $ionicHistory.goBack();
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    var waitConfirmWithdrawStatus_Confirm_TranferStatus = function (objsession, Withdraw_Index, Status, phRemark) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('waitConfirmWithdrawStatus_Confirm_TranferStatus', {
+                objsession: objsession,
+                Withdraw_Index: Withdraw_Index,
+                Status: Status,
+                phRemark: phRemark
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('waitConfirmWithdrawStatus_Confirm_TranferStatus', res));
+            });
+
+        })
+    }
+
+
+    /*--------------------------------------
+    Modal Function SwapPallet_ModalLoad
+    ------------------------------------- */
+    function SwapPallet_ModalLoad() {
+
+        $scope.modal.show();
+
+        $scope.modal_data.PalletNo = $scope.data.PalletNo;
+
+        if (!$scope.modal_data.PalletNo) {
+            setFocus('Modal_PalletNo');
+        }
+        else {
+            $scope.isDisable = true;
+            isSales = true;
+            setFocus('Modal_Location');
+        }
+
+    }
+
+    /*--------------------------------------
+    Scan Barcode Modal Function
+    ------------------------------------- */
+    $scope.scanPalletNo_Modal = function (id) {
+        $cordovaBarcodeScanner.scan().then(function (imageData) {
+            if (!imageData.cancelled) {
+                $scope['modal_data'][id] = imageData.text.toUpperCase();
+                $scope.search_modal(angular.copy($scope['modal_data'][id]), '');
+            }
+        }, function (error) {
+            AppService.err('scanPalletNo_Modal', error);
+        });
+    };
+
+    /*--------------------------------------
+    Event Function search_modal
+    ------------------------------------- */
+    $scope.search_modal = function (dataSearch, id, searchType) {
+
+        var str = (id == 'Modal_PalletNo') ? 'กรุณา Scan Pallet No.' : 'กรุณา Scan Location';
+
+        if (!dataSearch) {
+            AppService.err('แจ้งเตื่อน', str, id);
+            return;
+        }
+
+        if (searchType == 'read location no' || searchType == 'read pallet no') {
+            keyCnt += 1;
+            var curTextCount = dataSearch == null ? 0 : dataSearch.length;
+            //console.log('current inut text length: ' + curTextCount);
+            //console.log('current inut keyCnt: ' + keyCnt);
+            if (keyCnt == 1 && curTextCount > 1) {
+                //console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
+                $scope.data.PalletSearchFlag = "yes";
+            } else {
+                $scope.data.PalletSearchFlag = "no"; // set flag to stop search
+            }
+            //console.log('flag is ' + $scope.data.PalletSearchFlag);
+            if ($scope.data.PalletSearchFlag == 'no') {
+                $scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
+                //console.log('exit seach');
+                return;
+            }
+        }
+
+        keyCnt = 0;
+
+        if (id == 'Modal_Location') {
+            searchLocation_Modal(dataSearch, id);
+        }
+        else {
+            searchPallet_Modal(dataSearch, id);
+        }
+
+    };
+
+    function searchPallet_Modal(dataSearch, id) {
+        try {
+
+            $ionicLoading.show();
+
+            AppService.blur();
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            var res_getPalletInBGPallet = getPalletInBGPallet(objsession, dataSearch);
+
+            res_getPalletInBGPallet.then(function (res) {
+
+                var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
+
+                if (Object.keys(resDataSet).length <= 0) {
+                    $scope['modal_data'][id] = null;
+                    AppService.err('แจ้งเตือน', 'ไม่พบ Pallet No ในระบบ', id);
+                    return;
+                }
+
+                if (resDataSet[0].PalletStatus_Index != '0010000000000') {
+                    $scope['modal_data'][id] = null;
+                    AppService.err('แจ้งเตือน', 'Pallet นี้ไม่อยู่ในสถานะ EM', id);
+                    return;
+                }
+
+                $scope.isDisable = true;
+                setFocus('Modal_Location');
+
+                $ionicLoading.hide();
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    function searchLocation_Modal(dataSearch, id) {
+        try {
+
+            $ionicLoading.show();
+
+            AppService.blur();
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            if (isSales) {
+                var datatables = {};
+                var i = 0;
+
+                for (var x in $scope.datatablesList) {
+
+                    if ($scope.datatablesList[x]['Location_Alias'] == dataSearch) {
+
+                        datatables[i] = $scope.datatablesList[x];
+
+                        i++;
+                    }
+                }
+
+                if (Object.keys(datatables).length <= 0) {
+                    $scope['modal_data'][id] = null;
+                    AppService.err('แจ้งเตือน', 'ไม่พบ Location นี้ในใบเบิก', id);
+                    return;
+                }
+
+                $scope.modal_data.SKU = datatables[0].SKU_x0020_ID;
+                $scope.modal_data.Lot = datatables[0].LOT_x002F_BATCH;
+                Tag_No = datatables[0].TAG_x0020_NO;
+
+                $ionicLoading.hide();
+
+            }
+            else {
+
+                var res_Find_GradeLot_IN_location = Find_GradeLot_IN_location(objsession, dataSearch);
+
+                res_Find_GradeLot_IN_location.then(function (res) {
+
+                    var resDataSet = (!res_Find_GradeLot_IN_location['diffgr:diffgram']) ? {} : res_Find_GradeLot_IN_location['diffgr:diffgram'].NewDataSet.Table1;
+
+                    if (Object.keys(resDataSet).length > 0) {
+                        $scope.modal_data.SKU = resDataSet[0].sku_id;
+                        $scope.modal_data.Lot = resDataSet[0].plot;
+                        Tag_No = resDataSet[0].tag_no;
+                    }
+
+                    $ionicLoading.hide();
+
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
+
+            }
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    var Find_GradeLot_IN_location = function (objsession, pstrLocationAlias) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('Find_GradeLot_IN_location', {
+                objsession: objsession,
+                pstrLocationAlias: pstrLocationAlias
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('Find_GradeLot_IN_location', res));
+            });
+
+        })
+    }
+
+    /*--------------------------------------
+    Event Function save_modal
+    ------------------------------------- */
+    $scope.save_modal = function () {
+
+        if (!$scope.modal_data.PalletNo) {
+            AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'Modal_PalletNo');
+            return;
+        }
+        else {
+            searchPallet_Modal($scope.modal_data.PalletNo, 'Modal_PalletNo');
+        }
+
+
+        if (!$scope.modal_data.Location) {
+            AppService.err('แจ้งเตื่อน', 'กรุณา Scan Location', 'Modal_Location');
+            return;
+        }
+        else {
+            searchLocation_Modal($scope.modal_data.Location, 'Modal_Location');
+        }
+
+        savePallet_Modal();
+
+    };
+
+    function savePallet_Modal() {
+        try {
+
+            $ionicLoading.show();
+
+            AppService.blur();
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            var Palletstatus = '0010000000004';
+
+            if (IsSales) {
+                Palletstatus = '0010000000005';
+            }
+
+            var res_updatePalletToTag = updatePalletToTag(objsession, Tag_No, $scope.modal_data.PalletNo, $scope.modal_data.Lot, Palletstatus);
+
+            res_updatePalletToTag.then(function (res) {
+
+                clearData_Modal();
+                booAssing = true;
+                $scope.isDisable = false;
+
+                if (IsSales) {
+
+                    $scope.modal.hide();
+
+                    //$ionicHistory.goBack();
+
+                    //AppService.succ('สแกน Pallet' + $scope.data.PalletNo + 'อีกครั้งเพื่อเบิกสินค้า!', '');
+
+                    if (booAssing) {
+
+                        loadDO(Withdraw_Index, Withdraw_No);
+
+                        searchPallet($scope.data.PalletNo);
+                    }
+
+                    $scope.data.PalletNo = null;
+                    setFocus('PalletNo');
+
+                }
+                else {
+                    setFocus('Modal_PalletNo');
+
+                }
+
+                $ionicLoading.hide();
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
+
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    var updatePalletToTag = function (objsession, pstrTag_No, pstrPallet_No, PLot, pstrPalletstatus_index) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('updatePalletToTag', {
+                objsession: objsession,
+                pstrTag_No: pstrTag_No,
+                pstrPallet_No: pstrPallet_No,
+                PLot: PLot,
+                pstrPalletstatus_index: pstrPalletstatus_index,
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('updatePalletToTag', res));
+            });
+
+        })
+    }
+
+})
+
+.controller('Main_ProductGeneralLotCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
+
+    /*--------------------------------------
+    Data Function
+    --------------------------------------*/
+    $scope.orderTopicList = {};
+    $scope.orderTopicListLength = 0;
+
+    $scope.selectedOrder_Index = null;
+    $scope.selectedOrder_No = null;
+
+    /*--------------------------------------
+    Event Function setSelected
+    ------------------------------------- */
+    $scope.setSelected = function (Order_Index, Order_No) {
+        $scope.selectedOrder_Index = Order_Index;
+        $scope.selectedOrder_No = Order_No;
+    };
+
+    /*--------------------------------------
+    Event Function selected
+    ------------------------------------- */
+    $scope.selected = function (selectedOrder_Index, selectedOrder_No) {
+        if (!selectedOrder_Index) {
+            AppService.err('แจ้งเตือน', 'ยังไม่ได้เลือกรายการ', '');
+        } else {
+            $state.go('Main_ProductGeneralLot_SelectedCtrl', { Order_Index: selectedOrder_Index, Order_No: selectedOrder_No });
+        }
+    };
+
+    /*--------------------------------------
+    Call API GetOrderTopic
+    ------------------------------------- */
+    var GetOrderTopic = function () {
+
+        $ionicLoading.show();
+
+        var strWhere = " And (ms_DocumentType.DocumentType_Index not IN ('0010000000002','0010000000044')) "
+        strWhere += " and tb_Order.Customer_Index in ( select  Customer_Index from x_Department_Customer ";
+        strWhere += " where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and IsUse = 1) ";
+
+        App.API('GetOrderTopic', {
+            objsession: angular.copy(LoginService.getLoginData()),
+            pstrWhere: strWhere
+        }).then(function (res) {
+
+            var resDataSet = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
+
+            if (Object.keys(resDataSet).length > 0) {
+                $scope.orderTopicList = resDataSet;
+                $scope.orderTopicListLength = Object.keys(resDataSet).length;
+            }
+            else {
+                AppService.err('แจ้งเตือน', 'ไม่มีรายการรับสินค้า', '');
+                return;
+            }
+
+        }).catch(function (res) {
+            AppService.err('GetOrderTopic', res);
+        }).finally(function (res) {
+            $ionicLoading.hide();
+        });
+    };
+
+    GetOrderTopic();
+
+})
+
+.controller('Main_ProductGeneralLot_SelectedCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $stateParams, $ionicHistory) {
+
+    /*--------------------------------------
+    Data Function
+    --------------------------------------*/
+    $scope.data = {};
+    $scope.datatablesList = {};
+    $scope.datatablesListLength = 0;
+    $scope.datatablesList2 = {};
+    $scope.datatablesListLength2 = 0;
+
+    var Order_Index = $stateParams.Order_Index;
+    var Order_No = $stateParams.Order_No;
+    var Sysloc = (Order_No) ? Order_No.substring(0, 2) : null;
+
+    var keyCnt = 0;
+
+    var clearData = function () {
+        $scope.data = {};
+        $scope.datatablesList = {};
+        $scope.datatablesListLength = 0;
+        $scope.datatablesList2 = {};
+        $scope.datatablesListLength2 = 0;
+    };
+
+    var setFocus = function (id) {
+        AppService.focus(id);
+    }
+
+    var findByValue = function (key, value, isOptions) {
+        return AppService.findObjValue($scope.dataTableItem, key, value, isOptions);
+    };
+
+    clearData();
+
+    $scope.$on('$ionicView.enter', function () {
+        setFocus('PalletNo');
+    });
+
+    $scope.DisplayFlag = 0
+
+    $scope.changeDisplay = function (value) {
+
+        $scope.DisplayFlag = value;
+
+    };
+
+    $scope.data.Order_No = $stateParams.Order_No;
+    $scope.data.PalletCount = '0/0';
+    $scope.data.SysLocation = (Sysloc == 'WH') ? 'WH14' : 'RM_FLOOR';
+
+    /*--------------------------------------
+    Function LoadDatatables
+    --------------------------------------*/
+
+    function LoadDatatables(){
+
+        try {
+
+            $ionicLoading.show();
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            var res_getTag_Receive = getTag_Receive(objsession,Order_Index);
+
+            var res_getTag_Receive_ShowStatus2 = getTag_Receive_ShowStatus2(objsession,Order_Index);
+
+            var res_getTag_Receive_ShowStatus1 = getTag_Receive_ShowStatus1(objsession,Order_Index);
+
+            Promise.all([res_getTag_Receive,res_getTag_Receive_ShowStatus2,res_getTag_Receive_ShowStatus1]).then(function(res){
+
+                var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
+                var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
+                var resDataSet3 = (!res[2]['diffgr:diffgram']) ? {} : res[2]['diffgr:diffgram'].NewDataSet.Table1;
+
+                if(Object.keys(resDataSet).length <= 0)
+                {
+                    AppService.err('แจ้งเตือน', 'กรุณาจัดการ TAG ก่อนรับเข้า', '');
+                    Tag_No = null;
+                    clearData();
+                    $ionicHistory.goBack();
+                }
+
+                if(Object.keys(resDataSet2).length > 0)
+                {
+                    $scope.datatablesList2 = resDataSet2;
+                    $scope.datatablesListLength2 = Object.keys(resDataSet2).length;
+                }
+
+                if(Object.keys(resDataSet3).length > 0)
+                {
+                    $scope.datatablesList = resDataSet3;
+                    $scope.datatablesListLength = Object.keys(resDataSet3).length;
+                }
+                else
+                {
+                    Tag_No = null;
+                    AppService.err('แจ้งเตือน', 'จัดเก็บรายการเรียบร้อยแล้ว', '');
+                    $ionicHistory.goBack();
+                }
+    
+                $scope.data.PalletCount = $scope.datatablesListLength2 + '/' + Object.keys(resDataSet).length;
+    
+                $scope.data.PalletNo = null;
+                setFocus('PalletNo');
+
+                $ionicLoading.hide();
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
+            
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+
+    }
+
+    var getTag_Receive = function (objsession, pstrorder_index) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTag_Receive', {
+                objsession: objsession,
+                pstrorder_index: pstrorder_index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_Receive', res));
+            });
+
+        })
+    }
+
+    var getTag_Receive_ShowStatus2 = function (objsession, pstrorder_index) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTag_Receive_ShowStatus2', {
+                objsession: objsession,
+                pstrorder_index: pstrorder_index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_Receive_ShowStatus2', res));
+            });
+
+        })
+    }
+
+    var getTag_Receive_ShowStatus1 = function (objsession, pstrorder_index) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTag_Receive_ShowStatus1', {
+                objsession: objsession,
+                pstrorder_index: pstrorder_index
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTag_Receive_ShowStatus1', res));
+            });
+
+        })
+    }
+
+    if (Order_Index && Order_No) {
+        LoadDatatables();
+    }
+
+    /*--------------------------------------
+    Scan Barcode Function
+    ------------------------------------- */
+    $scope.scanPalletNo = function () {
+        $cordovaBarcodeScanner.scan().then(function (imageData) {
+            if (!imageData.cancelled) {
+                $scope.data.PalletNo = imageData.text.toUpperCase();
+                $scope.search(angular.copy($scope.data.PalletNo), '');
+            }
+        }, function (error) {
+            AppService.err('scanPalletNo', error);
+        });
+    };
+
+    /*--------------------------------------
+    Event Function search
+    ------------------------------------- */
+    $scope.search = function (dataSearch, searchType) {
+
+        if (!dataSearch) {
+            AppService.err('แจ้งเตื่อน', 'กรุณา Scan Pallet No.', 'PalletNo');
+            return;
+        }
+
+        if (searchType == 'read pallet no') {
+            keyCnt += 1;
+            var curTextCount = dataSearch == null ? 0 : dataSearch.length;
+            //console.log('current inut text length: ' + curTextCount);
+            //console.log('current inut keyCnt: ' + keyCnt);
+            if (keyCnt == 1 && curTextCount > 1) {
+                //console.log('+++CONGRATULATION ++++++++ input value is a barcode.');
+                $scope.data.PalletSearchFlag = "yes";
+            } else {
+                $scope.data.PalletSearchFlag = "no"; // set flag to stop search
+            }
+            //console.log('flag is ' + $scope.data.PalletSearchFlag);
+            if ($scope.data.PalletSearchFlag == 'no') {
+                $scope.data.PalletSearchFlag = "yes"; // set search flag back to allow do searching
+                //console.log('exit seach');
+                return;
+            }
+        }
+
+        keyCnt = 0;
+
+        searchPallet(dataSearch);
+
+    };
+
+    function searchPallet(dataSearch) {
+        try {
+
+            $ionicLoading.show();
+
+            AppService.blur();
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            var res_getTagByPallet = getTagByPallet(objsession, dataSearch);
+
+            var res_getQtyPerPallet_TPIPL = getQtyPerPallet_TPIPL(objsession, dataSearch);
+
+            Promise.all([res_getTagByPallet, res_getQtyPerPallet_TPIPL]).then(function (res) {
+
+                var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
+
+                var resDataSet2 = (!res[1]['diffgr:diffgram']) ? {} : res[1]['diffgr:diffgram'].NewDataSet.Table1;
+
+                if (Object.keys(resDataSet).length > 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'Pallet นี้กำลังใช้งาน!', 'PalletNo');
+                    return;
+                }
+
+                if (Object.keys(resDataSet2).length <= 0) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'ไม่มี Pallet นี้ในระบบ!', 'PalletNo');
+                    return;
+                }
+
+                var _check  = false;
+                var _result = null;
+
+                for (var x in $scope.datatablesList) {
+                  
+                    if($scope.datatablesListLength > 0)
+                    {
+                        //if($scope.datatablesList[x].Str5 == dataSearch)
+                        //{
+
+                            var res_FindLocationAndInsert_Receive_V2 = FindLocationAndInsert_Receive_V2(objsession, dataSearch, $scope.datatablesList[x].Qty_per_TAG, '0010000000004', $scope.datatablesList[x].Tag_No, $scope.datatablesList[x].PLot, $scope.data.SysLocation);
+                            _result =  res_FindLocationAndInsert_Receive_V2.then(function (res) {
+
+                                _check = true;
+
+                                return res;
+            
+                            }).catch(function (error) {
+                                console.log("Error occurred");
+                                AppService.err('Error', 'Error occurred', '');
+                                return;
+                            });
+
+
+                        //}
+
+                    }
+
+                }
+
+                /*if(!_check)
+                {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'ไม่มี Pallet นี้ในรายการ!', 'PalletNo');
+                    return;
+                }*/
+
+                if (_result != 'True') {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', res, 'PalletNo');
+                    return;
+                }
+
+                LoadDatatables();
+
+                $scope.data.PalletNo = null;
+                AppService.succ('เก็บเรียบร้อย', 'PalletNo');
+
+                $ionicLoading.hide();
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    var getTagByPallet = function (objsession, pPallet_No) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getTagByPallet', {
+                objsession: objsession,
+                pPallet_No: pPallet_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getTagByPallet', res));
+            });
+
+        })
+    }
+
+    var getQtyPerPallet_TPIPL = function (objsession, pPallet_No) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('getQtyPerPallet_TPIPL', {
+                objsession: objsession,
+                pPallet_No: pPallet_No
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('getQtyPerPallet_TPIPL', res));
+            });
+
+        })
+    }
+
+    var FindLocationAndInsert_Receive_V2 = function (objsession, pPallet_No, pQtyPerPallet, pstrNewPalletStatus_Index, pstrTag_no, plot, plocation_Alias) {
+        return new Promise(function (resolve, reject) {
+
+            App.API('FindLocationAndInsert_Receive_V2', {
+                objsession: objsession,
+                pPallet_No: pPallet_No,
+                pQtyPerPallet: pQtyPerPallet,
+                pstrNewPalletStatus_Index: pstrNewPalletStatus_Index,
+                pstrTag_no: pstrTag_no,
+                plot: plot,
+                plocation_Alias: plocation_Alias
+            }).then(function (res) {
+                resolve(res);
+            }).catch(function (res) {
+                reject(AppService.err('FindLocationAndInsert_Receive_V2', res));
+            });
+
+        })
+    }
+
+
+});
