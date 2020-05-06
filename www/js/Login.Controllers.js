@@ -5,7 +5,7 @@
  */
 angular.module('Login.Controllers', ['ionic'])
 
-	.controller('LoginCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, App, AppService, LoginService, $filter, $ionicPlatform, $cordovaKeyboard, $ionicHistory, md5, ConnectivityMonitor) {
+	.controller('LoginCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, App, AppService, LoginService, $filter, $ionicPlatform, $cordovaKeyboard, $ionicHistory, md5) {
 
 		/*--------------------------------------
 		Data Function
@@ -26,12 +26,6 @@ angular.module('Login.Controllers', ['ionic'])
 		Call API LoadBranch
 		------------------------------------- */
 		var LoadBranch_API = function() {
-
-			if(ConnectivityMonitor.isOffline()) {
-				console.log('Network', 'Network Disconnect !!!');
-				AppService.err('Network', 'Network Disconnect !!!');
-				return; 
-			}
 
 			$ionicLoading.show();
 
