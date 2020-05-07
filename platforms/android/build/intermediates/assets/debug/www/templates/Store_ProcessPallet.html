@@ -1,0 +1,112 @@
+<ion-view view-title="Bulk Pallet Process">
+  <ion-content class="UpdatePallet input-custom padding-top"><!--container-->
+    <div class="padding-top">
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">ประเภท :</div>
+        <div class="col col-20 col-center">
+          <select id="Type" width="100%" style=" width: 100%; height: 35px;" ng-model="data.Type"  ng-change="select_type(data.Type)">
+            <option value="">เลือก</option>
+            <option value="1">รับเข้ารอล้าง (CR)</option> 
+            <option value="2">ล้างเสร็จรอตรวจ (CR=>CF)</option> 
+            <option value="3">เก็บถังพร้อมใช้ (CF=>EQ)</option> 
+            <option value="4">จ่าย IBC (EQ=>EM)</option>
+            <option value="5">แทงจำหน่าย</option> 
+            <option value="6">ซื้อเข้าใหม่ (CR)</option> 
+            <option value="7">คืนไม่ได้ใช้ (EM=>EQ)</option> 
+            <option value="8">Clear Pallet (EM)</option> 
+          </select>
+        </div>
+        <div class="col col-15 col-center">รายละเอียด :</div>
+        <div class="col col-center">
+          <select id="DetailType" width="100%" style=" width: 100%; height: 35px;" ng-model="data.DetailType" ng-options='option.DetailID as option.DetailType for option in DetailTypeList'>
+            <!--<option ng-if="DetailTypeList" ng-repeat="(key, value) in DetailTypeList" value="{{value.DetailID}}">{{value.DetailType}}</option>-->
+          </select>
+        </div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">
+          <label class="text-danger">Pallet No. :</label>
+        </div>
+        <div class="row">
+          <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'read pallet no') : return;" uppercased placeholder="Text">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo()"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin" ng-click="search(data.PalletNo,'click button')">ค้นหา</button>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">Pallet No. :</div>
+        <div class="col col-center"><input type="text" ng-model="data.Pallet_No" class="form-control" placeholder="Text" readonly></div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">สินค้า :</div>
+        <div class="col col-center"><input type="text" ng-model="data.Grade" class="form-control" placeholder="Text" readonly></div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">Lot :</div>
+        <div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control" placeholder="Text" readonly></div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">Location :</div>
+        <div class="col col-center"><input type="text" ng-model="data.Location" class="form-control" placeholder="Text" readonly></div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">เอกสาร :</div>
+        <div class="col col-center"><input type="text" ng-model="data.Document" class="form-control" placeholder="Text" readonly></div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">จำนวน :</div>
+        <div class="row">
+          <input type="text" ng-model="data.Qty" class="form-control" placeholder="Number" style="width:40%;" readonly>
+          <div class="col col-center">KG.</div>
+          <input type="text" ng-model="data.Bag" class="form-control" placeholder="Number" style="width:40%;" readonly>
+          <div class="col col-center">BAG</div>
+        </div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">สถานะ Pallet :</div>
+        <div class="col col-center"><input type="text" ng-model="data.Status" class="form-control" placeholder="Text" readonly></div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">ประเภท Pallet :</div>
+        <div class="col col-center"><input type="text" ng-model="data.PalletType" class="form-control" placeholder="Text" readonly></div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">หน่วยงาน :</div>
+        <div class="col col-center"><input type="text" ng-model="data.Customer" class="form-control" placeholder="Text" readonly></div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">ลูกค้า :</div>
+        <div class="col col-center"><input type="text" ng-model="data.CustomerShip" class="form-control" placeholder="Text" readonly></div>
+      </div>
+
+      <div class="row responsive-sm">
+        <div class="col col-20 col-center">หมายเหตุ :</div>
+        <div class="col col-center"><textarea type="text" ng-model="data.Remark" class="form-control" placeholder="Text" value=""></textarea></div>
+      </div>
+
+      <br>
+      <div class="text-center"><button class="button button-dark button-select" ng-click="save()">ยืนยัน</button></div>
+    </div>
+
+  </ion-content>
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+      <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

@@ -1,0 +1,96 @@
+
+<ion-view view-title="Packing Core" >
+  <ion-content class="PackingCore input-custom containner padding-left padding-right padding-top">
+    <form role="form" name="myForm" novalidate>
+
+        <div class="row padding-top">
+          <label class="col col-center col-20 text-right text-danger">PD No. :</label>
+          <div class="col ">
+              <select id="orderItem" width="100%" style="width: 100%; height: 32px; " required ng-change="changeOrder(data.Order)" ng-model="data.Order">
+              <option value="">เลือก</option>
+              <option ng-if="getBaggingOrderHeaderList" ng-repeat="(key, value) in getBaggingOrderHeaderList | orderObjectBy:'BaggingOrder_No':false " value="{{value.BaggingOrder_No+','+value.BaggingOrder_Index}}">{{value.BaggingOrder_No}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <label class="col col-center col-20 text-right text-danger">Shift :</label>
+          <div class="col">
+             <select id="shiftItem" width="100%" style="width: 100%; height: 32px; " required ng-change="changeShift(data.Shift)"  ng-model="data.Shift">
+              <option value="">เลือก</option>
+              <option ng-if="getShiftHeaderList" ng-repeat="(key, value) in getShiftHeaderList | orderObjectBy:'Seq':false " value="{{value.WorkShifts_Index+','+value.WorkShiftsTime}}">{{value.Seq}}</option>
+            </select>
+          </div>
+          <div class="col-5"></div>
+          <div class="col"><input type="text"  ng-model="data.shiftTime" value="{{data.shiftTime}}" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row text-right">
+          <label class="col col-center col-20 text-danger">Serial Core :</label>
+         <div class="col col-40"><input type="text" id="barcode" ng-model="data.SerialBarcode" ng-keyup="changeBarcode(data.SerialBarcode,'read barcode')" required  value="{{data.SerialBarcode}}" class="form-control" placeholder="Enter Text"></div>
+          <div class="col text-center"><a class="button-icon icon ion-ios-camera-outline" ng-disabled="isDisable" ng-click="scanBarcode()"></a></div>
+          <div class="col col-20">
+            <button class="button button-dark button-block button-save no-margin" ng-click="changeBarcode(data.SerialBarcode,'')">เพิ่ม</button>
+          <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+            </div>
+        </div>
+
+        <div class="item-input"><span>รายการแกน</span></div>
+        <div class="item">
+		    <ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (data.odtTable && data.odtTable.length > 10)? '500px':'auto'}">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Seq</th>
+                <th>Serial No.</th>
+              </tr>
+            </thead>
+            <tbody>
+             <tr ng-if="data.odtTable.length == 0">
+              <td colspan="9">ไม่มี serial no สำหรับรายการนี้</td>
+            </tr>
+             <tr ng-if="data.odtTable.length > 0" ng-repeat="(n, v) in data.odtTable track by $index" ng-click="setSelected($index)" ng-class="{selected: $index === serialNoSelectedIndex}">
+              <td>{{$index+1}}</td>
+              <td>{{v.Serial_No}}</td>
+            </tr>
+            </tbody>
+          </table>         
+          <div class="text-left"><button class="button button-assertive button-delete pull-left" ng-click="removeSelected()">ลบ</button></div>
+          <div class="text-right"><input type="text" value="{{data.odtTable.length}}"  class="form-control col-15 pull-right text-right input-skyblue" placeholder="0" readonly></div>
+        </div>
+        
+        <br>
+
+        <div class="item-input"><label>ประวัติแกนที่รับแล้ว</label></div>
+        <div class="item">
+          <ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (recievedCoreItems && recievedCoreItems.length > 10)? '500px':'auto'}">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Seq</th>
+                <th>Serial No.</th>
+              </tr>
+            </thead>
+            <tbody>
+
+             <tr ng-if="recievedCoreItems" ng-repeat="(n, v) in recievedCoreItems track by $index" >
+              <td>{{$index+1}}</td>
+              <td>{{v.Serial_No}}</td>
+            </tr>
+            </tbody>
+          </table>         
+          <div class="text-right"><input type="text" value="{{recievedCoreItems.length}}" class="form-control col-15 pull-right text-right input-skyblue" placeholder="0" readonly></div>
+        </div>
+
+        <br>
+        <div class="text-center"><button ng-click="save()" class="button button-dark button-select">บันทึก</button></div> 
+
+        
+
+    </form>
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+      <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

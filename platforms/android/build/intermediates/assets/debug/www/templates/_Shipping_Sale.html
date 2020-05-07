@@ -1,0 +1,128 @@
+
+<ion-view view-title="ตักสินค้าตามใบเบิก" >
+  <ion-content class="PayProductGenaral containner input-custom padding-left padding-right padding-top">
+    <form role="form" name="myForm" novalidate>
+
+        <div class="row">
+          <label class="col col-25 col-center text-right text-danger">เลขที่ใบเบิก : </label>
+          <div class="col ">
+            <select width="100%" id="input-selectOrderNumber" style="width: 100%; height: 32px;" ng-model="data.OrderNumber" ng-change="changeOrderNumber(data.OrderNumber)">
+              <option value="">เลือก</option>
+              <option ng-if="getWithdrawRequestList" ng-repeat="(key, value) in getWithdrawRequestList | orderObjectBy:'Order_No':false " value="{{value.Withdraw_Index}}">{{value.Withdraw_No}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25">ประเภท : </div>
+          <div class="col"><input type="text" ng-model="data.DocumentType_Id" class="form-control" placeholder="" readonly></div>
+          <div class="col"><input type="text" ng-model="data.DocumentType" class="form-control"  readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25">แผนก : </div>
+          <div class="col"><input type="text" ng-model="data.Department_Id" class="form-control col-100" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25">วันที่ : </div>
+          <div class="col"><input type="text" ng-model="data.Withdraw_Date" class="form-control col-100" placeholder="" readonly></div>
+        </div>
+        <div class="row text-right">
+          <label class="col col-center col-25 text-danger">Pallet No. : </label>
+          <div class="col col-45"><input type="text" ng-model="data.PalletBarcode" ng-keyup="search('read barcode')" id="input-PalletNoBar" class="form-control" placeholder="Enter Text" uppercased></div>
+          <div class="col text-center">
+            <a class="button-icon icon ion-ios-camera-outline"></a>
+          </div>
+          <div class=" col col-20">
+            <button class="button button-block button-dark button-save no-margin" ng-click="search('')">ค้นหา</button>
+            <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+        </div>
+        </div>
+        
+        <br>
+
+        <div class="list padding">
+        <ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (getWithdrawItemList.length > 10)? '500px':'auto'}">
+        <table class="table table-bordered table-responsive" >
+          <thead>
+            <tr style="background-color: #eeeeee">
+              <th>STATE</th>
+              <th>PALLET_NO</th>
+              <th>TAG_NO</th>
+              <th>QTY</th>
+              <th>PICKINGQTY</th>
+              <th>PCK</th>
+              <th>Weight</th>
+              <th>Volume</th>
+              <th>CUSTOMER_NAME</th>
+              <th>LOCATION</th>
+              <th>SKU_ID</th>
+              <th>SKU_NAME</th>
+              <th>LOT_BATCH</th>
+              <th>STATUS</th>
+              <th>WITHDRAWITEM-STATUS</th>
+              <th>WITHDRAW-STATUS</th>
+              <th>WithdrawItem_Index</th>
+              <th>Qty_Bal</th>
+              <th>Location_Alias</th>
+              <th>Withdraw_No</th>
+              <th>PalletStatus_Id</th>
+              <th>PalletStatus_Index</th>
+              <th>Withdraw_Index</th>
+              <th>DocumentType_Index</th>
+              <th>Pallet_seq</th>
+              <th>UnitWeight</th>
+              <th>Customer_Index</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-if="getWithdrawItemList.length==0">
+              <td colspan="27">ไม่มีรายการ</td>
+            </tr>
+            <tr ng-if="getWithdrawItemList.length > 0" ng-repeat="(n, v) in getWithdrawItemList | orderObjectBy:'WITHDRAWITEM-STATUS':true ">
+              <td>{{v.STATE}}</td>
+              <td>{{v.PALLET_x0020_NO}}</td>
+              <td>{{v.TAG_x0020_NO}}</td>
+              <td>{{v.QTY}}</td>
+              <td>{{v.PICKINGQTY}}</td>
+              <td>{{v.PCK}}</td>
+              <td>{{v.Weight}}</td>
+              <td>{{v.Volume}}</td>
+              <td>{{v.CUSTOMER_x0020_NAME}}</td>
+              <td>{{v.LOCATION}}</td>
+              <td>{{v.SKU_x0020_ID}}</td>
+              <td>{{v.SKU_x0020_NAME}}</td>
+              <td>{{v.LOT_x002F_BATCH}}</td>
+              <td>{{v.STATUS}}</td>
+              <td>{{v.WITHDRAWITEM-STATUS}}</td>
+              <td>{{v.WITHDRAW-STATUS}}</td>
+              <td>{{v.WithdrawItem_Index}}</td>
+              <td>{{v.Qty_Bal}}</td>
+              <td>{{v.Location_Alias}}</td>
+              <td>{{v.Withdraw_No}}</td>
+              <td>{{v.PalletStatus_Id}}</td>
+              <td>{{v.PalletStatus_Index}}</td>
+              <td>{{v.Withdraw_Index}}</td>
+              <td>{{v.DocumentType_Index}}</td>
+              <td>{{v.Pallet_seq}}</td>
+              <td>{{v.UnitWeight}}</td>
+              <td>{{v.Customer_Index}}</td>
+            </tr>
+          </tbody>
+        </table>        
+        </ion-scroll>
+        <br>
+          <span class="pull-right">รวม : {{countSTATE}}/{{getWithdrawItemList.length}}</span>
+        </div>
+
+        <br>
+        <div class="text-center"><button class="button button-dark button-select" ng-click="save()">ยืนยัน</button></div>
+          <!-- <div class="col-50 text-center"><button class="button button-stable">Split/Swap</button></div> -->
+
+    </form>
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+      <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

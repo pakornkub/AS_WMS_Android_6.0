@@ -1,0 +1,86 @@
+<ion-view view-title="รับ Pallet จากลูกค้า">
+  <ion-content class="SHReceive input-custom">
+    <!--container-->
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center">
+          <label class="text-danger">Location :</label>
+        </div>
+        <div class="col col-60 col-center">
+          <input type="text" ng-model="data.Location" id="Location" class="form-control" ng-keyup="($event.which === 13) ? search(data.Location,'Location','read location no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scan('Location')"></a>
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center">
+          <label class="text-danger">Pallet No :</label>
+        </div>
+        <div class="col col-60 col-center">
+          <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'PalletNo','read pallet no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scan('PalletNo')"></a>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+
+      <div class="col col-center">
+        <div style="margin-bottom: 10px;"><span class="header-table-title">รายการ</span></div>
+        <ion-scroll zooming="false" has-bouncing="false" direction="xy" style="max-height:70vh; border: 1px solid #ddd; margin-bottom: 10px;">
+          <table class="table table-bordered no-margin">
+            <thead>
+              <tr style="background-color: #eeeeee">
+                <th>No</th>
+                <th>Pallet</th>
+                <th>Status</th>
+                <th>DO</th>
+                <th>Customer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-if="datatablesListLength <= 0">
+                <td colspan="5" class="text-center text-danger">ไม่มีรายการ</td>
+              </tr>
+              <tr ng-if="datatablesListLength > 0" ng-repeat="(n, v) in datatablesList | orderObjectBy:'Seq':false" ng-click="setSelected(v.Pallet_No.toUpperCase(),v.Withdraw_Index)" ng-class="{selected: v.Pallet_No.toUpperCase() === selectedPallet_No}">
+                <td>{{v.Seq}}</td>
+                <td>{{v.Pallet_No.toUpperCase()}}</td>
+                <td>{{v.PalletStatus_Id}}</td>
+                <td>{{v.DO}}</td>
+                <td>{{v.Godown}}</td>
+                <!--<td>{{v.Withdraw_Index}}</td>
+                <td>{{v.CS_Index}}</td>
+                <td>{{v.CSL_Index}}</td>
+                <td>{{v.PalletStatus_Index}}</td>-->
+              </tr>
+            </tbody>
+          </table>
+        </ion-scroll>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center"><button class="button button-block button-assertive button-delete no-margin" ng-click="deleted()">ลบ</button></div>
+        <div class="col col-50 col-offset-25 col-center"><span class="right">{{lbQty}}</span></div>
+      </div>
+
+      <br>
+      
+      <div class="text-center"><button class="button button-dark button-select icon-left ion-checkmark" ng-click="save()">ยืนยัน</button></div>
+
+    </div>
+
+  </ion-content>
+
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+      <div class="keep col col-center">
+        <!--<span class="right">พาเลทที่ : {{lbPallet}}</span>-->
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

@@ -1,0 +1,86 @@
+
+<ion-view view-title="ตรวจสอบ Pallet" >
+  <ion-content class="CheckPallet input-custom"><!--container-->
+
+    <div class="padding-top">
+      
+      <div class="row responsive-xs">
+				<div class="col col-20 col-center">
+					<label class="text-danger">Pallet :</label>
+				</div>
+				<div class="col col-45 col-center">
+					<input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'read pallet no') : return;" placeholder="" uppercased>
+				</div>
+				<div class="col col-center">
+					<a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo()"></a>
+				</div>
+				<div class="col col-20 col-center">
+					<button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo,'click button')"></button>
+					<input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+				</div>
+      </div>
+
+      <div class="item">
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Pallet :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Pallet_No" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">สินค้า :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Grade" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Lot No :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">สถานะ : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Status" class="form-control" placeholder="" readonly></div>
+          <div class="col col-20 col-center">FT/LT : </div>
+          <div class="col col-center"><input type="text" ng-model="data.FTLT" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">จำนวน : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Qty" class="form-control" placeholder="" readonly></div>
+          <div class="col col-10 col-center">KG.</div>
+          <div class="col col-center"><input type="text" ng-model="data.Bag" class="form-control" placeholder="" readonly></div>
+          <div class="col col-10 col-center">BAG.</div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Location :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Location" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">เอกสาร :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Document" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">หน่วยงาน :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Customer" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">ลูกค้า :</div>
+          <div class="col col-center"><input type="text" ng-model="data.CustomerShip" class="form-control" placeholder="" readonly></div>
+        </div>
+      </div>
+      
+    </div>
+      
+  </ion-content>
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+      <div class="keep col col-center">
+        <!--<span class="right">พาเลทที่ : {{lbPallet}}</span>-->
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

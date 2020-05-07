@@ -1,0 +1,112 @@
+
+<ion-view view-title="รับสินค้า Raw mat" >
+  <ion-content class="RawMat input-custom containner">
+
+    <div class="item-input item-icon-right">
+        <span class="text-right">รายละเอียดสินค้า</span>
+    </div>
+    <div class="item">
+      
+      <div class="row">
+        <div class="margin-right-5">เลขที่ใบรับ :</div>
+        <input type="text" ng-model="data.OrderNo" class="form-control col-50" placeholder="Enter Text" readonly>
+      </div>
+      <ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (dataGridView1.length > 10) ? '500px':'auto'}">
+        <table class="table table-bordered table-responsive" >
+          <thead>
+            <tr style="background-color: #eeeeee">
+              <th>Sku_Id</th>
+              <th>PLot</th>
+              <th>Str5</th>
+              <th>Pallet_No</th>
+              <th>Qty_per_TAG</th>
+              <th>Weight</th>
+              <th>Tag_No</th>
+              <th>itemstatus</th>
+            </tr>
+          </thead>
+          <tbody >
+            <tr ng-if="dataGridView1.length==0">
+              <td colspan="8">ไม่มีรายการ</td>
+            </tr>
+            <tr ng-if="dataGridView1.length > 0" ng-repeat="(n, v) in dataGridView1 track by $index">
+              <td>{{v.Sku_Id}}</td>
+              <td>{{v.PLot}}</td>
+              <td>{{v.Str5}}</td>
+              <td>{{v.Pallet_No}}</td>
+              <td>{{v.Qty_per_TAG}}</td>
+              <td>{{v.Weight}}</td>
+              <td>{{v.Tag_No}}</td>
+              <td>{{v.itemstatus}}</td>
+            </tr>
+          </tbody>
+        </table>        
+      </ion-scroll>
+      <div class="row">
+          <label class="col col-20 col-center text-danger text-right">Pallet No. :</label>
+          <div class="col col-40"><input type="text" ng-model="data.Pallet" ng-keyup="save('read barcode')" id="Pallet" class="form-control col" placeholder="Enter Text" uppercased></div>
+          <div class="col text-center"><a class="button-icon icon ion-ios-camera-outline" ng-click="scanBarcode()"></a></div>
+          <div class="col col-20">
+            <button class="button button-dark button-save" ng-click="save('')">จัดเก็บ</button>
+            <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+            </div>
+      </div>
+      <div class="row">
+          <label class="ol col-20 col-center text-danger text-right">ตำแหน่งจัดเก็บ :</label>
+          <div class="col col-40"><input type="text" ng-model="data.Location" class="form-control input-skyblue" placeholder="Enter Text" readonly></div>
+      </div>
+      
+    </div>
+
+    <br>
+
+
+    <div class="item-input item-icon-right">
+      <span class="text-right">รายการที่รับแล้ว</span>
+    </div>
+    <div class="item">
+    <ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (dataGridView2.length > 10) ? '500px':'auto'}">
+        <table class="table table-bordered table-responsive" >
+          <thead>
+            <tr style="background-color: #eeeeee">
+              <th>Sku_Id</th>
+              <th>PLot</th>
+              <th>Str5</th>
+              <th>Pallet_No</th>
+              <th>Qty_per_TAG</th>
+              <th>Weight</th>
+              <th>Tag_No</th>
+              <th>itemstatus</th>
+            </tr>
+          </thead>
+          <tbody >
+            <tr ng-if="dataGridView2.length==0">
+              <td colspan="8">ไม่มีรายการ</td>
+            </tr>
+            <tr ng-if="dataGridView2.length > 0" ng-repeat="(n, v) in dataGridView2 track by $index">
+              <td>{{v.Sku_Id}}</td>
+              <td>{{v.PLot}}</td>
+              <td>{{v.Str5}}</td>
+              <td>{{v.Pallet_No}}</td>
+              <td>{{v.Qty_per_TAG}}</td>
+              <td>{{v.Weight}}</td>
+              <td>{{v.Tag_No}}</td>
+              <td>{{v.itemstatus}}</td>
+            </tr>
+          </tbody>
+        </table>        
+      </ion-scroll>
+    
+    </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+        <div class="col"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+        <div class="col keep">
+          <span class="right">เก็บ : {{dataGridView2.length}}/{{getTag}}</span>
+        </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

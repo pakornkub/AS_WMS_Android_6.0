@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "C:\\Users\\AuthorWise\\tpipl\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\layout-ldpi-v4\\capture.xml",
+        "source": "C:\\Users\\AuthorWise\\tpipl\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\layout-ldpi\\capture.xml"
+    },
+    {
+        "merged": "E:\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\layout-ldpi-v4\\capture.xml",
+        "source": "E:\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\layout-ldpi\\capture.xml"
+    },
+    {
+        "merged": "C:\\Users\\IT-Sutthiphong\\Desktop\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\layout-ldpi-v4\\capture.xml",
+        "source": "C:\\Users\\IT-Sutthiphong\\Desktop\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\layout-ldpi\\capture.xml"
+    },
+    {
+        "merged": "E:\\Android\\App_LDPE_WMS_Android\\code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\layout-ldpi-v4\\capture.xml",
+        "source": "E:\\Android\\App_LDPE_WMS_Android\\code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\layout-ldpi\\capture.xml"
+    },
+    {
+        "merged": "D:\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\layout-ldpi-v4\\capture.xml",
+        "source": "D:\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\layout-ldpi\\capture.xml"
+    },
+    {
+        "merged": "E:\\Android\\App_WMS_Mobile_LDPE\\code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\layout-ldpi-v4\\capture.xml",
+        "source": "E:\\Android\\App_WMS_Mobile_LDPE\\code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\layout-ldpi\\capture.xml"
+    },
+    {
+        "merged": "E:\\Work_Android\\WMS_Mobile_RY\\Code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\layout-ldpi-v4\\capture.xml",
+        "source": "E:\\Work_Android\\WMS_Mobile_RY\\Code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\layout-ldpi\\capture.xml"
+    },
+    {
+        "merged": "C:\\Users\\AuthorWise\\tpipl_addpage\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\layout-ldpi-v4\\capture.xml",
+        "source": "C:\\Users\\AuthorWise\\tpipl_addpage\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\layout-ldpi\\capture.xml"
+    },
+    {
+        "merged": "E:\\Work_Android\\WMS_Mobile_AS\\Code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\layout-ldpi-v4\\capture.xml",
+        "source": "E:\\Work_Android\\WMS_Mobile_AS\\Code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\layout-ldpi\\capture.xml"
+    }
+]

@@ -1,0 +1,131 @@
+<ion-view view-title="Check Roll, Pallet" >
+  <ion-content class="CheckRollPallet input-custom"><!--container-->
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">
+          <label class="text-danger">Pallet :</label>
+        </div>
+        <div class="col col-45 col-center">
+          <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo, 'PalletNo','read pallet no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('PalletNo')"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo, 'PalletNo','click button')"></button>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="row responsive-xs">
+      <div class="co col-50 col-center">
+        <button class="button button-block button-calm pull-right no-margin icon-left ion-home"
+          ng-click="changeDisplay(0)">รายละเอียด</button>
+      </div>
+      <div class="col col-50 col-center">
+        <button class="button button-block button-balanced pull-right no-margin icon-left ion-clipboard"
+          ng-click="changeDisplay(1)">Item/Pallet</button>
+      </div>
+    </div>
+
+    <div ng-class="{displayblock: DisplayFlag === 0,displaynone: DisplayFlag === 1}">
+      <div class="item">
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Des :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Grade" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">PD No :</div>
+          <div class="col col-center"><input type="text" ng-model="data.PD_No" class="form-control" placeholder="" readonly></div>
+          <div class="col col-20 col-center">Lot No :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Order No :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Order_No" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Length : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Qty" class="form-control" placeholder="M." readonly></div>
+          <div class="col col-20 col-center">Weight : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Weight" class="form-control" placeholder="KG." readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Pallet : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Pallet_No" class="form-control" placeholder="" readonly></div>
+          <div class="col col-20 col-center">Status : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Status" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Roll : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Roll_No" class="form-control" placeholder="" readonly></div>
+          <div class="col col-20 col-center">Location : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Location" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Owner :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Owner" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">WD No :</div>
+          <div class="col col-center"><input type="text" ng-model="data.WD_No" class="form-control" placeholder="" readonly></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div ng-class="{displayblock: DisplayFlag === 1,displaynone: DisplayFlag === 0}">   
+      <div class="item">
+        <ion-scroll zooming="false" has-bouncing="false" direction="x" style="border: 1px solid #ddd;">
+          <table class="table table-bordered no-margin" >
+            <thead>
+              <tr style="background-color: #eeeeee">
+                <th>Roll No.</th>
+                <th>Qty</th>
+                <th>Weight</th>
+                <th>Lot</th>
+                <th>Grade</th>
+                <th>PD No.</th>
+              </tr>
+            </thead>
+            <tbody >
+              <tr ng-if="getPalletRollListLength <= 0">
+                <td colspan="6" class="text-center text-danger">ไม่มีรายการ</td>
+              </tr>
+              <tr ng-if="getPalletRollListLength > 0" ng-repeat="(n, v) in getPalletRollList track by $index">
+                <td>{{v.Roll_No}}</td>
+                <td>{{v.Qty}}</td>
+                <td>{{v.Weight}}</td>
+                <td>{{v.Lot}}</td>
+                <td>{{v.Grade}}</td>
+                <td>{{v.PD_No}}</td>
+              </tr>
+            </tbody>
+          </table>  
+        </ion-scroll>
+        <span class="right" >จำนวน : {{data.Count}}</span>
+      </div>
+    </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer ">
+        <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+        <div class="keep col col-center" >
+          <!--<span class="right" >เก็บ : {{data.PalletCount_itemPutAway}}/{{data.PalletCount_itemALL}}</span>-->
+        </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

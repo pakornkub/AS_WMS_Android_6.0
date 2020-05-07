@@ -1,0 +1,65 @@
+
+<ion-view view-title="Delete Item" >
+  <ion-content class="DeleteRoll input-custom containner padding-left padding-right padding-top">
+
+        <div class="row padding-top">
+          <label class="col col-center col-25 text-right text-danger">Bag Out :</label>
+          <div class="col col-50">
+            <select width="100%" style="width: 100%; height: 32px;" ng-model="data.BagOut" ng-change="changeBagOut(data.BagOut)">
+              <option value="">เลือก</option>
+              <option ng-if="getBagging.length > 0" ng-repeat="(key, value) in getBagging | orderObjectBy:'BaggingOrder_Index':false " value="{{value.BaggingOrder_No}}">{{value.BaggingOrder_No}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row text-right">
+          <label class="col col-center col-25 text-danger">Roll :</label>
+          <div class="col col-50"><input type="text" ng-model="data.Roll" id="Roll" class="form-control"  ng-keyup="search(data.Roll,'read barcode')"  placeholder="Enter Text" uppercased></div>
+          <div class="col text-center"><a class="button-icon icon ion-ios-camera-outline btn-custom" ng-click="scanBarcode()" style="cursor: pointer ;line-height: 30px; max-height: 35px !important;"></a></div>
+          <div class="col col-20">
+            <button class="button button-dark button-block button-save no-margin" ng-click="search(data.Roll,'')">ค้นหา</button>
+            <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+            
+            </div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25"><label> Grade : </label></div>
+          <div class="col col-50"><input type="text" ng-model="data.Grade" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25"><label> Lot : </label></div>
+          <div class="col col-50"><input type="text" ng-model="data.Lot" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25"><label> Pallet : </label></div>
+          <div class="col col-50"><input type="text" ng-model="data.Pallet" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25"><label> Status : </label></div>
+          <div class="col col-50"><input type="text" ng-model="data.Status" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25"><label> Weight : </label></div>
+          <div class="col col-50"><input type="text" ng-model="data.Weight" class="form-control" placeholder="Enter Text" readonly></div>
+          <label class="col text-left"> KG. </label>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25">Length :</div>
+          <div class="col col-50"><input type="text" ng-model="data.Length" class="form-control" placeholder="Enter Text" readonly></div>
+          <label class="col text-left"> M.</label>
+        </div>
+        <div class="row text-right">
+          <div class="col col-center col-25"><label> Transfer Status : </label> </div>
+          <div class="col col-50"><input type="text" ng-model="data.Transfer" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+
+        <br>        
+        <div class="list text-center"><button class="button button-assertive button-select" ng-click="delete(data)">Delete</button></div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+      <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

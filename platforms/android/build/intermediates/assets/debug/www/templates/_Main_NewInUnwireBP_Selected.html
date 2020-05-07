@@ -1,0 +1,109 @@
+<ion-view view-title="NewIn, Unwire BP" >
+    <ion-content class="NewInUnwireBP input-custom containner">
+    
+      <div class="padding">
+        <div class="row item-input">
+          <div class="col col-25 col-center text-right"><label>เลขที่ใบรับ : </label></div>
+          <div class="col"><input type="text" ng-model="data.OrderNo" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row item-input">
+          <label class="col col-25 col-center text-right"><label class="text-danger">ตำแหน่งจัดเก็บ : </label></label>
+          <div class="col"><input type="text" ng-model="data.LocationStorage"  class="form-control input-skyblue" placeholder="Enter Text" ></div>
+        </div>
+        <div class="row item-input">
+          <label class="col col-25 col-center text-right"><label class="text-danger"> Pallet No. : </label></label>
+          <div class="col col-40"><input type="text" ng-model="data.PalletBarcode" class="form-control" ng-keyup="save('read barcode')" placeholder="Enter Text" id="input-PalletNoBar" uppercased></div>
+          <div class="col">
+              <a class="button-icon icon ion-ios-camera-outline button-scanbarcode" ng-click="scanBarcode()"></a>
+          </div>
+           <div class="col col-20">
+            <button class="button button-block button-dark button-save pull-right no-margin" ng-click="save('')">จัดเก็บ</button>
+          <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+            </div>
+        </div>
+      </div>
+
+        <div class="item">
+        <div class=""><span class="header-table-title">รายละเอียดสินค้า</span></div>
+        <ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (dsTAG2List && dsTAG2List.length > 10) ? '500px':'auto'}">
+        <table class="table table-bordered" >
+          <thead>
+            <tr style="background-color: #eeeeee">
+              <th>Sku_Id</th>
+              <th>PLot</th>
+              <th>Str5</th>
+              <th>Pallet_No</th>
+              <th>Qty_per_TAG</th>
+              <th>Weight</th>
+              <th>Tag_No</th>
+              <th>itemstatus</th>
+            </tr>
+          </thead>
+          <tbody >
+            <tr ng-if="!dsTAG2List">
+              <td colspan="8">ไม่มีรายการ</td>
+            </tr>
+            <tr ng-if="dsTAG2List" ng-repeat="(n, v) in dsTAG2List track by $index">
+              <td>{{v.Sku_Id}}</td>
+              <td>{{v.PLot}}</td>
+              <td>{{v.Str5}}</td>
+              <td>{{v.Pallet_No}}</td>
+              <td>{{v.Qty_per_TAG}}</td>
+              <td>{{v.Weight}}</td>
+              <td>{{v.Tag_No}}</td>
+              <td>{{v.itemstatus}}</td>
+            </tr>
+          </tbody>
+        </table>        
+        </ion-scroll>
+        </div>
+
+      <br>
+
+      <div class="item">
+        <div class=""><span class="header-table-title">รายการที่รับแล้ว</span></div>
+        <ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (dsTAG3List && dsTAG3List.length > 10) ? '500px':'auto'}">
+        <table class="table table-bordered table-responsive" >
+          <thead>
+            <tr style="background-color: #eeeeee">
+              <th>Sku_Id</th>
+              <th>PLot</th>
+              <th>Str5</th>
+              <th>Pallet_No</th>
+              <th>Qty_per_TAG</th>
+              <th>Weight</th>
+              <th>Tag_No</th>
+              <th>itemstatus</th>
+            </tr>
+          </thead>
+          <tbody >
+            <tr ng-if="!dsTAG3List">
+              <td colspan="8">ไม่มีรายการ</td>
+            </tr>
+            <tr ng-if="dsTAG3List" ng-repeat="(n, v) in dsTAG3List track by $index">
+              <td>{{v.Sku_Id}}</td>
+              <td>{{v.PLot}}</td>
+              <td>{{v.Str5}}</td>
+              <td>{{v.Pallet_No}}</td>
+              <td>{{v.Qty_per_TAG}}</td>
+              <td>{{v.Weight}}</td>
+              <td>{{v.Tag_No}}</td>
+              <td>{{v.itemstatus}}</td>
+            </tr>
+          </tbody>
+        </table>        
+        </ion-scroll>
+      </div>
+
+    </ion-content>
+    
+    <ion-footer-bar>
+      <div class="bar bar-footer">
+        <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+        <div class="keep col col-center" >
+          <span class="right" ng-if="data.count">เก็บ : {{data.count}}</span>
+          <span class="right" ng-if="!data.count">เก็บ : 0</span>
+        </div>
+      </div>
+    </ion-footer-bar>
+</ion-view>

@@ -1,0 +1,152 @@
+<ion-view view-title="จ่ายสินค้าเสียหาย" >
+  <ion-content class="WHIssueDamage input-custom"><!--container-->
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">ใบเบิก :</div>
+        <div class="col col-center">
+          <select id="DO" ng-model="data.DO" ng-change="changeDO(data.DO)">
+            <option value="">เลือก</option>
+            <option ng-if="getDOList" ng-repeat="(key, value) in getDOList | orderObjectBy:'Withdraw_No':false " value="{{value.Withdraw_Index+','+value.Withdraw_No}}">{{value.Withdraw_No}}</option><!--data-no="{{value.Withdraw_No}}"-->
+          </select>
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">
+          <label class="text-danger">Pallet :</label>
+        </div>
+        <div class="col col-45 col-center">
+          <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'PalletNo','read pallet no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('PalletNo')"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo,'PalletNo','click button')"></button>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+
+      <div class="col col-center">
+        <div style="margin-bottom: 10px;"><span class="header-table-title">รายการ</span></div>
+        <ion-scroll zooming="false" has-bouncing="false" direction="xy" style="max-height:40vh; border: 1px solid #ddd; margin-bottom: 10px;">
+          <table class="table table-bordered no-margin">
+            <thead>
+              <tr style="background-color: #eeeeee">
+                <th>สถานะ&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>Pallet</th>
+                <th>ตำแหน่ง&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>จน.&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>Grade</th>
+                <th>Lot</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-if="datatablesListLength <= 0">
+                <td colspan="6" class="text-center text-danger">ไม่มีรายการ</td>
+              </tr>
+              <tr ng-if="datatablesListLength > 0" ng-repeat="(n, v) in datatablesList | orderObjectBy:'STATE':false">
+                <td>{{v.STATE}}</td>
+                <td>{{v.PALLET_x0020_NO.toUpperCase()}}</td>
+                <td>{{v.LOCATION}}</td>
+                <td>{{v.QTY}}</td>
+                <td>{{v.SKU_x0020_ID}}</td>
+                <td>{{v.LOT_x002F_BATCH}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </ion-scroll>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-50 col-center"><label class="text-danger">{{lbError}}</label></div>
+        <div class="col col-50 col-center"><span class="right">รวม : {{lbQty}}/{{lbTotal}}</span></div>
+      </div>
+
+      <br>
+
+      <div class="text-center">
+        <button class="button button-dark button-select icon-left ion-checkmark" ng-click="save()">ยืนยัน</button>
+      </div>
+
+    </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer ">
+        <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+        <div class="keep col col-center" >
+          <!--<span class="right" >จำนวน : {{lbPalletCount}}</span>-->
+        </div>
+    </div>
+  </ion-footer-bar>
+
+  <script id="my-modal.html" type="text/ng-template">
+    <ion-modal-view>
+      <ion-header-bar class="bar-balanced">
+        <h1 class="title">เพิ่มเลขพาเลท</h1>
+      </ion-header-bar>
+      <ion-content class="SHLoading input-custom">
+        <div class="padding-top">
+
+          <div class="row responsive-xs">
+            <div class="col col-25 col-center">
+              <label class="text-danger">Pallet No :</label>
+            </div>
+            <div class="col col-40 col-center">
+              <input type="text" ng-model="modal_data.PalletNo" id="Modal_PalletNo" class="form-control" ng-disabled="isDisable" ng-keyup="($event.which === 13) ? search_modal(modal_data.PalletNo,'Modal_PalletNo','read pallet no') : return;" placeholder="" uppercased>
+            </div>
+            <div class="col col-center">
+              <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-disabled="isDisable" ng-click="scanPalletNo_Modal('Modal_PalletNo')"></a>
+            </div>
+            <div class="col col-20 col-center">
+              <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-disabled="isDisable" ng-click="search_modal(modal_data.PalletNo,'Modal_PalletNo','click button')"></button>
+            </div>
+          </div>
+  
+          <div class="row responsive-xs">
+            <div class="col col-25 col-center">
+              <label class="text-danger">Location :</label>
+            </div>
+            <div class="col col-40 col-center">
+              <input type="text" ng-model="modal_data.Location" id="Modal_Location" class="form-control" ng-keyup="($event.which === 13) ? search_modal(modal_data.Location,'Modal_Location','read location no') : return;" placeholder="" uppercased>
+            </div>
+            <div class="col col-center">
+              <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo_Modal('Modal_Location')"></a>
+            </div>
+            <div class="col col-20 col-center">
+              <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search_modal(modal_data.Location,'Modal_Location','click button')"></button>
+              <input type="hidden" ng-model="modal_data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+            </div>
+          </div>
+
+          <div class="row responsive-xs">
+            <div class="col col-25 col-center">สินค้า :</div>
+            <div class="col col-center"><input type="text" ng-model="modal_data.SKU" class="form-control" placeholder="" readonly></div>
+          </div>
+  
+          <div class="row responsive-xs">
+            <div class="col col-25 col-center">Lot :</div>
+            <div class="col col-center"><input type="text" ng-model="modal_data.Lot" class="form-control" placeholder="" readonly></div>
+          </div>
+            
+          <div class="text-center">
+            <button class="button button-dark button-select icon-left ion-checkmark" ng-click="save_modal()">ยืนยัน</button>
+          </div>
+        </div>
+      </ion-content>
+      <ion-footer-bar>
+          <div class="bar bar-footer">
+            <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="modal.hide()"></i></a></div>
+            <!--<div class="keep col col-center" >
+                  <span class="right" >พาเลทที่ : {{0}}</span>
+                </div>-->
+          </div>
+        </ion-footer-bar>
+    </ion-modal-view>
+  </script>
+
+</ion-view>

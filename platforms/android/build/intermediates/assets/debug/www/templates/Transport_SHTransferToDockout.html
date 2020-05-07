@@ -1,0 +1,146 @@
+<ion-view view-title="โอนสินค้าไปท่าขึ้น">
+  <ion-content class="SHTransferToDockout input-custom">
+    <!--container-->
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+        <div class="co col-50 col-center">
+          <button class="button button-block button-calm pull-right no-margin icon-left ion-home"
+            ng-click="changeDisplay(0)">หน้าหลัก</button>
+        </div>
+        <div class="col col-50 col-center">
+          <button class="button button-block button-balanced pull-right no-margin icon-left ion-clipboard"
+            ng-click="changeDisplay(1)">รายการโอน</button>
+        </div>
+      </div>
+
+      <div ng-class="{displayblock: DisplayFlag === 0,displaynone: DisplayFlag === 1}">
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">เลขDO :</div>
+          <div class="col col-center">
+            <select id="DO" ng-model="data.DO" ng-change="changeDO(data.DO)">
+              <option value="">เลือก</option>
+              <option ng-if="getDOList" ng-repeat="(key, value) in getDOList | orderObjectBy:'Withdraw_No':false" value="{{value.Withdraw_Index+','+value.Withdraw_No}}">{{value.Withdraw_No}}</option><!--data-no="{{value.Withdraw_No}}"-->
+            </select>
+          </div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">
+            <label class="text-danger">Pallet :</label>
+          </div>
+          <div class="col col-40 col-center">
+            <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'PalletNo','read pallet no') : return;" placeholder="" uppercased>
+          </div>
+          <div class="col col-center">
+            <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('PalletNo')"></a>
+          </div>
+          <div class="col col-20 col-center">
+            <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo,'PalletNo','click button')"></button>
+          </div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">
+            <label class="text-danger">Pallet2 :</label>
+          </div>
+          <div class="col col-40 col-center">
+            <input type="text" ng-model="data.PalletNo2" id="PalletNo2" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo2,'PalletNo2','read pallet no') : return;" placeholder="" uppercased>
+          </div>
+          <div class="col col-center">
+            <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('PalletNo2')"></a>
+          </div>
+          <div class="col col-20 col-center">
+            <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo2,'PalletNo2','click button')"></button>
+            <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+          </div>
+        </div>
+
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">Sku/Lot :</div>
+          <div class="col col-center"><input type="text" ng-model="data.SKU" class="form-control" placeholder=""
+              readonly></div>
+          <div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control" placeholder=""
+              readonly></div>
+        </div>
+
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">จำนวน :</div>
+          <div class="col col-center"><input type="text" ng-model="data.TotalQty" class="form-control" placeholder="" readonly></div>
+          <div class="col col-15 col-center">KG.</div>
+          <div class="col col-center"><input type="text" ng-model="data.PackageQty" class="form-control" placeholder="" readonly></div>
+          <div class="col col-15 col-center">BAG</div>
+        </div>
+
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">โกดัง :</div>
+          <div class="col col-center"><input type="text" ng-model="data.GoDown" class="form-control" placeholder=""
+              readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-25 col-center">ท่าโหลด :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Vehicle_License_No" class="form-control" placeholder="" readonly></div>
+          <div class="col col-center"><input type="text" id="inputVehicle_License_No" ng-model="data.inputVehicle_License_No" class="form-control" placeholder="" ng-keyup="($event.which === 13) ? keyupVehicle_License_No(data.inputVehicle_License_No) : return;" uppercased></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-50 col-center"><label class="text-danger">{{lbError}}</label></div>
+          <div class="col col-50 col-center"><span class="right">{{lbQty}}/{{lbTotal}}</span></div>
+        </div>
+
+        <br>
+
+        <div class="text-center"><button class="button button-dark button-select icon-left ion-checkmark" ng-click="saveSubmit()">ยืนยัน</button></div>
+
+      </div>
+
+      <div ng-class="{displayblock: DisplayFlag === 1,displaynone: DisplayFlag === 0}">
+
+        <div class="col col-center">
+          <ion-scroll zooming="false" has-bouncing="false" direction="xy" style="max-height:70vh; border: 1px solid #ddd; margin-bottom: 10px;">
+            <table class="table table-bordered no-margin">
+              <thead>
+                <tr style="background-color: #eeeeee">
+                  <th>Location</th>
+                  <th>พาเลท</th>
+                  <th>สถานะ</th>
+                  <th>Lot</th>
+                  <th>จน.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-if="datatablesList_AssetLength <= 0">
+                  <td colspan="5" class="text-center text-danger">ไม่มีรายการ</td>
+                </tr>
+                <tr ng-if="datatablesList_AssetLength > 0" ng-repeat="(n, v) in datatablesList_Asset | orderObjectBy:'Location_Alias':true">
+                  <td>{{v.LOCATION}}</td>
+                  <td>{{v.PALLET_x0020_NO.toUpperCase()}}</td>
+                  <td>{{v.PalletStatus_Id}}</td>
+                  <td>{{v.LOT_x002F_BATCH}}</td>
+                  <td>{{v.QTY}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </ion-scroll>
+        </div>
+
+      </div>
+
+    </div>
+
+  </ion-content>
+
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+      <div class="keep col col-center">
+        <span class="right">พาเลทที่ : {{lbPallet}}</span>
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

@@ -1,0 +1,74 @@
+
+<ion-view view-title="Weighing Chemical" >
+  <ion-content class="WeighingChemical input-custom">
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+        <div class="col col-center col-25"><label class="text-danger">PD No :</label></div>
+        <div class="col col-center">
+          <select ng-model="data.BagOrder" ng-change="SelectPD()" >
+            <option value="">เลือก</option>
+            <option ng-repeat="(key, value) in getBagging" value="{{value.Production_No}}">{{value.Production_No}}</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center">
+          <label class="text-danger">Pallet :</label>
+        </div>
+        <div class="col col-40 col-center">
+          <input type="text" ng-model="data.Pallet" id="Pallet" class="form-control" ng-keyup="($event.which === 13) ? search(data.Pallet,'Pallet') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanBarcode(data)"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.Pallet,'click button')" ng-disabled="isDisable"></button>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-center col-25"><label class="text-danger">Sku ID : </label></div>
+        <div class="col col-center"><input type="text" ng-model="data.Sku_Id" class="form-control  input-skyblue" readonly></div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-center col-25"><label class="text-danger">Detail : </label></div>
+        <div class="col col-center"><input type="text" ng-model="data.Detail" class="form-control  input-skyblue" readonly></div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-center col-25"><label class="text-danger">Lot : </label></div>
+        <div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control  input-skyblue" readonly></div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-center col-25"><label class="text-danger">QTY : </label></div>
+        <div class="col col-center"><input type="text" ng-model="data.QTY" class="form-control  input-skyblue" readonly></div>
+      </div>
+
+      <input type="hidden" ng-model="data.Sku_Index">
+      <input type="hidden" ng-model="data.TagNo">
+      <input type="hidden" ng-model="data.Customer_Index">
+
+      <div class="text-center">
+        <button class="button button-dark button-select" ng-click="save()">บันทึก</button>
+        <button class="button button-assertive button-select" ng-click="clear()">Clear</button>
+      </div>
+
+      <!-- <br><div class="text-center"><button class="button button-assertive button-select" ng-click="clear()">Clear</button></div>
+      <br><div class="text-center"><button class="button button-dark  button-select" ng-click="save()">บันทึก</button></div> -->
+
+    </div>
+
+  </ion-content>
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+        <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+    
+</ion-view>

@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "E:\\Work_Android\\WMS_Mobile_RY\\Code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi\\launcher_icon.png",
+        "source": "E:\\Work_Android\\WMS_Mobile_RY\\Code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\drawable-xhdpi\\launcher_icon.png"
+    },
+    {
+        "merged": "E:\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi\\launcher_icon.png",
+        "source": "E:\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\drawable-xhdpi\\launcher_icon.png"
+    },
+    {
+        "merged": "E:\\Android\\App_LDPE_WMS_Android\\code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi\\launcher_icon.png",
+        "source": "E:\\Android\\App_LDPE_WMS_Android\\code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\drawable-xhdpi\\launcher_icon.png"
+    },
+    {
+        "merged": "D:\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi\\launcher_icon.png",
+        "source": "D:\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\drawable-xhdpi\\launcher_icon.png"
+    },
+    {
+        "merged": "C:\\Users\\IT-Sutthiphong\\Desktop\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi\\launcher_icon.png",
+        "source": "C:\\Users\\IT-Sutthiphong\\Desktop\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\drawable-xhdpi\\launcher_icon.png"
+    },
+    {
+        "merged": "E:\\Android\\App_WMS_Mobile_LDPE\\code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi\\launcher_icon.png",
+        "source": "E:\\Android\\App_WMS_Mobile_LDPE\\code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\drawable-xhdpi\\launcher_icon.png"
+    },
+    {
+        "merged": "C:\\Users\\AuthorWise\\tpipl_addpage\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi\\launcher_icon.png",
+        "source": "C:\\Users\\AuthorWise\\tpipl_addpage\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\drawable-xhdpi\\launcher_icon.png"
+    },
+    {
+        "merged": "C:\\Users\\AuthorWise\\tpipl\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi\\launcher_icon.png",
+        "source": "C:\\Users\\AuthorWise\\tpipl\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\drawable-xhdpi\\launcher_icon.png"
+    },
+    {
+        "merged": "E:\\Work_Android\\WMS_Mobile_AS\\Code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi\\launcher_icon.png",
+        "source": "E:\\Work_Android\\WMS_Mobile_AS\\Code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\drawable-xhdpi\\launcher_icon.png"
+    }
+]

@@ -1,0 +1,38 @@
+
+<ion-view view-title="Receive Core to Pallet" >
+  <ion-content scroll="false" class="ReceiveCoreToPallet input-custom containner" >
+    <form role="form" name="myForm" novalidate>
+
+    <div class="padding">
+      <div class="assertive">**โปรดกดเลือกข้อมูลในตาราง แล้วกดเลือก</div>
+        <ion-scroll zooming="false" has-bouncing="false" direction="xy" style="max-height:70vh; border: 1px solid #ddd; margin-bottom: 10px;" >
+        <table class="table table-bordered no-margin" >
+          <thead>
+            <tr style="background-color: #eeeeee">
+              <th>Order_Index</th>
+              <th>Order_No</th>
+            </tr>
+          </thead>
+          <tbody >
+            <tr ng-if="orderTopicList==null">
+              <td colspan="2">ไม่มีรายการ</td>
+            </tr>
+            <tr ng-if="orderTopicList!=null" ng-repeat="(n, v) in orderTopicList | orderObjectBy:'Order_Index':false " ng-click="setSelected(v.Order_Index, v.Order_No)" ng-class="{selected: v.Order_Index === IndexSelected}">
+              <td>{{v.Order_Index}}</td>
+              <td>{{v.Order_No}}</td>
+            </tr>
+          </tbody>
+        </table>        
+        </ion-scroll>
+      <button class="button button-dark button-select pull-right" ng-click="selected(IndexSelected, NoSelected)">เลือก</button>
+    </div>
+
+    </form>
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+      <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

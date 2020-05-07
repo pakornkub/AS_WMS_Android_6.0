@@ -1,0 +1,74 @@
+[
+    {
+        "merged": "D:\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\config.xml",
+        "source": "D:\\tpipl\\platforms\\android\\res\\xml\\config.xml"
+    },
+    {
+        "merged": "E:\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\preferences.xml",
+        "source": "E:\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\xml\\preferences.xml"
+    },
+    {
+        "merged": "E:\\Android\\App_WMS_Mobile_LDPE\\code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\config.xml",
+        "source": "E:\\Android\\App_WMS_Mobile_LDPE\\code\\tpipl\\platforms\\android\\res\\xml\\config.xml"
+    },
+    {
+        "merged": "E:\\Work_Android\\WMS_Mobile_AS\\Code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\config.xml",
+        "source": "E:\\Work_Android\\WMS_Mobile_AS\\Code\\tpipl\\platforms\\android\\res\\xml\\config.xml"
+    },
+    {
+        "merged": "E:\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\config.xml",
+        "source": "E:\\tpipl\\platforms\\android\\res\\xml\\config.xml"
+    },
+    {
+        "merged": "E:\\Work_Android\\WMS_Mobile_RY\\Code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\config.xml",
+        "source": "E:\\Work_Android\\WMS_Mobile_RY\\Code\\tpipl\\platforms\\android\\res\\xml\\config.xml"
+    },
+    {
+        "merged": "C:\\Users\\IT-Sutthiphong\\Desktop\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\preferences.xml",
+        "source": "C:\\Users\\IT-Sutthiphong\\Desktop\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\xml\\preferences.xml"
+    },
+    {
+        "merged": "C:\\Users\\AuthorWise\\tpipl_addpage\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\preferences.xml",
+        "source": "C:\\Users\\AuthorWise\\tpipl_addpage\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\xml\\preferences.xml"
+    },
+    {
+        "merged": "C:\\Users\\IT-Sutthiphong\\Desktop\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\config.xml",
+        "source": "C:\\Users\\IT-Sutthiphong\\Desktop\\tpipl\\platforms\\android\\res\\xml\\config.xml"
+    },
+    {
+        "merged": "E:\\Work_Android\\WMS_Mobile_AS\\Code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\preferences.xml",
+        "source": "E:\\Work_Android\\WMS_Mobile_AS\\Code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\xml\\preferences.xml"
+    },
+    {
+        "merged": "E:\\Android\\App_LDPE_WMS_Android\\code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\config.xml",
+        "source": "E:\\Android\\App_LDPE_WMS_Android\\code\\tpipl\\platforms\\android\\res\\xml\\config.xml"
+    },
+    {
+        "merged": "C:\\Users\\AuthorWise\\tpipl_addpage\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\config.xml",
+        "source": "C:\\Users\\AuthorWise\\tpipl_addpage\\tpipl\\platforms\\android\\res\\xml\\config.xml"
+    },
+    {
+        "merged": "E:\\Work_Android\\WMS_Mobile_RY\\Code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\preferences.xml",
+        "source": "E:\\Work_Android\\WMS_Mobile_RY\\Code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\xml\\preferences.xml"
+    },
+    {
+        "merged": "E:\\Android\\App_LDPE_WMS_Android\\code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\preferences.xml",
+        "source": "E:\\Android\\App_LDPE_WMS_Android\\code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\xml\\preferences.xml"
+    },
+    {
+        "merged": "E:\\Android\\App_WMS_Mobile_LDPE\\code\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\preferences.xml",
+        "source": "E:\\Android\\App_WMS_Mobile_LDPE\\code\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\xml\\preferences.xml"
+    },
+    {
+        "merged": "C:\\Users\\AuthorWise\\tpipl\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\config.xml",
+        "source": "C:\\Users\\AuthorWise\\tpipl\\tpipl\\platforms\\android\\res\\xml\\config.xml"
+    },
+    {
+        "merged": "D:\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\preferences.xml",
+        "source": "D:\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\xml\\preferences.xml"
+    },
+    {
+        "merged": "C:\\Users\\AuthorWise\\tpipl\\tpipl\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\xml\\preferences.xml",
+        "source": "C:\\Users\\AuthorWise\\tpipl\\tpipl\\platforms\\android\\build\\intermediates\\exploded-aar\\barcodescanner\\res\\xml\\preferences.xml"
+    }
+]

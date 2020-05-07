@@ -1775,7 +1775,7 @@ angular.module('Production.Controllers', ['ionic'])
     /*--------------------------------------
     Event Function cal
     ------------------------------------- */
-    $scope.cal = (keyEnter, IssueQty) => {
+    $scope.cal = function(keyEnter, IssueQty){
 
         if($scope.data.IssueQty && $scope.data.IssueQty != '-')
         {

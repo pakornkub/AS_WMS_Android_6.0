@@ -1,0 +1,124 @@
+
+<ion-view view-title="Combine Pallet" >
+  <ion-content class="CombinePallet input-custom containner padding-left padding-right padding-top">
+
+      <div class="padding-top">
+        <div class="row no-padding no-margin">
+           <div class="col col-25 col-center text-right">
+              <label class="text-danger">Pallet ต้นทาง :</label>
+            </div>
+          <div class="col-40"><input type="text" ng-model="data.PalletStart" id="pallet-start" ng-keyup="searchPallet(data.PalletStart, 'Start','read barcode')" class="form-control" placeholder="Enter Text" uppercased></div>
+          <div class="col text-center">
+              <a class="button-icon icon ion-ios-camera-outline button-scanbarcode" ng-click="scanBarcode('Start')"></a>
+          </div>
+          <div class="col col-20">
+            <button class="button button-block button-dark button-save pull-right no-margin" ng-click="searchPallet(data.PalletStart, 'Start','')" >ค้นหา</button>
+          </div>
+         
+        </div>
+        <div class="row no-padding no-margin">
+          <div class="col col-25 col-center text-right">
+             <label class="text-danger">Grade :</label>
+          </div>
+          <div class="col"><input type="text" ng-model="data.Str1" class="form-control" placeholder="Enter Text" readonly></div>
+          <!--<div class="col">-->
+            <!--<select width="100%" style="width: 100%; height: 32px; " ng-model="data.TagNo1" ng-change="changeTagNo(data.TagNo1)" >-->
+            <!--<select width="100%" style="width: 100%; height: 32px; " ng-model="data.Str1" ng-disabled="true" >
+              <option value="">{{data.Str1}}</option>-->
+              <!--<option value="">เลือก</option>-->
+              <!--<option ng-if="dataTagItem1" ng-repeat="(key, value) in dataTagItem1 | orderObjectBy:'Tag_No_T':false " value="{{value}}">{{value.Tag_No_T}}</option>-->
+            <!--</select>-->
+          <!--</div>-->
+        </div>
+        <div class="row no-padding no-margin">
+          <div class="col col-25 col-center text-right">
+             <label class="">สินค้า :</label>
+          </div>
+          <div class="col"><input type="text" ng-model="data.SkuId" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row no-padding no-margin">
+          <div class="col col-25 col-center text-right">
+             <label class="">สถานะ :</label>
+          </div>
+          <div class="col"><input type="text" ng-model="data.PalletStatus" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row no-padding no-margin">
+          <div class="col col-25 col-center text-right">
+             <label class="">Lot No. :</label>
+          </div>
+          <div class="col"><input type="text" ng-model="data.LotNo" class="form-control" placeholder="Enter Text" readonly></div>
+        </div>
+        <div class="row no-padding no-margin">
+          <div class="col col-25 col-center text-right">
+             <label class="">จำนวนเต็ม :</label>
+          </div>
+          <div class="col-20">
+            <input type="number" ng-model="data.KG" ng-value="data.QtyAfterMove" class="form-control" placeholder="Number" readonly>
+          </div>
+          <div class="col col-center"><label>KG.</label></div>
+          <div class="col col-20">
+            <input type="number" ng-model="data.BAG" class="form-control" style="margin-left: 4px;" placeholder="Number" readonly>
+          </div>
+          <div class="col col-center"><label>Roll/Unit</label></div>
+        </div>
+        <div class="row no-padding no-margin">
+          <label class="col col-25 col-center text-right text-danger">จำนวนย้าย :</label>
+          <div class="col">
+            <input type="number" ng-model="data.QtyMove"  ng-value="data.QtyMove" class="form-control" placeholder="Number" ng-change="changeQtyMove(data.QtyMove)" >
+          </div>
+          <div class="col col-10 col-center"><label>KG.</label></div>
+        </div>
+        <div class="row no-padding no-margin">
+          <div class="col col-25 col-center text-right">จำนวนคงเหลือ :</div>
+          <div class="col">
+            <input type="number" ng-model="data.QtyAfterMove" ng-value="data.QtyAfterMove" class="form-control input-skyblue" placeholder="Number" readonly>
+          </div>
+          <div class="col col-10 col-center"><label>KG.</label></div>
+        </div>
+
+        <div class="row no-padding no-margin">
+          <div class="col col-25 col-center text-right ">
+             <label class="text-danger">Pallet ปลายทาง :</label>
+          </div>
+          <div class="col col-40">
+            <input type="text" ng-model="data.PalletEnd" id="pallet-end" ng-keyup="searchPallet(data.PalletEnd, 'End','read barcode')" class="form-control" placeholder="Enter Text" uppercased>
+            </div>
+          <div class="col text-center">
+              <a class="button-icon icon ion-ios-camera-outline button-scanbarcode" ng-click="scanBarcode('End')"></a>
+          </div>
+          <div class="col col-20">
+            <button class="button button-block button-dark button-save pull-right no-margin" ng-click="searchPallet(data.PalletEnd, 'End', '')" >ค้นหา</button>
+            <input type="hidden" class="" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes" >
+            </div>
+        </div>
+
+        <div class="row no-padding no-margin">
+          <label class="col col-25 col-center text-right text-danger">Grade :</label>
+          <div class="col">
+            <select width="100%" style="width: 100%; height: 32px; " ng-model="data.TagNo2">
+              <option value="">เลือก</option>
+              <!--<option ng-if="dataTagItem2" ng-repeat="(key, value) in dataTagItem2  "ng-selected="{{value}}">{{value.Str1}}</option>-->
+               <option ng-if="dataTagItem2" ng-repeat="(key, value) in dataTagItem2  " value="{{value}}" ng-selected="{{value}}">{{value.Str1}}</option>
+              <!--<option ng-if="dataTagItem2" ng-repeat="(key, value) in dataTagItem2 | orderObjectBy:'Tag_No_T':false " value="{{value}}">{{value.Tag_No_T}}</option>-->
+            </select>
+          </div>
+        </div>
+
+        <div ng-hide="true">
+          {{data.Tag_No}}
+          {{data.ItemStatus_Index_Bal}}
+        </div>
+        
+        <br>
+        <div class="text-center"><button class="button button-stable" ng-click="save(data)">ยืนยัน</button></div>
+
+        </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+      <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

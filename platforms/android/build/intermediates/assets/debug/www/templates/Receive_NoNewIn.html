@@ -1,0 +1,43 @@
+
+<ion-view view-title="รับโอน No Bagging">
+  <ion-content class="NoNewIn input-custom"><!--container-->
+
+    <div class="padding">
+
+
+      <div class="col col-center">
+        <div style="margin-bottom: 10px;"><span class="header-table-title assertive">**โปรดกดเลือกข้อมูลในตาราง แล้วกดเลือก</span></div>
+        <ion-scroll zooming="false" has-bouncing="false" direction="xy" style="max-height:70vh; border: 1px solid #ddd; margin-bottom: 10px;" >
+          <table class="table table-bordered no-margin" >
+            <thead>
+              <tr style="background-color: #eeeeee">
+                <th>Order_No</th>
+              </tr>
+            </thead>
+            <tbody >
+              <tr ng-if="orderTopicListLength <= 0">
+                <td colspan="2" class="text-center text-danger">ไม่มีรายการ</td>
+              </tr>
+              <tr ng-if="orderTopicListLength > 0" ng-repeat="(n, v) in orderTopicList | orderObjectBy:'Order_Index':false " ng-click="setSelected(v.Order_Index, v.Order_No)" ng-class="{selected: v.Order_Index === selectedOrder_Index}">
+                <td>{{v.Order_No}}</td>
+              </tr>
+            </tbody>
+          </table>        
+        </ion-scroll>
+      </div>
+
+      <div class="text-center">
+          <button class="button button-dark button-select" ng-click="selected(selectedOrder_Index, selectedOrder_No)">เลือก</button>
+      </div>
+       
+    </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer fooExit">
+      <a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a>
+    </div>
+  </ion-footer-bar>
+</ion-view>
+

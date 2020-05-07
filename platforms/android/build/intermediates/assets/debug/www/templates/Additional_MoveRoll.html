@@ -1,0 +1,140 @@
+<ion-view view-title="Move Roll" >
+  <ion-content class="MoveRoll input-custom"><!--container-->
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">
+          <label class="text-danger">Pallet :</label>
+        </div>
+        <div class="col col-45 col-center">
+          <input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo, 'PalletNo','read pallet no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('PalletNo')"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo, 'PalletNo','click button')"></button>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-20 col-center">
+          <label class="text-danger">Roll :</label>
+        </div>
+        <div class="col col-45 col-center">
+          <input type="text" ng-model="data.RollNo" id="RollNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.RollNo, 'RollNo','read roll no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('RollNo')"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.RollNo, 'RollNo','click button')"></button>
+          <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="row responsive-xs">
+      <div class="co col-50 col-center">
+        <button class="button button-block button-calm pull-right no-margin icon-left ion-home"
+          ng-click="changeDisplay(0)">รายละเอียดการย้าย</button>
+      </div>
+      <div class="col col-50 col-center">
+        <button class="button button-block button-balanced pull-right no-margin icon-left ion-clipboard"
+          ng-click="changeDisplay(1)">รายการที่ย้ายแล้ว</button>
+      </div>
+    </div>
+
+    <div ng-class="{displayblock: DisplayFlag === 0,displaynone: DisplayFlag === 1}">
+      <div class="item">
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Grade :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Grade" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Lot :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Roll :</div>
+          <div class="col col-center"><input type="text" ng-model="data.Roll" class="form-control" placeholder="" readonly></div>
+        </div>
+
+        <div class="row responsive-xs">
+          <div class="col col-20 col-center">Weight : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Weight" class="form-control" placeholder="" readonly></div>
+          <div class="col col-20 col-center">Length : </div>
+          <div class="col col-center"><input type="text" ng-model="data.Length" class="form-control" placeholder="" readonly></div>
+        </div>  
+
+      </div>
+    </div>
+
+    <div ng-class="{displayblock: DisplayFlag === 1,displaynone: DisplayFlag === 0}">   
+      <div class="item">
+        <ion-scroll zooming="false" has-bouncing="false" direction="x" style="border: 1px solid #ddd;">
+          <table class="table table-bordered no-margin" >
+            <thead>
+              <tr style="background-color: #eeeeee">
+                <th>Pallet No.</th>
+                <th>Roll No.</th>
+                <th>Weight</th>
+                <th>Length</th>
+              </tr>
+            </thead>
+            <tbody >
+              <tr ng-if="datatablesListLength <= 0">
+                <td colspan="4" class="text-center text-danger">ไม่มีรายการ</td>
+              </tr>
+              <tr ng-if="datatablesListLength > 0" ng-repeat="(n, v) in datatablesList track by $index">
+                <td>{{v.Pallet_No}}</td>
+                <td>{{v.Roll_No}}</td>
+                <td>{{v.Weight_Act}}</td>
+                <td>{{v.Total_Qty}}</td>
+              </tr>
+            </tbody>
+          </table>  
+        </ion-scroll>
+        <span class="right" >จำนวน : {{Count}}</span>
+      </div>
+    </div>
+
+    <div class="row responsive-xs">
+      <div class="col col-20 col-center">
+        <label class="text-danger">To Pallet :</label>
+      </div>
+      <div class="col col-45 col-center">
+        <input type="text" ng-model="data.PalletNo2" id="PalletNo2" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo2, 'PalletNo2','read pallet no') : return;" placeholder="" uppercased>
+      </div>
+      <div class="col col-center">
+        <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('PalletNo2')"></a>
+      </div>
+      <div class="col col-20 col-center">
+        <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo2, 'PalletNo2','click button')"></button>
+        <input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+      </div>
+    </div>
+
+    <br>
+
+    <div class="text-center">
+      <button class="button button-dark button-select icon-left ion-checkmark" ng-click="save()">ยืนยัน</button>
+    </div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer ">
+        <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+        <div class="keep col col-center" >
+          <!--<span class="right" >เก็บ : {{data.PalletCount_itemPutAway}}/{{data.PalletCount_itemALL}}</span>-->
+        </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

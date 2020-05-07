@@ -1,0 +1,64 @@
+<ion-view view-title="รับ (Dammage Transfer)">
+  <ion-content class="ReceiveDM input-custom">
+    <!--container-->
+
+    <div class="padding-top">
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center">
+          <label class="text-danger">เลขที่ใบโอน :</label>
+        </div>
+        <div class="col col-40 col-center">
+          <input type="text" ng-model="data.Withdraw_No" id="Withdraw_No" class="form-control" ng-keyup="($event.which === 13) ? search(data.Withdraw_No,'Withdraw_No','read pallet no') : return;" placeholder="" uppercased>
+        </div>
+        <div class="col col-center">
+          <a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo('Withdraw_No')"></a>
+        </div>
+        <div class="col col-20 col-center">
+          <button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.Withdraw_No,'Withdraw_No','click button')"></button>
+        </div>
+      </div>
+      
+      <div class="col col-center">
+        <div style="margin-bottom: 10px;"><span class="header-table-title">รายการ</span></div>
+        <ion-scroll zooming="false" has-bouncing="false" direction="xy" style="max-height:70vh; border: 1px solid #ddd; margin-bottom: 10px;">
+          <table class="table table-bordered no-margin">
+            <thead>
+              <tr style="background-color: #eeeeee">
+                <th>เลขที่ใบโอน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-if="datatablesListLength <= 0">
+                <td colspan="3" class="text-center text-danger">ไม่มีรายการ</td>
+              </tr>
+              <tr ng-if="datatablesListLength > 0" ng-repeat="(n, v) in datatablesList | orderObjectBy:'Index':false" ng-click="setSelected(v.Order_Index,v.Order_No,'','')" ng-class="{selected: v.Order_Index === selectedOrder_Index">
+                <td>{{v.Order_No}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </ion-scroll>
+      </div>
+
+      <div class="row responsive-xs">
+        <div class="col col-25 col-center"></div>
+        <div class="col col-50 col-offset-25 col-center"><span class="right">รวม : {{lbQTYWithdraw}}</span></div>
+      </div>
+
+      <br>
+      
+      <div class="text-center"><button class="button button-dark button-select icon-left ion-checkmark" ng-click="selected(selectedOrder_Index,selectedOrder_No,selectedCus_Id,selectedCus_Id_New)">เลือก</button></div>
+
+    </div>
+
+  </ion-content>
+
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+      <div class="keep col col-center">
+        <!--<span class="right">พาเลทที่ : {{lbPallet}}</span>-->
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

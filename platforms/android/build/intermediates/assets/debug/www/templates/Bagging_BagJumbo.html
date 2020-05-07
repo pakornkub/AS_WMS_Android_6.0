@@ -1,0 +1,108 @@
+<ion-view view-title="Bag Jumbo" >
+  <ion-content class="BagJumbo input-custom"><!--container-->
+
+		<div class="padding-top">
+
+			<div class="row responsive-xs">
+				<div class="col col-20 col-center">BG :</div>
+				<div class="col col-center">
+					<select id="BaggingOrder" ng-model="data.BaggingOrder" ng-change="changeBaggingOrder(data.BaggingOrder)">
+						<option value="">เลือก</option>
+						<option ng-if="getBaggingOrderHeaderList" ng-repeat="(key, value) in getBaggingOrderHeaderList | orderObjectBy:'BaggingOrder_No':false" value="{{value.BaggingOrder_No+','+value.BaggingOrder_Index}}">{{value.BaggingOrder_No}}</option>
+					</select>
+				</div>
+				<div class="col col-center">
+					<input type="text" ng-model="data.Line" class="form-control" placeholder="" readonly>
+				</div>
+			</div>
+
+			<div class="row responsive-xs">
+				<div class="col col-20 col-center">สินค้า :</div>
+				<div class="col col-center"><input type="text" ng-model="data.Grade" class="form-control" placeholder="" readonly></div>
+			</div>
+
+			<div class="row responsive-xs">
+				<div class="col col-20 col-center">Lot :</div>
+				<div class="col col-center"><input type="text" ng-model="data.Lot" class="form-control" placeholder="" readonly></div>
+			</div>
+
+			<div class="row responsive-xs">
+				<div class="col col-20 col-center">จำนวน : </div>
+				<div class="col col-center"><input type="text" ng-model="data.Qty" class="form-control" placeholder="" readonly></div>
+				<div class="col col-15 col-center text-right">KG.</div>
+			</div>	
+	
+			<div class="row responsive-xs">
+				<div class="col col-20 col-center">
+					<label class="text-danger">Pallet :</label>
+				</div>
+				<div class="col col-45 col-center">
+					<input type="text" ng-model="data.PalletNo" id="PalletNo" class="form-control" ng-keyup="($event.which === 13) ? search(data.PalletNo,'read pallet no') : return;" placeholder="" uppercased>
+				</div>
+				<div class="col col-center">
+					<a class="button-icon icon ion-ios-camera-outline button-scanpalletno" ng-click="scanPalletNo()"></a>
+				</div>
+				<div class="col col-20 col-center">
+					<button class="button button-block button-dark button-save pull-right no-margin ion-search" ng-click="search(data.PalletNo,'click button')"></button>
+					<input type="hidden" ng-model="data.PalletSearchFlag" id="input-PalletSearchFlag" value="yes">
+				</div>
+			</div>
+
+			<br>
+
+			<div class="col col-center">
+				<div style="margin-bottom: 10px;"><span class="header-table-title">รายการ</span></div>
+				<ion-scroll zooming="false" has-bouncing="false" direction="xy" ng-style="{'height': (dataTableItemLength > 10)? '570px':'auto'}">
+					<table class="table table-bordered table-responsive">
+						<thead>
+							<tr style="background-color: #eeeeee">
+								<th>Pallet No.</th>
+								<th>Type</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-if="dataTableItemLength <= 0">
+								<td colspan="2" class="text-center text-danger">ไม่มีรายการ</td>
+							</tr>
+							<tr ng-if="dataTableItemLength > 0" ng-repeat="(n, v) in dataTableItem track by $index" ng-click="setSelected($index)" ng-class="{selected: v.isSelect == true}">
+								<td>{{v.Pallet_No}}</td>
+								<td>{{v.Pallet_Name}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</ion-scroll>
+			</div>
+			
+			<div class="row responsive-sm"> 
+				<div class="col col-25">
+					<button class="button button-block button-assertive button-delete no-margin" ng-click="deleted()">ลบ</button>
+				</div>  
+				<div class="col col-50 col-offset-25">
+					<div class="row" style="margin-top:-5px;">
+						<div class="col col-center">พาเลทอ่านได้</div>
+						<input type="text" style="width: 50%;" ng-model="data.Count" ng-value="dataTableItemLength" class="form-control text-right input-skyblue" placeholder="0" readonly>
+					</div>
+					<div class="row">
+						<div class="col col-center">พาเลทที่ Bag แล้ว</div>
+						<input type="text" style="width: 50%;" ng-model="data.Total" class="form-control text-right input-skyblue" placeholder="0" readonly>
+					</div>
+				</div>  
+			</div>
+			
+			<br>
+
+			<div class="text-center"><button class="button button-dark button-select icon-left ion-checkmark" ng-click="save()">ยืนยัน</button></div>
+
+		</div>
+
+  </ion-content>
+  
+  <ion-footer-bar>
+    <div class="bar bar-footer">
+      <div class="col fooExit"><a class="item-icon-left"><i class="icon ion-arrow-left-c fooExit" ng-click="GoBack()"></i></a></div>
+      <div class="keep col col-center">
+        <!--<span class="right">พาเลทที่ : {{lbPallet}}</span>-->
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

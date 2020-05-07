@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-media-compat\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="9935891f23923f39d002087085d9696568a9f657">
+        <dex dex="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-media-compat-26.0.0-alpha1_65a566a9f6d52698c0aee33f2e3cb517b3b37cb5.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\exploded-aar\org.apache.cordova\CordovaLib\6.2.3\debug\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="7a1530ac850543228ac856fe951d258efe29f918">
+        <dex dex="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\CordovaLib-6.2.3-debug_295a8c3e584a4b93bdc8a36e3fd19f0c3bd48b44.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-fragment\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="18d31838aa4fcc768a8a0516e22cc13b94655d89">
+        <dex dex="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-fragment-26.0.0-alpha1_f3a06ece7e81342cda95c9737b190c9b37909fdc.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Pakorn\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\26.0.0-alpha1\support-annotations-26.0.0-alpha1.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="023ee503b631f69511e335a061ea008f8da60f40">
+        <dex dex="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\support-annotations-26.0.0-alpha1_fd36db37b0d2b6dad80003cc27f7c1ef7fbe1e27.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\exploded-aar\org.apache.cordova\CordovaLib\6.2.3\debug\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="7a1530ac850543228ac856fe951d258efe29f918">
+        <dex dex="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\CordovaLib-6.2.3-debug_5d24235055cb44fccceef19a8cff063296d4231e.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\exploded-aar\barcodescanner\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="bd90253b55403aaf6ed1c913904d8bc1f19e6ff4">
+        <dex dex="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\intermediates-exploded-aar-barcodescanner_6f5f157501bbb4522eb12363698b703527c70c56.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-v4\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-v4-26.0.0-alpha1_09e2c2550039b1b1513aecfce1bbd86e80a61e04.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-media-compat\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="9935891f23923f39d002087085d9696568a9f657">
+        <dex dex="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-media-compat-26.0.0-alpha1_6ac03da2a9f9969835edd408c64939d65295d8b7.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-core-ui\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="fcd01fd11233459f546c437ec927e9b61bf7caf1">
+        <dex dex="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-core-ui-26.0.0-alpha1_ab29c27c94fde01cf5048bb56d04b96cb0849d37.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-v4\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-v4-26.0.0-alpha1_19c67e20b61c39c21ea4decf51623deb061336c7.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-core-utils\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="2e92aa0163544a804a0b34f169ca61801770839a">
+        <dex dex="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-core-utils-26.0.0-alpha1_5ad3fea695f77111c0d5e9fcd963227b2a6830ff.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\exploded-aar\barcodescanner\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="bd90253b55403aaf6ed1c913904d8bc1f19e6ff4">
+        <dex dex="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\intermediates-exploded-aar-barcodescanner_e3749c595904727584d5809fe60a2214ea9c56e8.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-core-utils\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="2e92aa0163544a804a0b34f169ca61801770839a">
+        <dex dex="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-core-utils-26.0.0-alpha1_ba72afb4d5c9636fe084f98ca6cb3193fee64cd6.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-compat\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="8df0e365e40beb151bc42dee20817721a6cab7b0">
+        <dex dex="E:\Work_Android\WMS_Mobile_AS\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-compat-26.0.0-alpha1_8ced095b889a603ec4f77ca20d6bf07003b25134.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-fragment\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="18d31838aa4fcc768a8a0516e22cc13b94655d89">
+        <dex dex="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-fragment-26.0.0-alpha1_1776acb2af1df57f3be805f2296969563d095267.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-compat\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="8df0e365e40beb151bc42dee20817721a6cab7b0">
+        <dex dex="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-compat-26.0.0-alpha1_a83fcea84320d665c01ce755d790bf0b9210bba4.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\exploded-aar\com.android.support\support-core-ui\26.0.0-alpha1\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="29.0.2"
+        sha1="fcd01fd11233459f546c437ec927e9b61bf7caf1">
+        <dex dex="E:\Work_Android\WMS_Mobile_RY\Code\tpipl\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-core-ui-26.0.0-alpha1_722a62715cdce69e8812b058f28519381ab7b768.jar" />
+    </item>
+
+</items>
