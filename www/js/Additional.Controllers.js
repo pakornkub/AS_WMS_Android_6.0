@@ -591,6 +591,7 @@ angular.module('Additional.Controllers', ['ionic'])
 		sku_index = '';
 		lot = '';
 		baggingorderitem_index = '';
+		bool = '';
 	};
 
 	var setFocus = function (id) {
@@ -904,30 +905,7 @@ angular.module('Additional.Controllers', ['ionic'])
 					sku = resDataSet[x].Sku_Index_T;
 					lot = resDataSet[x].PLot;
 
-					var pstrWhere = " and BaggingOrderItem_Index = (select DocumentPlanItem_Index from tb_OrderItem where OrderItem_Index = '" + resDataSet[x].OrderItem_Index + "') ";
-					
-					var res_getBaggingOrderItem = getBaggingOrderItem(objsession,pstrWhere);
-
-					bool = res_getBaggingOrderItem.then(function(res3){
-
-						var resDataSet2 = (!res3['diffgr:diffgram']) ? {} : res3['diffgr:diffgram'].NewDataSet.Table1;
-
-						if(Object.keys(resDataSet2).length > 0)
-						{
-							baggingorderitem_index = resDataSet2[0].BaggingOrderItem_Index;
-						}
-						else
-						{
-							baggingorderitem_index = '';
-						}
-
-						return updatePalletToItem(objsession, resDataSet[x].OrderItem_Index, baggingorderitem_index, $scope.data.PalletNo2)
-
-					}).catch(function (error) {
-						console.log("Error occurred");
-						AppService.err('Error', 'Error occurred', '');
-						return;
-					});	
+					bool = loopUpdatePalletToItem(resDataSet[x].OrderItem_Index);
 
 				}
 
@@ -964,6 +942,44 @@ angular.module('Additional.Controllers', ['ionic'])
 
 				AppService.succ('ย้าย Pallet เรียบร้อย', 'PalletNo');
 				return;
+
+			}).catch(function (error) {
+				console.log("Error occurred");
+				AppService.err('Error', 'Error occurred', '');
+				return;
+			});	
+
+		} catch (error) {
+			console.log("Error occurred");
+			AppService.err('Error', 'Error occurred', '');
+			return;
+		}
+	}
+
+	function loopUpdatePalletToItem(OrderItem_Index)
+	{
+		try {
+			
+			var objsession = angular.copy(LoginService.getLoginData());
+
+			var pstrWhere = " and BaggingOrderItem_Index = (select DocumentPlanItem_Index from tb_OrderItem where OrderItem_Index = '" + OrderItem_Index + "') ";
+			
+			var res_getBaggingOrderItem = getBaggingOrderItem(objsession,pstrWhere);
+
+			return res_getBaggingOrderItem.then(function(res3){
+
+				var resDataSet2 = (!res3['diffgr:diffgram']) ? {} : res3['diffgr:diffgram'].NewDataSet.Table1;
+
+				if(Object.keys(resDataSet2).length > 0)
+				{
+					baggingorderitem_index = resDataSet2[0].BaggingOrderItem_Index;
+				}
+				else
+				{
+					baggingorderitem_index = '';
+				}
+
+				return updatePalletToItem(objsession, OrderItem_Index, baggingorderitem_index, $scope.data.PalletNo2)
 
 			}).catch(function (error) {
 				console.log("Error occurred");
