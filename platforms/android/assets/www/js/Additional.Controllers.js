@@ -345,7 +345,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 					$scope.data.PalletStatusTo = (resDataSet[0].PalletStatus_Index == '0010000000003') ? '0010000000004' : resDataSet[0].PalletStatus_Index;
 
-					return getTag_Sum(objsession, resDataSet[0].Order_Index, dataSearch);
+					return getTag_Sum(objsession, ' ', dataSearch);
 				}
 
 			}).then(function(res2){

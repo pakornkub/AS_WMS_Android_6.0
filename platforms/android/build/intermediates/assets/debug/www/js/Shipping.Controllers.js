@@ -6,7 +6,7 @@
 */
 angular.module('Shipping.Controllers', ['ionic'])
 
-.controller('Shipping_SaleCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter) {
+.controller('Shipping_SaleCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicHistory) {
 
     /*--------------------------------------
     Data Function
@@ -286,7 +286,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
             var objsession = angular.copy(LoginService.getLoginData());
 
-            var datatables = {};
+            var datatables = [];
             var i = 0;
 
             for (var x in $scope.datatablesList) {
@@ -331,98 +331,203 @@ angular.module('Shipping.Controllers', ['ionic'])
             }
             else {
 
-                for (var x in datatables) {
+                /*var i = 0;
+
+                for (var x of datatables) {
+
                     //check Local realtime befor
-                    if (datatables[x]['WITHDRAWITEM-STATUS'] == -9 || datatables[x]['WITHDRAWITEM-STATUS'] == -10) {
+                    if (x['WITHDRAWITEM-STATUS'] == -9 || x['WITHDRAWITEM-STATUS'] == -10) {
                         $scope.data.PalletNo = null;
                         AppService.err('แจ้งเตือน', 'Pallet ' + dataSearch + ' ถูกเบิกแล้ว!', id);
                         return;
                     }
 
-                    if (datatables[x]['Qty_Bal'] != datatables[x]['QTY']) {
+                    if (x['Qty_Bal'] != x['QTY']) {
                         AppService.err('แจ้งเตือน', 'จำนวนสินค้าที่เบิกไม่มีในรายการนี้ !', id);
                         return;
                     }
-                    else {
+                    
+                    var res_loopSavePickItem_Withdraw = loopSavePickItem_Withdraw(x);
 
-                        //check Online real befor
-                        var res_CHEKPICK_WITHDRAWITEM_STATUS = CHEKPICK_WITHDRAWITEM_STATUS(objsession, datatables[x]['WithdrawItem_Index']);//return boolean
+                    res_loopSavePickItem_Withdraw.then(function(res){
 
-                        var Location = datatables[x]['Location_Alias'];
-                        if (Location.substring(0, 1) != 'Y') {
-                            Location = Location.substring(0, 1) + '-FLOOR';
+                        if(!res)
+                        {
+                            return;
                         }
 
-                        res_CHEKPICK_WITHDRAWITEM_STATUS.then(function (res) {
+                        if(i == datatables.length-1)
+                        {
+                            $scope.data.PalletNo = null;
+                            setFocus(id);
 
-                            if (res) {
+                            $ionicLoading.hide();
+                        }
 
-                                return 'True1';
-                            }
-                            else {
+                        i++;
 
-                                //Update Status and Swap WithdrawItem . (Not Insert Transfer and Transaction)
-                                return SavePickItem_Withdraw(objsession, datatables[x]['TAG_x0020_NO'], datatables[x]['QTY'], Location, '0010000000001', '0010000000007', Withdraw_No, Withdraw_Index, datatables[x]['WithdrawItem_Index'], _CONST_HEADERTYPE, true);//return string
+                    }).catch(function (error) {
+                        console.log("Error occurred");
+                        AppService.err('Error', 'Error occurred', '');
+                        return;
+                    });
 
-                            }
+                }*/
 
+                var res_loopPromiseSavePickItem_Withdraw = loopPromiseSavePickItem_Withdraw(dataSearch, id, datatables)
 
-                        }).then(function (res2) {
+                res_loopPromiseSavePickItem_Withdraw.then(function(res){
 
-
-                            if (res2 == 'True1') {
-                                $scope.data.PalletNo = null;
-                                AppService.err('แจ้งเตือน', 'Pallet ' + dataSearch + ' ถูกเบิกแล้ว!', id);
-                                return;
-                            }
-                            else {
-
-                                if (res2 != 'PASS') {
-                                    AppService.err('แจ้งเตือน', 'ผิดพลาด : ในการย้าย Pallet ' + dataSearch + ' ลองอีกครั้ง!', id);
-                                    return;
-                                }
-
-                                //update real ui and Sort new
-                                for (var y in $scope.datatablesList) {
-                                    if ($scope.datatablesList[y]['WithdrawItem_Index'] == datatables[x]['WithdrawItem_Index']) {
-                                        $scope.datatablesList[y]['STATE'] = 'เบิกแล้ว';
-                                        $scope.datatablesList[y]['WITHDRAWITEM-STATUS'] = -9;
-                                        $scope.datatablesList[y]['PICKINGQTY'] = datatables[x]['QTY'];
-                                        $scope.datatablesList[y]['Location_Alias'] = Location;
-                                        $scope.datatablesList[y]['LOCATION'] = Location;
-                                    }
-                                }
-
-                                var countSTATE = 0;
-
-                                for (var y in $scope.datatablesList) {
-                                    if ($scope.datatablesList[y]['WITHDRAWITEM-STATUS'] == -9 || $scope.datatablesList[y]['WITHDRAWITEM-STATUS'] == -10) {
-                                        countSTATE++;
-                                    }
-                                }
-
-                                $scope.lbQty = countSTATE;
-                                $scope.lbTotal = $scope.datatablesListLength;
-
-
-                                $scope.data.PalletNo = null;
-                                setFocus(id);
-
-                                $ionicLoading.hide();
-
-                            }
-
-                        }).catch(function (error) {
-                            console.log("Error occurred");
-                            AppService.err('Error', 'Error occurred', '');
-                            return;
-                        });
-
+                    if(!res)
+                    {
+                        return;
                     }
+
+                    $scope.data.PalletNo = null;
+                    setFocus(id);
+
+                    $ionicLoading.hide();
+
+                }).catch(function (error) {
+                    console.log("Error occurred");
+                    AppService.err('Error', 'Error occurred', '');
+                    return;
+                });
+
+            }
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    function loopPromiseSavePickItem_Withdraw(dataSearch, id, datatables)
+    {
+        try {
+            
+            var promiseChain = Promise.resolve();
+
+            for (var x of datatables) { 
+
+                //check Local realtime befor
+                if (x['WITHDRAWITEM-STATUS'] == -9 || x['WITHDRAWITEM-STATUS'] == -10) {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'Pallet ' + dataSearch + ' ถูกเบิกแล้ว!', id);
+                    return false;
+                }
+
+                if (x['Qty_Bal'] != x['QTY']) {
+                    AppService.err('แจ้งเตือน', 'จำนวนสินค้าที่เบิกไม่มีในรายการนี้ !', id);
+                    return false;
+                }
+                
+    
+                current = x;
+
+                // Note that there is a scoping issue here, since
+                // none of the .then code runs till the loop completes,
+                // you need to pass the current value of `currentProduct`
+                // into the chain manually, to avoid having its value
+                // changed before the .then code accesses it.
+
+                var makeNextPromise = function(dataSearch, id, current) { 
+                    
+                    return function() {
+                        // Make sure to return your promise here.
+                        return loopSavePickItem_Withdraw(dataSearch, id, current)
+                    }
+                    
+                }
+
+                // Note that we pass the value of `currentProduct` into the
+                // function to avoid it changing as the loop iterates.
+                promiseChain = promiseChain.then(makeNextPromise(dataSearch, id, current))
+            }
+
+            return promiseChain;
+
+        } catch (error) {
+            console.log("Error occurred");
+            AppService.err('Error', 'Error occurred', '');
+            return;
+        }
+    }
+
+    function loopSavePickItem_Withdraw(dataSearch, id, datatables)
+    {
+        try {
+
+            var objsession = angular.copy(LoginService.getLoginData());
+
+            //check Online real befor
+            var res_CHEKPICK_WITHDRAWITEM_STATUS = CHEKPICK_WITHDRAWITEM_STATUS(objsession, datatables['WithdrawItem_Index']);//return boolean
+
+            var Location = datatables['Location_Alias'];
+            /*if (Location.substring(0, 1) != 'Y') {
+                Location = Location.substring(0, 1) + '-FLOOR';
+            }*/
+
+            return res_CHEKPICK_WITHDRAWITEM_STATUS.then(function (res) {
+
+                if (res) {
+
+                    return 'True1';
+                }
+                else {
+
+                    //Update Status and Swap WithdrawItem . (Not Insert Transfer and Transaction)
+                    return SavePickItem_Withdraw(objsession, datatables['TAG_x0020_NO'], datatables['QTY'], Location, '0010000000001', '0010000000007', Withdraw_No, Withdraw_Index, datatables['WithdrawItem_Index'], _CONST_HEADERTYPE, true);//return string
 
                 }
 
-            }
+
+            }).then(function (res2) {
+
+                if (res2 == 'True1') {
+                    $scope.data.PalletNo = null;
+                    AppService.err('แจ้งเตือน', 'Pallet ' + dataSearch + ' ถูกเบิกแล้ว!', id);
+                    return false;
+                }
+                else {
+
+                    if (res2 != 'PASS') {
+                        AppService.err('แจ้งเตือน', 'ผิดพลาด : ในการย้าย Pallet ' + dataSearch + ' ลองอีกครั้ง!', id);
+                        return false;
+                    }
+
+                    //update real ui and Sort new
+                    for (var y in $scope.datatablesList) {
+                        if ($scope.datatablesList[y]['WithdrawItem_Index'] == datatables['WithdrawItem_Index']) {
+                            $scope.datatablesList[y]['STATE'] = 'เบิกแล้ว';
+                            $scope.datatablesList[y]['WITHDRAWITEM-STATUS'] = -9;
+                            $scope.datatablesList[y]['PICKINGQTY'] = datatables['QTY'];
+                            $scope.datatablesList[y]['Location_Alias'] = Location;
+                            $scope.datatablesList[y]['LOCATION'] = Location;
+                        }
+                    }
+
+                    var countSTATE = 0;
+
+                    for (var y in $scope.datatablesList) {
+                        if ($scope.datatablesList[y]['WITHDRAWITEM-STATUS'] == -9 || $scope.datatablesList[y]['WITHDRAWITEM-STATUS'] == -10) {
+                            countSTATE++;
+                        }
+                    }
+
+                    $scope.lbQty = countSTATE;
+                    $scope.lbTotal = $scope.datatablesListLength;
+
+                    return true;
+
+                }
+
+            }).catch(function (error) {
+                console.log("Error occurred");
+                AppService.err('Error', 'Error occurred', '');
+                return;
+            });
 
         } catch (error) {
             console.log("Error occurred");
@@ -711,6 +816,8 @@ angular.module('Shipping.Controllers', ['ionic'])
                     return;
                 }
             }
+
+            $ionicLoading.show();
 
             var res_waitConfirmWithdrawStatus_Confirm_TranferStatus = waitConfirmWithdrawStatus_Confirm_TranferStatus(objsession, Withdraw_Index, 2, _CONST_HEADERTYPE);
 
@@ -1353,20 +1460,18 @@ angular.module('Shipping.Controllers', ['ionic'])
                     return;
                 }
 
-                Qty_Per_Tag = resDataSet2[0].Qty_per_TAG;
+                Qty_Per_Tag = (resDataSet2[0].Qty_per_TAG) ? resDataSet2[0].Qty_per_TAG : 0.00;
                 HoldFlag = '';
 
                 var res_FindLocationAndInsert_NewIn = FindLocationAndInsert_NewIn(objsession, dataSearch, $scope.data.TF, Qty_Per_Tag, HoldFlag);
 
                 var res_getTag_Detail_Putaway_TPIPL = getTag_Detail_Putaway_TPIPL(objsession, $scope.data.TF);
 
-                var res_getTag_Sum = getTag_Sum(objsession, $scope.data.TF, dataSearch);
-
-                Promise.all([res_FindLocationAndInsert_NewIn, res_getTag_Detail_Putaway_TPIPL,res_getTag_Sum]).then(function (res) {
+                Promise.all([res_FindLocationAndInsert_NewIn, res_getTag_Detail_Putaway_TPIPL]).then(function (res) {
 
                     if (res[0] != 'True') {
                         AppService.err('แจ้งเตือน', res[0], '');
-                        return;
+                        return false;
                     }
 
                     //AppService.succ('เก็บเรียบร้อย','');
@@ -1392,8 +1497,17 @@ angular.module('Shipping.Controllers', ['ionic'])
                         $scope.data.ItemStatusFrom = 'BG';
                         $scope.data.ItemStatusTo = 'WH';
                     }
+                
+                    return  getTag_Sum(objsession, $scope.data.TF, dataSearch);
 
-                    var resDataSet4 = (!res[2]['diffgr:diffgram']) ? {} : res[2]['diffgr:diffgram'].NewDataSet.Table1;
+                }).then(function(res2){
+                    
+                    if(!res2)
+                    {
+                        return;
+                    }
+
+                    var resDataSet4 = (!res2['diffgr:diffgram']) ? {} : res2['diffgr:diffgram'].NewDataSet.Table1;
 
                     if(Object.keys(resDataSet4).length >= 0)
                     {
@@ -1816,20 +1930,18 @@ angular.module('Shipping.Controllers', ['ionic'])
                     return;
                 }
 
-                Qty_Per_Tag = resDataSet2[0].Qty_per_TAG;
+                Qty_Per_Tag = (resDataSet2[0].Qty_per_TAG) ? resDataSet2[0].Qty_per_TAG : 0.00;
                 HoldFlag = '';
 
                 var res_FindLocationAndInsert_NewIn = FindLocationAndInsert_NewIn(objsession, dataSearch, $scope.data.TF, Qty_Per_Tag, HoldFlag);
 
                 var res_getTag_Detail_Putaway_TPIPL = getTag_Detail_Putaway_TPIPL(objsession, $scope.data.TF);
 
-                var res_getTag_Sum = getTag_Sum(objsession, $scope.data.TF, dataSearch);
-
-                Promise.all([res_FindLocationAndInsert_NewIn, res_getTag_Detail_Putaway_TPIPL,res_getTag_Sum]).then(function (res) {
+                Promise.all([res_FindLocationAndInsert_NewIn, res_getTag_Detail_Putaway_TPIPL]).then(function (res) {
 
                     if (res[0] != 'True') {
                         AppService.err('แจ้งเตือน', res[0], '');
-                        return;
+                        return false;
                     }
 
                     //AppService.succ('เก็บเรียบร้อย','');
@@ -1856,7 +1968,16 @@ angular.module('Shipping.Controllers', ['ionic'])
                         $scope.data.ItemStatusTo = 'WH';
                     }
 
-                    var resDataSet4 = (!res[2]['diffgr:diffgram']) ? {} : res[2]['diffgr:diffgram'].NewDataSet.Table1;
+                    return getTag_Sum(objsession, $scope.data.TF, dataSearch);
+
+                }).then(function(res2){
+
+                    if(!res2)
+                    {
+                        return;
+                    }
+
+                    var resDataSet4 = (!res2['diffgr:diffgram']) ? {} : res2['diffgr:diffgram'].NewDataSet.Table1;
 
                     if(Object.keys(resDataSet4).length >= 0)
                     {

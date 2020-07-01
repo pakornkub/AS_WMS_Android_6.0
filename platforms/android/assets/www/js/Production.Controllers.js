@@ -425,7 +425,7 @@ angular.module('Production.Controllers', ['ionic'])
                 pQtyPerPallet: pQtyPerPallet,
                 pstrNewPalletStatus_Index: pstrNewPalletStatus_Index,
                 pstrTag_no: pstrTag_no,
-                plot: plot,
+                plot: (plot ? plot : ''),
                 plocation_Alias: plocation_Alias
             }).then(function (res) {
                 resolve(res);
@@ -944,8 +944,8 @@ angular.module('Production.Controllers', ['ionic'])
                 baggingorder_index: baggingorder_index,
                 roll: roll,
                 seq: seq,
-                length: length,
-                weight: weight
+                len: parseFloat(length),
+                weight: parseFloat(weight)
             }).then(function (res) {
                 resolve(res);
             }).catch(function (res) {
