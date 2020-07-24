@@ -42,9 +42,9 @@ angular.module('Menu.Controllers', ['ionic'])
 						$scope.menuList = { Main: 'เมนูหลัก', Additional: 'เมนูเสริม' };
 						//console.log('User:WH');
 						break;
-					case '0010000000007':
+					case '0010000000007': case '0010000000106':
 						/*ST*/
-						$scope.menuList = { MainMenu: 'เมนูหลัก', Additional: 'เมนูเสริม' , Store: 'Store'};
+						$scope.menuList = { Main: 'เมนูหลัก', Additional: 'เมนูเสริม' , Store: 'Store'};
 						//console.log('User:ST');
 						break;
 					case '0010000000112': 
@@ -80,7 +80,7 @@ angular.module('Menu.Controllers', ['ionic'])
 						$scope.menuList = { main_NewInUnwire: 'NewIn, Unwire', main_NewInUnwireBP: 'NewIn, Unwire BP', main_ProductGeneralLot: 'รับสินค้าทั่วไปต่าง Lot', main_UserCustomerReturn: 'รับ User Return/Customer Return, Movein', additional_MoveLocation: 'เก็บเข้า Rack', main_PayProductGenaral: 'จ่ายสินค้าทั่วไป' };
 						//console.log('User:WH');
 						break;
-					case '0010000000007':
+					case '0010000000007': case '0010000000106':
 						/*ST*/
 						$scope.menuList = { main_ProductGeneral: 'รับสินค้าทั่วไป', main_UserCustomerReturn: 'รับ User Return/Customer Return, Movein', additional_MoveLocation: 'เก็บเข้า Rack', main_PayProductGenaral: 'จ่ายสินค้าทั่วไป' };
 						//console.log('User:ST');
@@ -115,7 +115,7 @@ angular.module('Menu.Controllers', ['ionic'])
 						/*SH*/
 					case '0010000000004': case '0010000000005': case '0010000000104': case '0010000000094':
 						/*WH*/
-					case '0010000000007':
+					case '0010000000007': case '0010000000106':
 						/*ST*/
 						$scope.menuList = { pallet_SplitPallet: 'Split Pallet', pallet_CombinePallet: 'Combine Pallet', store_WeighingChemical: 'Weighing Chemical' };
 						//console.log('User:ST');
@@ -150,7 +150,7 @@ angular.module('Menu.Controllers', ['ionic'])
 						/*SH*/
 					case '0010000000004': case '0010000000005': case '0010000000104': case '0010000000094':
 						/*WH*/
-					case '0010000000007':
+					case '0010000000007': case '0010000000106':
 						/*ST*/
 					case '0010000000112':
 						/*WH_SH*/
@@ -179,7 +179,7 @@ angular.module('Menu.Controllers', ['ionic'])
 						break;
 					case '0010000000004': case '0010000000005': case '0010000000104': case '0010000000094':
 						/*WH*/
-					case '0010000000007':
+					case '0010000000007': case '0010000000106':
 						/*ST*/
 					case '0010000000112':
 						/*WH_SH*/
@@ -223,7 +223,7 @@ angular.module('Menu.Controllers', ['ionic'])
 						$scope.menuList = { additional_MoveRoll: 'Move Roll', additional_MovePallet: 'Move Pallet', additional_MoveLocation: 'Move Location', additional_CheckRollPallet: 'Check Roll, Pallet', additional_CheckLocation: 'Check Location' };
 						//console.log('User:WH');
 						break;
-					case '0010000000007':
+					case '0010000000007': case '0010000000106':
 						/*ST*/
 						$scope.menuList = { additional_MovePallet: 'Move Pallet', additional_MoveLocation: 'Move Location', additional_CheckRollPallet: 'Check Roll, Pallet', additional_CheckLocation: 'Check Location' };
 						//console.log('User:ST');
@@ -262,7 +262,7 @@ angular.module('Menu.Controllers', ['ionic'])
 						//$scope.menuList = { pallet_ClearPallet: 'Clear Pallet' };
 						//console.log('User:WH');
 						break;
-					case '0010000000007':
+					case '0010000000007': case '0010000000106':
 						/*ST*/
 					case '0010000000112':
 						/*WH_SH*/
@@ -294,7 +294,7 @@ angular.module('Menu.Controllers', ['ionic'])
 						/*SH*/
 					case '0010000000004': case '0010000000005': case '0010000000003': case '0010000000104': case '0010000000094':
 						/*WH*/
-					case '0010000000007': 
+					case '0010000000007': case '0010000000106':
 						/*ST*/
 					case '0010000000112':
 						/*WH_SH*/

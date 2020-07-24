@@ -153,6 +153,7 @@ angular.module('Production.Controllers', ['ionic'])
                     Tag_No = null;
                     clearData();
                     $ionicHistory.goBack();
+                    return;
                 }
 
                 if(Object.keys(resDataSet2).length > 0)
@@ -171,6 +172,7 @@ angular.module('Production.Controllers', ['ionic'])
                     Tag_No = null;
                     AppService.err('แจ้งเตือน', 'จัดเก็บรายการเรียบร้อยแล้ว', '');
                     $ionicHistory.goBack();
+                    return;
                 }
     
                 $scope.data.PalletCount = $scope.datatablesListLength2 + '/' + Object.keys(resDataSet).length;

@@ -1552,6 +1552,7 @@ angular.module('Main.Controllers', ['ionic'])
                 Tag_No = null;
                 clearData();
                 $ionicHistory.goBack();
+                return;
             }
 
             $scope.datatablesList = resDataSet;
@@ -1572,6 +1573,7 @@ angular.module('Main.Controllers', ['ionic'])
                 Tag_No = null;
                 AppService.err('แจ้งเตือน', 'จัดเก็บรายการเรียบร้อยแล้ว', '');
                 $ionicHistory.goBack();
+                return;
             }
 
             $scope.data.SKU = datatables[0].Str1_T;
@@ -1760,7 +1762,7 @@ angular.module('Main.Controllers', ['ionic'])
                 pQtyPerPallet: pQtyPerPallet,
                 pstrNewPalletStatus_Index: pstrNewPalletStatus_Index,
                 pstrTag_no: pstrTag_no,
-                plot: plot,
+                plot: (plot ? plot : ''),
                 plocation_Alias: plocation_Alias
             }).then(function (res) {
                 resolve(res);
@@ -1893,7 +1895,7 @@ angular.module('Main.Controllers', ['ionic'])
             if (!Withdraw_Index) {
 
                 $ionicLoading.hide();
-                return;
+                return false;
 
             } else {
 
@@ -1901,7 +1903,7 @@ angular.module('Main.Controllers', ['ionic'])
 
                 var res_GetWithdrawItem = GetWithdrawItem(objsession, Withdraw_Index);
 
-                Promise.all([res_GetWithdraw_Request, res_GetWithdrawItem]).then(function (res) {
+                return Promise.all([res_GetWithdraw_Request, res_GetWithdrawItem]).then(function (res) {
 
                     var resDataSet = (!res[0]['diffgr:diffgram']) ? {} : res[0]['diffgr:diffgram'].NewDataSet.Table1;
 
@@ -1940,11 +1942,13 @@ angular.module('Main.Controllers', ['ionic'])
 
                         $ionicLoading.hide();
 
+                        return true;
+
                     } else {
 
                         clearData();
                         AppService.err('แจ้งเตือน', 'ไม่มีรายละเอียดของใบเบิกนี้', 'PalletNo');
-                        return;
+                        return false;
                     }
 
                 }).catch(function (error) {
@@ -2380,7 +2384,7 @@ angular.module('Main.Controllers', ['ionic'])
                     return 'True1';
                 }
 
-                if (resDataSet2[0].Customer_Index != datatablesList[0].Customer_Index) {
+                if (resDataSet2[0].Customer_Index != $scope.datatablesList[0].Customer_Index) {
                     AppService.err('ลูกค้าไม่ตรง !', 'พาเลท ' + $scope.data.PalletNo + 'ไม่ใช่ลูกค้าคนนี้', 'PalletNo');
                     return 'True1';
                 }
@@ -2560,40 +2564,59 @@ angular.module('Main.Controllers', ['ionic'])
         try {
 
             $ionicLoading.show();
-
-            //AppService.blur();
+	
+            AppService.blur();
 
             var objsession = angular.copy(LoginService.getLoginData());
 
             //การยืนยันไม่ควรตรวจสอบจากหน้าจอควร Query ใหม่แบบ RealTime หรือ Load Detail ใหม่
-            loadDO(Withdraw_Index, Withdraw_No)
+            var flagLoadDO = loadDO(Withdraw_Index, Withdraw_No);
 
-            //Check picking
-            var countSTATE = 0;
-
-            if ($scope.datatablesListLength > 0) {
-                for (var x in $scope.datatablesList) {
-                    if ($scope.datatablesList[x]['WITHDRAWITEM-STATUS'] != -9) {
-                        countSTATE++;
-                    }
-                }
-
-                if (countSTATE > 0) {
-                    $scope.data.PalletNo = null;
-                    AppService.err('แจ้งเตือน', 'หยิบไม่ครบรายการ', 'PalletNo');
-                    return;
-                }
+            if(flagLoadDO === false)
+            {
+                $ionicLoading.hide();
+                AppService.err('แจ้งเตือน', 'ไม่ได้เลือก DO หรือ ไม่มีรายการเบิกใน DO นี้', 'PalletNo');
+                return;
             }
 
-            $ionicLoading.show();
+            flagLoadDO.then(function(res){
 
-            var res_waitConfirmWithdrawStatus_Confirm_TranferStatus = waitConfirmWithdrawStatus_Confirm_TranferStatus(objsession, Withdraw_Index, 2, _CONST_HEADERTYPE);
+                if(res)
+                {
+                    //Check picking
+                    var countSTATE = 0;
+        
+                    if ($scope.datatablesListLength > 0) {
+                        for (var x in $scope.datatablesList) {
+                            if ($scope.datatablesList[x]['WITHDRAWITEM-STATUS'] != -9) {
+                                countSTATE++;
+                            }
+                        }
+        
+                        if (countSTATE > 0) {
+                            $scope.data.PalletNo = null;
+                            AppService.err('แจ้งเตือน', 'หยิบไม่ครบรายการ', 'PalletNo');
+                            return false;
+                        }
+                    }
+        
+                    $ionicLoading.show();
+        
+                    return waitConfirmWithdrawStatus_Confirm_TranferStatus(objsession, Withdraw_Index, 2, _CONST_HEADERTYPE);
 
-            res_waitConfirmWithdrawStatus_Confirm_TranferStatus.then(function (res) {
+                }
+
+                return false;
+
+            }).then(function(res2){
+
+                if(res2 === false)
+                {
+                    $ionicLoading.hide();
+                    return;
+                }
 
                 AppService.succ('หยิบครบทุกรายการแล้ว (รอการยืนยันการหยิบสินค้า)', '');
-
-                $ionicLoading.hide();
 
                 $ionicHistory.goBack();
 
@@ -2927,7 +2950,7 @@ angular.module('Main.Controllers', ['ionic'])
                 objsession: objsession,
                 pstrTag_No: pstrTag_No,
                 pstrPallet_No: pstrPallet_No,
-                PLot: PLot,
+                PLot: (PLot ? PLot : ''),
                 pstrPalletstatus_index: pstrPalletstatus_index,
             }).then(function (res) {
                 resolve(res);
@@ -3089,6 +3112,7 @@ angular.module('Main.Controllers', ['ionic'])
                     Tag_No = null;
                     clearData();
                     $ionicHistory.goBack();
+                    return;
                 }
 
                 if(Object.keys(resDataSet2).length > 0)
@@ -3107,6 +3131,7 @@ angular.module('Main.Controllers', ['ionic'])
                     Tag_No = null;
                     AppService.err('แจ้งเตือน', 'จัดเก็บรายการเรียบร้อยแล้ว', '');
                     $ionicHistory.goBack();
+                    return;
                 }
     
                 $scope.data.PalletCount = $scope.datatablesListLength2 + '/' + Object.keys(resDataSet).length;
@@ -3361,7 +3386,7 @@ angular.module('Main.Controllers', ['ionic'])
                 pQtyPerPallet: pQtyPerPallet,
                 pstrNewPalletStatus_Index: pstrNewPalletStatus_Index,
                 pstrTag_no: pstrTag_no,
-                plot: plot,
+                plot: (plot ? plot : ''),
                 plocation_Alias: plocation_Alias
             }).then(function (res) {
                 resolve(res);
