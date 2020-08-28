@@ -5,7 +5,7 @@
  */
 angular.module('Login.Controllers', ['ionic'])
 
-	.controller('LoginCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, App, AppService, LoginService, $filter, $ionicPlatform, $cordovaKeyboard, $ionicHistory, md5) {
+	.controller('LoginCtrl', function ($scope, $rootScope, $ionicPopup, $state, $ionicLoading, App, AppService, LoginService, $filter, $ionicPlatform, $cordovaKeyboard, $ionicHistory, md5) {
 
 		/*--------------------------------------
 		Data Function
@@ -22,12 +22,18 @@ angular.module('Login.Controllers', ['ionic'])
 			setFocus('password');
 		});
 
+		$scope.$on("$destroy", function () {
+			if ($rootScope.promise) {
+				$rootScope.stopCount();
+			}
+		});
+
 		/*--------------------------------------
 		Call API LoadBranch
 		------------------------------------- */
 		var LoadBranch_API = function() {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			App.API('LoadBranch').then(function (res) {
 				$scope.loadBranchList = (!res['diffgr:diffgram']) ? {} : res['diffgr:diffgram'].NewDataSet.Table1;
@@ -35,7 +41,7 @@ angular.module('Login.Controllers', ['ionic'])
 			}).catch(function (res) {
 				AppService.err('LoadBranch', res);
 			}).finally(function (res) {
-				$ionicLoading.hide();
+				AppService.stopLoading();
 			});
 
 		}
@@ -47,7 +53,7 @@ angular.module('Login.Controllers', ['ionic'])
 		------------------------------------- */
 		$scope.login = function (login) {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			if (!login.database) {
 				AppService.err('แจ้งเตือน', 'กรุณาเลือกฐานข้อมูล', 'password');
@@ -98,7 +104,7 @@ angular.module('Login.Controllers', ['ionic'])
 					'namePage': 'Main Menu'
 				}); //Main Menu
 
-				$ionicLoading.hide();
+				AppService.stopLoading();
 
 			}).catch(function (error) {
 				console.log("Error occurred");

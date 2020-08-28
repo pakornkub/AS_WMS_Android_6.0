@@ -5,7 +5,7 @@
  */
 angular.module('Store.Controllers', ['ionic'])
 
-.controller('Store_WeighingChemicalCtrl', function($ionicPopup,$ionicLoading, $scope, $state, App, LoginService, AppService, $cordovaBarcodeScanner) {
+.controller('Store_WeighingChemicalCtrl', function($ionicPopup,$ionicLoading, $scope, $rootScope, $state, App, LoginService, AppService, $cordovaBarcodeScanner) {
     $scope.data = {};
     $scope.getBagging = {};
     $scope.palletdetail = {};
@@ -16,10 +16,16 @@ angular.module('Store.Controllers', ['ionic'])
     var Class_product = "";
     var Ref_no5 = "";
 
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
+
     /*--------------------------------------
     Call API PD
     ------------------------------------- */
-    $ionicLoading.show();
+    AppService.startLoading();
 
     App.API('getProductionMixing', {
         objsession: angular.copy(LoginService.getLoginData()),
@@ -31,7 +37,7 @@ angular.module('Store.Controllers', ['ionic'])
     }).catch(function(res) {
         AppService.err('getProductionMixing', res);
     }).finally(function() {
-        $ionicLoading.hide();
+        AppService.stopLoading();
     });
 
     
@@ -106,7 +112,7 @@ angular.module('Store.Controllers', ['ionic'])
             }).catch(function (res) {
                 AppService.err('getTagByPallet_WeighingChemical', res);
             }).finally(function () {
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
             });
         
@@ -154,7 +160,7 @@ angular.module('Store.Controllers', ['ionic'])
                         }).then(function(res) {
                         if(res) {
                             
-                            $ionicLoading.show();
+                            AppService.startLoading();
         
                             App.API('update_WeighingChemical', {
                                 objsession: angular.copy(LoginService.getLoginData()),
@@ -173,7 +179,7 @@ angular.module('Store.Controllers', ['ionic'])
                             }).catch(function(res) {
                                 AppService.err('update_WeighingChemical', res);
                             }).finally(function() {
-                                $ionicLoading.hide();
+                                AppService.stopLoading();
                             });
         
                         }
@@ -188,7 +194,7 @@ angular.module('Store.Controllers', ['ionic'])
         }).catch(function(res) {
             AppService.err('CheckPallet_WeighingChemical', res);
         }).finally(function() {
-            $ionicLoading.hide();
+            AppService.stopLoading();
         });
         
         

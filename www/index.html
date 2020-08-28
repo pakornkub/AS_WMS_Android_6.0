@@ -73,3 +73,7 @@
 
   </body>
 </html>
+
+<script id="loading.html" type="text/ng-template">
+  <ion-spinner icon="android"></ion-spinner><br>Loading... {{countDown}}<i ng-click="stopLoading()" ng-class="{displayblock: closeLoading === 1,displaynone: closeLoading === 0}" class="icon ion-close"></i>
+</script>

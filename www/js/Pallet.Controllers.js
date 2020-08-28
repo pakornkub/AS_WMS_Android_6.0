@@ -5,7 +5,7 @@
  */
 angular.module('Pallet.Controllers', [])
 
-	.controller('Pallet_ClearPalletCtrl', function ($scope, $state, $ionicPopup, $cordovaBarcodeScanner, AppService, LoginService, App, $ionicLoading) {
+	.controller('Pallet_ClearPalletCtrl', function ($scope, $rootScope, $state, $ionicPopup, $cordovaBarcodeScanner, AppService, LoginService, App, $ionicLoading) {
 
 		$scope.data = {};
 		$scope.dataTableItem = [];
@@ -15,6 +15,12 @@ angular.module('Pallet.Controllers', [])
 
 		$scope.$on('$ionicView.enter', function () {
 			setFocus('PalletNo');
+		});
+
+		$scope.$on("$destroy", function () {
+			if ($rootScope.promise) {
+				$rootScope.stopCount();
+			}
 		});
 
 		/*--------------------------------------
@@ -113,7 +119,7 @@ angular.module('Pallet.Controllers', [])
 		------------------------------------- */
 		var Check_Pallet = function (dataS) {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -165,7 +171,7 @@ angular.module('Pallet.Controllers', [])
 
 										$scope.dataTableItemLength = Object.keys($scope.dataTableItem).length;
 
-										$ionicLoading.hide();
+										AppService.stopLoading();
 										setFocus();
 
 									}
@@ -178,7 +184,7 @@ angular.module('Pallet.Controllers', [])
 							} else {
 								//AppService.err('', 'Pallet No. นี้มีสินค้าใน Stock แล้ว', 'PalletNo');
 
-								$ionicLoading.hide();
+								AppService.stopLoading();
 
 								$ionicPopup.confirm({
 									title: 'Confirm',
@@ -186,7 +192,7 @@ angular.module('Pallet.Controllers', [])
 								}).then(function (res) {
 
 									if (res) {
-										$ionicLoading.show();
+										AppService.startLoading();
 
 										AppService.blur();
 
@@ -214,7 +220,7 @@ angular.module('Pallet.Controllers', [])
 
 												$scope.dataTableItemLength = Object.keys($scope.dataTableItem).length;
 
-												$ionicLoading.hide();
+												AppService.stopLoading();
 												setFocus();
 
 											}
@@ -278,7 +284,7 @@ angular.module('Pallet.Controllers', [])
 
 
 					if (res) {
-						$ionicLoading.show();
+						AppService.startLoading();
 
 						AppService.blur();
 
@@ -338,7 +344,7 @@ angular.module('Pallet.Controllers', [])
 
 	})
 
-	.controller('Pallet_SplitPalletCtrl', function ($scope, $state, $ionicLoading, $cordovaBarcodeScanner, AppService, LoginService, App, $ionicLoading) {
+	.controller('Pallet_SplitPalletCtrl', function ($scope, $rootScope, $state, $ionicLoading, $cordovaBarcodeScanner, AppService, LoginService, App, $ionicLoading) {
 
 		/*--------------------------------------
 		Data Function
@@ -368,6 +374,12 @@ angular.module('Pallet.Controllers', [])
 
 		$scope.$on('$ionicView.enter', function () {
 			setFocus('PalletNo');
+		});
+
+		$scope.$on("$destroy", function () {
+			if ($rootScope.promise) {
+				$rootScope.stopCount();
+			}
 		});
 
 		/*--------------------------------------
@@ -424,7 +436,7 @@ angular.module('Pallet.Controllers', [])
 		function searchPallet(dataSearch, id) {
 			try {
 
-				$ionicLoading.show();
+				AppService.startLoading();
 
 				AppService.blur();
 
@@ -470,7 +482,7 @@ angular.module('Pallet.Controllers', [])
 								return;
 							}
 
-							$ionicLoading.hide();
+							AppService.stopLoading();
 
 						}).catch(function (error) {
 							console.log("Error occurred");
@@ -660,7 +672,7 @@ angular.module('Pallet.Controllers', [])
 		function saveSplit() {
 			try {
 
-				$ionicLoading.show();
+				AppService.startLoading();
 
 				AppService.blur();
 
@@ -691,7 +703,7 @@ angular.module('Pallet.Controllers', [])
 					if (res == 'True') {
 						clearData();
 						AppService.succ('ทำการแตกพาเลทสินค้าเรียบร้อย', 'PalletNo');
-						$ionicLoading.hide();
+						AppService.stopLoading();
 					}
 
 				}).catch(function (error) {
@@ -755,7 +767,7 @@ angular.module('Pallet.Controllers', [])
 
 	})
 
-	.controller('Pallet_CombinePalletCtrl', function ($scope, $state, $ionicLoading, $cordovaBarcodeScanner, AppService, LoginService, App, $ionicLoading) {
+	.controller('Pallet_CombinePalletCtrl', function ($scope, $rootScope, $state, $ionicLoading, $cordovaBarcodeScanner, AppService, LoginService, App, $ionicLoading) {
 
 		/*--------------------------------------
 		Data Function
@@ -787,6 +799,12 @@ angular.module('Pallet.Controllers', [])
 
 		$scope.$on('$ionicView.enter', function () {
 			setFocus('PalletNo');
+		});
+
+		$scope.$on("$destroy", function () {
+			if ($rootScope.promise) {
+				$rootScope.stopCount();
+			}
 		});
 
 		/*--------------------------------------
@@ -843,7 +861,7 @@ angular.module('Pallet.Controllers', [])
 		function searchPallet(dataSearch, id) {
 			try {
 
-				$ionicLoading.show();
+				AppService.startLoading();
 
 				AppService.blur();
 
@@ -889,7 +907,7 @@ angular.module('Pallet.Controllers', [])
 								return;
 							}
 
-							$ionicLoading.hide();
+							AppService.stopLoading();
 
 						}).catch(function (error) {
 							console.log("Error occurred");
@@ -928,7 +946,7 @@ angular.module('Pallet.Controllers', [])
 								return;
 							}
 
-							$ionicLoading.hide();
+							AppService.stopLoading();
 
 						}).catch(function (error) {
 							console.log("Error occurred");
@@ -1106,7 +1124,7 @@ angular.module('Pallet.Controllers', [])
 		function saveSplit() {
 			try {
 
-				$ionicLoading.show();
+				AppService.startLoading();
 
 				AppService.blur();
 
@@ -1145,7 +1163,7 @@ angular.module('Pallet.Controllers', [])
 					if (res == 'True') {
 						clearData();
 						AppService.succ('ทำการรวมพาเลทสินค้าเรียบร้อย', 'PalletNo');
-						$ionicLoading.hide();
+						AppService.stopLoading();
 					}
 					else {
 						$scope.data.PalletNo2 = null;

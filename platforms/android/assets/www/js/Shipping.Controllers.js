@@ -6,7 +6,7 @@
 */
 angular.module('Shipping.Controllers', ['ionic'])
 
-.controller('Shipping_SaleCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicHistory) {
+.controller('Shipping_SaleCtrl', function ($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicHistory) {
 
     /*--------------------------------------
     Data Function
@@ -58,12 +58,18 @@ angular.module('Shipping.Controllers', ['ionic'])
         setFocus('PalletNo');
     });
 
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
+
     /*--------------------------------------
     Call API GetWithdraw_Request
     ------------------------------------- */
     $scope.GetWithdraw_Request = function () {
 
-        $ionicLoading.show();
+        AppService.startLoading();
 
         var pstrWhere = " AND DocumentType_Index = '0010000000006' and Status IN (1) and Customer_Index in (select  Customer_Index from x_Department_Customer where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and IsUse = 1) ";
 
@@ -88,7 +94,7 @@ angular.module('Shipping.Controllers', ['ionic'])
         }).catch(function (res) {
             AppService.err('GetWithdraw_Request', res);
         }).finally(function (res) {
-            $ionicLoading.hide();
+            AppService.stopLoading();
         });
     };
 
@@ -118,13 +124,13 @@ angular.module('Shipping.Controllers', ['ionic'])
     function loadDO(Withdraw_Index, Withdraw_No) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             var objsession = angular.copy(LoginService.getLoginData());
 
             if (!Withdraw_Index) {
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
                 return false;
 
             } else {
@@ -170,7 +176,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
                         setFocus('PalletNo');
 
-                        $ionicLoading.hide();
+                        AppService.stopLoading();
 
                         return true;
 
@@ -282,7 +288,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -321,7 +327,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
                     $scope.data.PalletNo = null;
                     setFocus('PalletNo');
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
                     return;
 
                 }).catch(function (error) {
@@ -363,7 +369,7 @@ angular.module('Shipping.Controllers', ['ionic'])
                             $scope.data.PalletNo = null;
                             setFocus(id);
 
-                            $ionicLoading.hide();
+                            AppService.stopLoading();
                         }
 
                         i++;
@@ -388,7 +394,7 @@ angular.module('Shipping.Controllers', ['ionic'])
                     $scope.data.PalletNo = null;
                     setFocus(id);
 
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
 
                 }).catch(function (error) {
                     console.log("Error occurred");
@@ -793,7 +799,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     function savePallet() {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 	
             AppService.blur();
 
@@ -804,7 +810,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
             if(flagLoadDO === false)
             {
-                $ionicLoading.hide();
+                AppService.stopLoading();
                 AppService.err('แจ้งเตือน', 'ไม่ได้เลือก DO หรือ ไม่มีรายการเบิกใน DO นี้', 'PalletNo');
                 return;
             }
@@ -830,7 +836,7 @@ angular.module('Shipping.Controllers', ['ionic'])
                         }
                     }
         
-                    $ionicLoading.show();
+                    AppService.startLoading();
         
                     return waitConfirmWithdrawStatus_Confirm_TranferStatus(objsession, Withdraw_Index, 2, _CONST_HEADERTYPE);
 
@@ -842,7 +848,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
                 if(res2 === false)
                 {
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
                     return;
                 }
 
@@ -960,7 +966,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     function searchPallet_Modal(dataSearch, id) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -987,7 +993,7 @@ angular.module('Shipping.Controllers', ['ionic'])
                 $scope.isDisable = true;
                 setFocus('Modal_Location');
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
             }).catch(function (error) {
                 console.log("Error occurred");
@@ -1005,7 +1011,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     function searchLocation_Modal(dataSearch, id) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -1035,7 +1041,7 @@ angular.module('Shipping.Controllers', ['ionic'])
                 $scope.modal_data.Lot = datatables[0].LOT_x002F_BATCH;
                 Tag_No = datatables[0].TAG_x0020_NO;
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
             }
             else {
@@ -1052,7 +1058,7 @@ angular.module('Shipping.Controllers', ['ionic'])
                         Tag_No = resDataSet[0].tag_no;
                     }
 
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
 
                 }).catch(function (error) {
                     console.log("Error occurred");
@@ -1113,7 +1119,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     function savePallet_Modal() {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -1157,7 +1163,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
                 }
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
             }).catch(function (error) {
                 console.log("Error occurred");
@@ -1193,7 +1199,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
 })
 
-.controller('Shipping_NewInShippingCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
+.controller('Shipping_NewInShippingCtrl', function ($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
 
     /*--------------------------------------
     Data Function
@@ -1240,6 +1246,12 @@ angular.module('Shipping.Controllers', ['ionic'])
         setFocus('PalletNo');
     });
 
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
+
     $scope.DisplayFlag = 0
 
     $scope.changeDisplay = function (value) {
@@ -1253,7 +1265,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     ------------------------------------- */
     $scope.GetOrderTopic_API = function () {
 
-        $ionicLoading.show();
+        AppService.startLoading();
 
         var pstrWhere = " And (ms_DocumentType.DocumentType_Index IN ('0010000000057','0010000000089')) and ((select count(*) from tb_Tag where tb_Order.Order_Index = tb_tag.Order_Index and Tag_Status <> -1) > 0) " +
             " and tb_Order.Customer_Index in (select  Customer_Index from x_Department_Customer where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and IsUse = 1 ) ";
@@ -1277,7 +1289,7 @@ angular.module('Shipping.Controllers', ['ionic'])
         }).catch(function (res) {
             AppService.err('GetOrderTopic', res);
         }).finally(function (res) {
-            $ionicLoading.hide();
+            AppService.stopLoading();
         });
     };
 
@@ -1297,7 +1309,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     function loadTF(Order_Index) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             var objsession = angular.copy(LoginService.getLoginData());
 
@@ -1305,7 +1317,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
                 $scope.data = {};
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
                 return;
 
@@ -1340,7 +1352,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
                     setFocus('PalletNo');
 
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
 
                 }).catch(function (error) {
                     console.log("Error occurred");
@@ -1441,7 +1453,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     function searchPallet(dataSearch) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -1539,7 +1551,7 @@ angular.module('Shipping.Controllers', ['ionic'])
                         updatePalletSumWeight(objsession, dataSearch, $scope.data.Length, $scope.data.Weight, 'NewIn_V2', ' ', ' ');
                     }
 
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
 
                 }).catch(function (error) {
                     console.log("Error occurred");
@@ -1663,7 +1675,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
 })
 
-.controller('Shipping_CustomerReturnCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
+.controller('Shipping_CustomerReturnCtrl', function ($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
 
     /*--------------------------------------
     Data Function
@@ -1710,6 +1722,12 @@ angular.module('Shipping.Controllers', ['ionic'])
         setFocus('PalletNo');
     });
 
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
+
     $scope.DisplayFlag = 0
 
     $scope.changeDisplay = function (value) {
@@ -1723,7 +1741,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     ------------------------------------- */
     $scope.GetOrderTopic_API = function () {
 
-        $ionicLoading.show();
+        AppService.startLoading();
 
         var pstrWhere = " And (ms_DocumentType.DocumentType_Index IN ('0010000000004')) " +
             " and tb_Order.Customer_Index in (select  Customer_Index from x_Department_Customer where Department_Index = '" + angular.copy(LoginService.getLoginData('Department_Index')) + "' and IsUse = 1 ) ";
@@ -1747,7 +1765,7 @@ angular.module('Shipping.Controllers', ['ionic'])
         }).catch(function (res) {
             AppService.err('GetOrderTopic', res);
         }).finally(function (res) {
-            $ionicLoading.hide();
+            AppService.stopLoading();
         });
     };
 
@@ -1767,7 +1785,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     function loadTF(Order_Index) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             var objsession = angular.copy(LoginService.getLoginData());
 
@@ -1775,7 +1793,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
                 $scope.data = {};
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
                 return;
 
@@ -1810,7 +1828,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
                     setFocus('PalletNo');
 
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
 
                 }).catch(function (error) {
                     console.log("Error occurred");
@@ -1911,7 +1929,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     function searchPallet(dataSearch) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -2009,7 +2027,7 @@ angular.module('Shipping.Controllers', ['ionic'])
                         updatePalletSumWeight(objsession, dataSearch, $scope.data.Length, $scope.data.Weight, 'NewIn_V2', ' ', ' ');
                     }
 
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
 
                 }).catch(function (error) {
                     console.log("Error occurred");

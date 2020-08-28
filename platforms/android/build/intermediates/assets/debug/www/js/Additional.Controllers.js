@@ -5,7 +5,7 @@
 */
 angular.module('Additional.Controllers', ['ionic'])
 
-.controller('Additional_CheckLocationCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
+.controller('Additional_CheckLocationCtrl', function ($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
 
 	$scope.data = {};
 	$scope.dataTableItem = {};
@@ -30,6 +30,12 @@ angular.module('Additional.Controllers', ['ionic'])
 
 	$scope.$on('$ionicView.enter', function () {
 		setFocus('Location');
+	});
+
+	$scope.$on("$destroy", function () {
+		if ($rootScope.promise) {
+			$rootScope.stopCount();
+		}
 	});
 
 	$scope.clear = function () {
@@ -95,7 +101,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	function Check_Location(data) {
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -132,7 +138,7 @@ angular.module('Additional.Controllers', ['ionic'])
 					$scope.data.Location = null;
 					setFocus('Location');
 
-					$ionicLoading.hide();
+					AppService.stopLoading();
 
 				}).catch(function (error) {
 					console.log("Error occurred");
@@ -185,7 +191,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 })
 
-.controller('Additional_MoveLocationCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
+.controller('Additional_MoveLocationCtrl', function ($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
 
 	/*--------------------------------------
 	Data Function
@@ -220,6 +226,12 @@ angular.module('Additional.Controllers', ['ionic'])
 		setFocus('PalletNo');
 	});
 
+	$scope.$on("$destroy", function () {
+		if ($rootScope.promise) {
+			$rootScope.stopCount();
+		}
+	});
+
 	$scope.data.PalletStatusTo = '0010000000004';
 
 	/*--------------------------------------
@@ -227,7 +239,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	------------------------------------- */
 	var GetStatusItem = function () {
 
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('GetStatusItem', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -242,7 +254,7 @@ angular.module('Additional.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('GetStatusItem', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
 	};
 
@@ -308,7 +320,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	function searchPallet(dataSearch, id) {
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -366,7 +378,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 				setFocus('Location');
 
-				$ionicLoading.hide();
+				AppService.stopLoading();
 
 			}).catch(function (error) {
 				console.log("Error occurred");
@@ -429,7 +441,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	function savePallet() {
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -471,7 +483,7 @@ angular.module('Additional.Controllers', ['ionic'])
 						return;
 					}
 
-					$ionicLoading.hide();
+					AppService.stopLoading();
 
 				}).catch(function (error) {
 					console.log("Error occurred");
@@ -557,7 +569,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 })
 
-.controller('Additional_MovePalletCtrl', function($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $timeout) {
+.controller('Additional_MovePalletCtrl', function($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $timeout) {
   
 	/*--------------------------------------
 	Data Function
@@ -608,6 +620,12 @@ angular.module('Additional.Controllers', ['ionic'])
 		setFocus('PalletNo');
 	});
 
+	$scope.$on("$destroy", function () {
+		if ($rootScope.promise) {
+			$rootScope.stopCount();
+		}
+	});
+
 	$scope.DisplayFlag = 0
 
 	$scope.changeDisplay = function (value) {
@@ -621,7 +639,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	------------------------------------- */
 	var getGridView_ChangePallet_API = function (PalletNo, id) {
 
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getGridView_ChangePallet', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -650,7 +668,7 @@ angular.module('Additional.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getGridView_ChangePallet', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
 	};
 
@@ -713,7 +731,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	function searchPallet(dataSearch, id) {
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -789,7 +807,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	function searchPallet2(dataSearch, id) {
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -852,7 +870,7 @@ angular.module('Additional.Controllers', ['ionic'])
 					return;
 				}
 
-				$ionicLoading.hide();
+				AppService.stopLoading();
 
 				$ionicPopup.confirm({
 					title: 'Confirm',
@@ -890,7 +908,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	{
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 			
 			var objsession = angular.copy(LoginService.getLoginData());
 
@@ -1117,7 +1135,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 })
 
-.controller('Additional_CheckRollPalletCtrl', function($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
+.controller('Additional_CheckRollPalletCtrl', function($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
   
 	/*--------------------------------------
 	Data Function
@@ -1158,6 +1176,12 @@ angular.module('Additional.Controllers', ['ionic'])
 
 	$scope.$on('$ionicView.enter', function () {
 		setFocus('PalletNo');
+	});
+
+	$scope.$on("$destroy", function () {
+		if ($rootScope.promise) {
+			$rootScope.stopCount();
+		}
 	});
 
 	$scope.DisplayFlag = 0
@@ -1230,7 +1254,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	function searchPallet(dataSearch) {
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -1307,7 +1331,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 				if(res4 === false)
 				{
-					$ionicLoading.hide();
+					AppService.stopLoading();
 					return;
 				}
 
@@ -1320,7 +1344,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 				}
 
-				$ionicLoading.hide();
+				AppService.stopLoading();
 
 			}).catch(function (error) {
 				console.log("Error occurred");
@@ -1338,7 +1362,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	function searchRoll(dataSearch) {
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -1394,7 +1418,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 				if(res3 === false)
 				{
-					$ionicLoading.hide();
+					AppService.stopLoading();
 					return;
 				}
 
@@ -1410,7 +1434,7 @@ angular.module('Additional.Controllers', ['ionic'])
 					AppService.err('แจ้งเตือน', 'ไม่มีเอกสารอ้างอิง Roll No. นี้!', 'PalletNo');
 				}
 
-				$ionicLoading.hide();
+				AppService.stopLoading();
 
 			}).catch(function (error) {
 				console.log("Error occurred");
@@ -1540,7 +1564,7 @@ angular.module('Additional.Controllers', ['ionic'])
   
 })
 
-.controller('Additional_MoveRollCtrl', function($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
+.controller('Additional_MoveRollCtrl', function($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
 
 	/*--------------------------------------
 	Data Function
@@ -1589,6 +1613,12 @@ angular.module('Additional.Controllers', ['ionic'])
 		setFocus('PalletNo');
 	});
 
+	$scope.$on("$destroy", function () {
+		if ($rootScope.promise) {
+			$rootScope.stopCount();
+		}
+	});
+
 	$scope.DisplayFlag = 0
 
 	$scope.changeDisplay = function (value) {
@@ -1602,7 +1632,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	------------------------------------- */
 	var getGridView_RollToPallet_API = function()
 	{
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getGridView_RollToPallet', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -1620,7 +1650,7 @@ angular.module('Additional.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getGridView_RollToPallet', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
 	}
 
@@ -1701,7 +1731,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	function searchPallet(dataSearch) {
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -1738,7 +1768,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 				setFocus('RollNo');
 
-				$ionicLoading.hide();
+				AppService.stopLoading();
 
 			}).catch(function (error) {
 				console.log("Error occurred");
@@ -1756,7 +1786,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	function searchRoll(dataSearch) {
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -1793,7 +1823,7 @@ angular.module('Additional.Controllers', ['ionic'])
 				
 				setFocus('PalletNo2');
 
-				$ionicLoading.hide();
+				AppService.stopLoading();
 
 			}).catch(function (error) {
 				console.log("Error occurred");
@@ -1811,7 +1841,7 @@ angular.module('Additional.Controllers', ['ionic'])
 	function searchPallet2(dataSearch) {
 		try {
 
-			$ionicLoading.show();
+			AppService.startLoading();
 
 			AppService.blur();
 
@@ -1950,7 +1980,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 						if(res4 === false)
 						{
-							$ionicLoading.hide();
+							AppService.stopLoading();
 							return;
 						}
 
@@ -2030,7 +2060,7 @@ angular.module('Additional.Controllers', ['ionic'])
 
 							if(res3 === false)
 							{
-								$ionicLoading.hide();
+								AppService.stopLoading();
 								return;
 							}
 	

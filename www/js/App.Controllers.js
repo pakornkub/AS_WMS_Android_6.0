@@ -8,10 +8,41 @@
 angular
 	.module("App.Controllers", [])
 
-	.run(function ($rootScope) {
+	.run(function ($rootScope,$interval) {
 		$rootScope.typeOf = function (value) {
 			return typeof value;
 		};
+
+		$rootScope.countDown = 0;
+		$rootScope.closeLoading = 0;
+		$rootScope.promise;
+
+		$rootScope.startCount = function(){
+
+			$rootScope.stopCount();
+
+			$rootScope.promise = $interval(function() {
+
+				$rootScope.countDown++
+
+				if($rootScope.countDown == 15)
+				{
+					$rootScope.closeLoading = 1;
+				}
+
+			}, 1000);   
+
+		}
+
+		$rootScope.stopCount = function() {
+			
+			$interval.cancel($rootScope.promise);
+			$rootScope.countDown = 0;
+			$rootScope.closeLoading = 0;
+			
+		};
+		
+		
 	})
 
 	.provider("AppManager", function () {
@@ -19,7 +50,7 @@ angular
 			"$rootScope",
 			function ($rootScope) {
 				return {
-					ConfirmBack: function ($ionicPopup) {
+					ConfirmBack: function ($ionicPopup,$ionicLoading) {
 						$rootScope.GoBack = function () {
 							$ionicPopup
 								.confirm({
@@ -32,18 +63,26 @@ angular
 									}
 								});
 						};
+					},
+					StopLoad: function ($ionicLoading) {
+						$rootScope.stopLoading = function () {
+							$ionicLoading.hide();
+							$rootScope.stopCount();
+						};
 					}
 				};
 			}
 		];
 	})
 
-	.service("AppService", function ($ionicLoading, $ionicPopup) {
+	.service("AppService", function ($ionicLoading, $ionicPopup, $rootScope) {
 		return {
 			err: function (str, err, isFocus) {
 				if (str) console.log(!str ? "alert " : "catch " + str + " == ", err);
 
 				$ionicLoading.hide();
+				$rootScope.stopCount();
+				
 
 				if (isFocus && err) {
 					document.querySelector("input,select").blur();
@@ -65,7 +104,9 @@ angular
 					});
 			},
 			succ: function (succ, isFocus) {
+
 				$ionicLoading.hide();
+				$rootScope.stopCount();
 
 				if (isFocus && succ) {
 					document.querySelector("input,select").blur();
@@ -90,6 +131,7 @@ angular
 				if (str) console.log(!str ? "alert " : "catch " + str + " == ", err);
 
 				$ionicLoading.hide();
+				$rootScope.stopCount();
 
 				if (isFocus && err) {
 					document.querySelector("input,select").blur();
@@ -102,7 +144,7 @@ angular
 						template: !str ? err : str + " :: " + err
 					})
 					.then(function (err) {
-						$ionicLoading.show();
+						//$ionicLoading.show();
 						if (isFocus && err) {
 							$(document).ready(function () {
 								document.getElementById(isFocus).focus();
@@ -137,11 +179,29 @@ angular
 						return n[Key] == Value;
 					}
 				});
+			},
+			stopLoading : function () {
+
+				$ionicLoading.hide();
+				$rootScope.stopCount();
+
+			},
+			startLoading : function () {
+
+				$ionicLoading.show({
+					templateUrl: 'loading.html',
+					scope: $rootScope,
+				}).then(function(){
+	
+					$rootScope.startCount();                                  
+					
+				});
+				
 			}
 		};
 	})
 
-	.factory("App", function ($soap, API, ConnectivityMonitor, AppService, $ionicLoading) {
+	.factory("App", function ($soap, API, ConnectivityMonitor, AppService, $ionicLoading, $state) {
 		return {
 			API: function (action, params) {
 
@@ -164,6 +224,14 @@ angular
 
 					}, 5000);
 
+				}*/
+
+				/*if (ConnectivityMonitor.isOffline()) {
+					AppService.err_disconnect('แจ้งเตือน', 'การเชื่อมต่อ Network มีปัญหา', '');
+
+					$state.go('login');
+
+					return $soap.post('', '', null);
 				}*/
 
 				console.log("action -> ", action);

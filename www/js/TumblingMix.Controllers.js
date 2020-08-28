@@ -6,7 +6,7 @@
 angular.module('TumblingMix.Controllers', ['ionic'])
 
 
-.controller('TumblingMix_MixRawMatCtrl', function($ionicPopup, $scope, $state, $filter, $stateParams, $ionicLoading, $cordovaBarcodeScanner, AppService, App, LoginService) {
+.controller('TumblingMix_MixRawMatCtrl', function($ionicPopup, $scope, $rootScope, $state, $filter, $stateParams, $ionicLoading, $cordovaBarcodeScanner, AppService, App, LoginService) {
 
     $scope.data = {};
     $scope.getBagging = {};
@@ -21,10 +21,16 @@ angular.module('TumblingMix.Controllers', ['ionic'])
     var Ref_no5 = "";
     var Substr_batch = "";
 
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
+
     /*--------------------------------------
     Call API PD
     ------------------------------------- */
-    $ionicLoading.show();
+    AppService.startLoading();
 
     App.API('getProductionMixing', {
         objsession: angular.copy(LoginService.getLoginData()),
@@ -37,7 +43,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
         AppService.err('getProductionMixing', res);
     }).finally(function() {
         //$scope.geBatch_API();
-        $ionicLoading.hide();
+        AppService.stopLoading();
     });
 
     
@@ -67,7 +73,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
         }).catch(function(res) {
             AppService.err('getBatch', res);
         }).finally(function() {
-            $ionicLoading.hide();
+            AppService.stopLoading();
         });
     };
 
@@ -126,7 +132,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
                 var lot = dataSearch.substring(0, pos);
                 var roll = dataSearch.substring(pos + 1);
 
-                $ionicLoading.show();
+                AppService.startLoading();
                 App.API('getTagByPallet_TumblingMix_MB', { 
                     objsession: angular.copy(LoginService.getLoginData()),
                     LotNo: lot,
@@ -153,7 +159,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
                 }).catch(function(res) {
                     AppService.err('getTagByPallet_TumblingMix_MB', res);
                 }).finally(function(res) {
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
                 });
 
             }
@@ -189,7 +195,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
             }).catch(function (res) {
                 AppService.err('getTagByPallet', res);
             }).finally(function () {
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
             });
             }
@@ -232,7 +238,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
         }).catch(function(res) {
             AppService.err('getTagByPallet_TumblingMix', res);
         }).finally(function() {
-            $ionicLoading.hide();
+            AppService.stopLoading();
         });
     };
 
@@ -263,7 +269,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
         }).catch(function(res) {
             AppService.err('getTagByPallet_TumblingMix_NC', res);
         }).finally(function() {
-            $ionicLoading.hide();
+            AppService.stopLoading();
         });
     };
     
@@ -330,7 +336,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
                                     }).then(function(res) {
                                         if(res) {
                                         
-                                            $ionicLoading.show();
+                                            AppService.startLoading();
                         
                                             App.API('insertPDMixRawmat', {
                                                 objsession: angular.copy(LoginService.getLoginData()),
@@ -360,7 +366,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
                                             }).catch(function(res) {
                                                 AppService.err('insertPDMixRawmat', res);
                                             }).finally(function() {
-                                                $ionicLoading.hide();
+                                                AppService.stopLoading();
                                             });
                         
                                         }
@@ -396,7 +402,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
                                 }).then(function(res) {
                                     if(res) {
                                     
-                                        $ionicLoading.show();
+                                        AppService.startLoading();
                     
                                         App.API('insertPDMixRawmat', {
                                             objsession: angular.copy(LoginService.getLoginData()),
@@ -426,7 +432,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
                                         }).catch(function(res) {
                                             AppService.err('insertPDMixRawmat', res);
                                         }).finally(function() {
-                                            $ionicLoading.hide();
+                                            AppService.stopLoading();
                                         });
                     
                                     }
@@ -439,7 +445,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
                 }).catch(function(res) {
                     AppService.err('CheckPallet_TumblingMix', res);
                 }).finally(function() {
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
                 });
 
             }
@@ -447,7 +453,7 @@ angular.module('TumblingMix.Controllers', ['ionic'])
         }).catch(function(res) {
             AppService.err('CheckSeqTumblingMix', res);
         }).finally(function() {
-            $ionicLoading.hide();
+            AppService.stopLoading();
         });
 
 

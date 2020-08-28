@@ -5,7 +5,13 @@
  */
 angular.module('Production.Controllers', ['ionic'])
 
-.controller('Production_ReceiveRawMatCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
+.controller('Production_ReceiveRawMatCtrl', function ($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
+
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
 
     /*--------------------------------------
     Data Function
@@ -40,7 +46,7 @@ angular.module('Production.Controllers', ['ionic'])
     ------------------------------------- */
     var GetOrderTopic = function () {
 
-        $ionicLoading.show();
+        AppService.startLoading();
 
         var strWhere = " And (ms_DocumentType.DocumentType_Index IN ('0010000000005')) "
         strWhere += " and tb_Order.Customer_Index in ( select  Customer_Index from x_Department_Customer ";
@@ -65,7 +71,7 @@ angular.module('Production.Controllers', ['ionic'])
         }).catch(function (res) {
             AppService.err('GetOrderTopic', res);
         }).finally(function (res) {
-            $ionicLoading.hide();
+            AppService.stopLoading();
         });
     };
 
@@ -73,7 +79,7 @@ angular.module('Production.Controllers', ['ionic'])
 
 })
 
-.controller('Production_ReceiveRawMat_SelectedCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $stateParams, $ionicHistory) {
+.controller('Production_ReceiveRawMat_SelectedCtrl', function ($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $stateParams, $ionicHistory) {
 
     /*--------------------------------------
     Data Function
@@ -111,6 +117,12 @@ angular.module('Production.Controllers', ['ionic'])
         setFocus('PalletNo');
     });
 
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
+
     $scope.DisplayFlag = 0
 
     $scope.changeDisplay = function (value) {
@@ -131,7 +143,7 @@ angular.module('Production.Controllers', ['ionic'])
 
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             var objsession = angular.copy(LoginService.getLoginData());
 
@@ -180,7 +192,7 @@ angular.module('Production.Controllers', ['ionic'])
                 $scope.data.PalletNo = null;
                 setFocus('PalletNo');
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
             }).catch(function (error) {
                 console.log("Error occurred");
@@ -297,7 +309,7 @@ angular.module('Production.Controllers', ['ionic'])
     function searchPallet(dataSearch) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -373,7 +385,7 @@ angular.module('Production.Controllers', ['ionic'])
                 $scope.data.PalletNo = null;
                 AppService.succ('เก็บเรียบร้อย', 'PalletNo');
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
             }).catch(function (error) {
                 console.log("Error occurred");
@@ -441,7 +453,7 @@ angular.module('Production.Controllers', ['ionic'])
 
 })
 
-.controller('Production_PackingRollCtrl', function($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
+.controller('Production_PackingRollCtrl', function($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
     
     /*--------------------------------------
 	Data Function
@@ -496,7 +508,13 @@ angular.module('Production.Controllers', ['ionic'])
 
 	$scope.$on('$ionicView.enter', function () {
 		setFocus('RollNo');
-	});
+    });
+    
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
 
 	$scope.DisplayFlag = 0
 
@@ -511,7 +529,7 @@ angular.module('Production.Controllers', ['ionic'])
 	------------------------------------- */
     var getBaggingOrderHeader_API = function()
     {
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getBaggingOrderHeader', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -531,7 +549,7 @@ angular.module('Production.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getBaggingOrderHeader', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
     }
 
@@ -542,7 +560,7 @@ angular.module('Production.Controllers', ['ionic'])
 	------------------------------------- */
     var getGridView_Roll_API = function()
     {
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getGridView_Roll', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -567,7 +585,7 @@ angular.module('Production.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getGridView_Roll', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
     }
 
@@ -576,7 +594,7 @@ angular.module('Production.Controllers', ['ionic'])
 	------------------------------------- */
     var getBaggingOrderItem_API = function()
     {
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getBaggingOrderItem', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -594,7 +612,7 @@ angular.module('Production.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getBaggingOrderItem_API', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
     }
 
@@ -612,7 +630,7 @@ angular.module('Production.Controllers', ['ionic'])
     function loadPD(BaggingOrder_Index) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             var objsession = angular.copy(LoginService.getLoginData());
 
@@ -620,7 +638,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                 $scope.data = {};
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
                 return;
 
@@ -658,7 +676,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                     setFocus('RollNo');
 
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
 
                 }).catch(function (error) {
 					console.log("Error occurred");
@@ -760,7 +778,7 @@ angular.module('Production.Controllers', ['ionic'])
     function searchRoll(dataSearch) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -770,7 +788,7 @@ angular.module('Production.Controllers', ['ionic'])
 			_lot 	= dataSearch.substring(0, _pos);
             _roll 	= dataSearch.substring(_pos+1);
             
-            $ionicLoading.hide();
+            AppService.stopLoading();
 
             $ionicPopup.confirm({
                 title: 'Confirm',
@@ -799,7 +817,7 @@ angular.module('Production.Controllers', ['ionic'])
     function insertRoll(dataSearch) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             var objsession = angular.copy(LoginService.getLoginData());
 
@@ -877,7 +895,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                 if(res4 === false)
                 {
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
                     return;
                 }
 
@@ -959,7 +977,7 @@ angular.module('Production.Controllers', ['ionic'])
 
 })
 
-.controller('Production_IssueRawMatCtrl', function($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $stateParams) {
+.controller('Production_IssueRawMatCtrl', function($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $stateParams) {
 
     /*--------------------------------------
 	Data Function
@@ -1023,6 +1041,12 @@ angular.module('Production.Controllers', ['ionic'])
 		setFocus('Line_No');
     });
 
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
+
     $scope.data.Date    = new Date();
     $scope.data.DateMax = $filter('date')('', 'dd/MM/yyyy');
     $scope.data.TypeIssue = 'Issue';
@@ -1032,7 +1056,7 @@ angular.module('Production.Controllers', ['ionic'])
 	------------------------------------- */
     var getBaggingOrderHeader_API = function(Line_No)
     {
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getBaggingOrderHeader', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -1052,7 +1076,7 @@ angular.module('Production.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getBaggingOrderHeader', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
     }
     
@@ -1061,7 +1085,7 @@ angular.module('Production.Controllers', ['ionic'])
 	------------------------------------- */
     var getShift_API = function()
     {
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getShift', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -1098,7 +1122,7 @@ angular.module('Production.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getShift', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
     }
 
@@ -1123,7 +1147,7 @@ angular.module('Production.Controllers', ['ionic'])
 	------------------------------------- */
     var getDate_Current_API = function()
     {
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getDate_Current', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -1140,7 +1164,7 @@ angular.module('Production.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getDate_Current', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
     }
 
@@ -1274,7 +1298,7 @@ angular.module('Production.Controllers', ['ionic'])
     function searchPallet(dataSearch) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -1293,7 +1317,7 @@ angular.module('Production.Controllers', ['ionic'])
                 getDataPallet(dataSearch);
             }
             
-            $ionicLoading.hide();
+            AppService.stopLoading();
 
         } catch (error) {
             console.log("Error occurred");
@@ -1340,7 +1364,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                 if(res2 === false)
                 {
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
                     return;
                 }
 
@@ -1392,7 +1416,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                 setFocus('IssueQty');
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
             }).catch(function (error) {
                 console.log("Error occurred");
@@ -1480,7 +1504,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                 if(res3 === false)
                 {
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
                     return;
                 }
 
@@ -1532,7 +1556,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                 setFocus('IssueQty');
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
 			}).catch(function (error) {
 				console.log("Error occurred");
@@ -1650,7 +1674,7 @@ angular.module('Production.Controllers', ['ionic'])
     function savePallet() {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             var objsession = angular.copy(LoginService.getLoginData());
 
@@ -1672,7 +1696,7 @@ angular.module('Production.Controllers', ['ionic'])
                 return;
             }
 
-            $ionicLoading.hide();
+            AppService.stopLoading();
 
             $ionicPopup.confirm({
                 title: 'Confirm',
@@ -1686,7 +1710,7 @@ angular.module('Production.Controllers', ['ionic'])
                 }
                 else {
 
-                    $ionicLoading.show();
+                    AppService.startLoading();
 
                     var res_insertPDIssueRawMat =  insertPDIssueRawMat(objsession,_line_no,BaggingOrder_Index,BaggingOrder_No,WorkShifts_Index,$scope.data.Date,$scope.data.Qty,$scope.data.IssueQty,_tag_no,$scope.data.TypeIssue)
 
@@ -1817,7 +1841,7 @@ angular.module('Production.Controllers', ['ionic'])
 
 })
 
-.controller('Production_PackToPalletCtrl', function($scope, $ionicPopup,  $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
+.controller('Production_PackToPalletCtrl', function($scope, $rootScope, $ionicPopup,  $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService, $filter, $ionicScrollDelegate) {
 	
     /*--------------------------------------
 	Data Function
@@ -1874,12 +1898,18 @@ angular.module('Production.Controllers', ['ionic'])
 		setFocus('PalletNo');
     });
 
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
+
     /*--------------------------------------
 	Call API getBaggingOrderHeader
 	------------------------------------- */
     var getBaggingOrderHeader_API = function()
     {
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getBaggingOrderHeader', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -1899,7 +1929,7 @@ angular.module('Production.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getBaggingOrderHeader', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
     }
 
@@ -1910,7 +1940,7 @@ angular.module('Production.Controllers', ['ionic'])
 	------------------------------------- */
     var getGridView_Roll_API = function(whereSql)
     {
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getGridView_Roll', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -1930,7 +1960,7 @@ angular.module('Production.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getGridView_Roll', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
     }
 
@@ -1953,7 +1983,7 @@ angular.module('Production.Controllers', ['ionic'])
     function loadPD(BaggingOrder_Index) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             var objsession = angular.copy(LoginService.getLoginData());
 
@@ -1961,7 +1991,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                 $scope.data = {};
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
                 return;
 
@@ -1995,7 +2025,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                     setFocus('PalletNo');
 
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
 
                 }).catch(function (error) {
 					console.log("Error occurred");
@@ -2104,7 +2134,7 @@ angular.module('Production.Controllers', ['ionic'])
     function searchPallet(dataSearch) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -2167,7 +2197,7 @@ angular.module('Production.Controllers', ['ionic'])
                     $scope.data.RollNo = null;
                     _i = 0;
                     setFocus('RollNo');
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
 					return;
                 }
 
@@ -2180,7 +2210,7 @@ angular.module('Production.Controllers', ['ionic'])
                     _i = 0;
                     getGridView_Roll_API(" WHERE Pallet_No = '" + dataSearch + "' and tb_BaggingOrderItem.Status = 1 ");
                     setFocus('RollNo');
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
                     return;
                 }
 
@@ -2197,7 +2227,7 @@ angular.module('Production.Controllers', ['ionic'])
                 $scope.Count = resDataSet4[0].Count_Pallet;
                 _i = 0;
                 setFocus('RollNo');
-                $ionicLoading.hide();
+                AppService.stopLoading();
                 return
 
             }).catch(function (error) {
@@ -2216,7 +2246,7 @@ angular.module('Production.Controllers', ['ionic'])
     function searchRoll(dataSearch) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -2317,14 +2347,14 @@ angular.module('Production.Controllers', ['ionic'])
 
                     if(res3 === false)
                     {
-                        $ionicLoading.hide();
+                        AppService.stopLoading();
                         return;
                     }
 
                     $scope.isDisable_PD = true;
                     $scope.data.RollNo = null;
                     setFocus('RollNo');
-                    $ionicLoading.hide();
+                    AppService.stopLoading();
                     return;         
 
                 }).catch(function (error) {
@@ -2484,7 +2514,7 @@ angular.module('Production.Controllers', ['ionic'])
                 _i = 1;
                 _leng_roll = resDataSet3[0].Roll_No;
                 setFocus('RollNo');
-                $ionicLoading.hide();
+                AppService.stopLoading();
                 return;         
 
             }).catch(function (error) {
@@ -2550,7 +2580,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                 $scope.data.RollNo = null;
                 setFocus('RollNo');
-                $ionicLoading.hide();
+                AppService.stopLoading();
                 return;         
 
             }).catch(function (error) {
@@ -2724,7 +2754,7 @@ angular.module('Production.Controllers', ['ionic'])
                 }
                 else {
 
-                    $ionicLoading.show();
+                    AppService.startLoading();
 
                     var objsession = angular.copy(LoginService.getLoginData());
 
@@ -2755,7 +2785,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                                 if(res3 === false)
                                 {
-                                    $ionicLoading.hide();
+                                    AppService.stopLoading();
                                     return;
                                 }
 
@@ -2792,7 +2822,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                                 if(res3 === false)
                                 {
-                                    $ionicLoading.hide();
+                                    AppService.stopLoading();
                                     return;
                                 }
 
@@ -2843,7 +2873,7 @@ angular.module('Production.Controllers', ['ionic'])
 
 })
 
-.controller('Production_DeleteRollCtrl', function($scope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
+.controller('Production_DeleteRollCtrl', function($scope, $rootScope, $ionicPopup, $state, $ionicLoading, $cordovaBarcodeScanner, App, AppService, LoginService) {
 
     /*--------------------------------------
 	Data Function
@@ -2888,12 +2918,18 @@ angular.module('Production.Controllers', ['ionic'])
 		setFocus('RollNo');
     });
 
+    $scope.$on("$destroy", function () {
+        if ($rootScope.promise) {
+            $rootScope.stopCount();
+        }
+    });
+
     /*--------------------------------------
 	Call API getBaggingOrderHeader
 	------------------------------------- */
     var getBaggingOrderHeader_API = function()
     {
-		$ionicLoading.show();
+		AppService.startLoading();
 
 		App.API('getBaggingOrderHeader', {
 			objsession: angular.copy(LoginService.getLoginData()),
@@ -2913,7 +2949,7 @@ angular.module('Production.Controllers', ['ionic'])
 		}).catch(function (res) {
 			AppService.err('getBaggingOrderHeader', res);
 		}).finally(function (res) {
-			$ionicLoading.hide();
+			AppService.stopLoading();
 		});
     }
 
@@ -2991,7 +3027,7 @@ angular.module('Production.Controllers', ['ionic'])
     function searchRoll(dataSearch) {
         try {
 
-            $ionicLoading.show();
+            AppService.startLoading();
 
             AppService.blur();
 
@@ -3023,7 +3059,7 @@ angular.module('Production.Controllers', ['ionic'])
                 $scope.data.Status_Tranfer = resDataSet[0].Status_Tranfer_T;
                 _baggingorderitem_index = resDataSet[0].BaggingOrderItem_Index;
 
-                $ionicLoading.hide();
+                AppService.stopLoading();
 
             }).catch(function (error) {
                 console.log("Error occurred");
@@ -3083,7 +3119,7 @@ angular.module('Production.Controllers', ['ionic'])
                 }
                 else {
 
-                    $ionicLoading.show();
+                    AppService.startLoading();
 
                     var objsession = angular.copy(LoginService.getLoginData());
 
