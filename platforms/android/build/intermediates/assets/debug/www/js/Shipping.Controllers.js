@@ -17,6 +17,7 @@ angular.module('Shipping.Controllers', ['ionic'])
     $scope.datatablesListLength = 0;
     $scope.lbQty = 0;
     $scope.lbTotal = 0;
+    $scope.lbError = '';
 
     $scope.isDisable = false;
 
@@ -37,6 +38,7 @@ angular.module('Shipping.Controllers', ['ionic'])
         $scope.datatablesListLength = 0;
         $scope.lbQty = 0;
         $scope.lbTotal = 0;
+        $scope.lbError = '';
     };
 
     var clearData_Modal = function () {
@@ -280,6 +282,8 @@ angular.module('Shipping.Controllers', ['ionic'])
 
         keyCnt = 0;
 
+        $scope.lbError = '';
+
         searchPallet(dataSearch, id);
 
     };
@@ -299,7 +303,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
             for (var x in $scope.datatablesList) {
 
-                if ($scope.datatablesList[x]['PALLET_x0020_NO'] == dataSearch) {
+                if ($scope.datatablesList[x]['PALLET_x0020_NO'].toUpperCase() == dataSearch) {
 
                     datatables[i] = $scope.datatablesList[x];
 
@@ -564,7 +568,7 @@ angular.module('Shipping.Controllers', ['ionic'])
 
                         for (var x in $scope.datatablesList) {
 
-                            if ($scope.datatablesList[x]['PALLET_x0020_NO'] == '') {
+                            if ($scope.datatablesList[x]['PALLET_x0020_NO'].toUpperCase() == '') {
 
                                 datatables[i] = $scope.datatablesList[x];
 
@@ -658,11 +662,13 @@ angular.module('Shipping.Controllers', ['ionic'])
 
                 }
 
-                AppService.succ('เปลี่ยน Pallet ' + dataSearch + '  เรียบร้อย!', 'PalletNo');
+                //AppService.succ('เปลี่ยน Pallet ' + dataSearch + '  เรียบร้อย!', 'PalletNo');
+
+                $scope.lbError = 'เปลี่ยน Pallet ' + dataSearch + ' เรียบร้อย!';
 
                 loadDO(Withdraw_Index, Withdraw_No);
 
-                searchPallet($scope.data.PalletNo);
+                searchPallet(dataSearch,'PalletNo');
 
                 return true;
 
@@ -955,10 +961,10 @@ angular.module('Shipping.Controllers', ['ionic'])
         keyCnt = 0;
 
         if (id == 'Modal_Location') {
-            searchLocation_Modal(dataSearch, id);
+            searchLocation_Modal(dataSearch.toUpperCase(), id);
         }
         else {
-            searchPallet_Modal(dataSearch, id);
+            searchPallet_Modal(dataSearch.toUpperCase(), id);
         }
 
     };
@@ -1100,7 +1106,7 @@ angular.module('Shipping.Controllers', ['ionic'])
             return;
         }
         else {
-            searchPallet_Modal($scope.modal_data.PalletNo, 'Modal_PalletNo');
+            searchPallet_Modal($scope.modal_data.PalletNo.toUpperCase(), 'Modal_PalletNo');
         }
 
 
@@ -1109,7 +1115,7 @@ angular.module('Shipping.Controllers', ['ionic'])
             return;
         }
         else {
-            searchLocation_Modal($scope.modal_data.Location, 'Modal_Location');
+            searchLocation_Modal($scope.modal_data.Location.toUpperCase(), 'Modal_Location');
         }
 
         savePallet_Modal();
@@ -1131,7 +1137,7 @@ angular.module('Shipping.Controllers', ['ionic'])
                 Palletstatus = '0010000000005';
             }
 
-            var res_updatePalletToTag = updatePalletToTag(objsession, Tag_No, $scope.modal_data.PalletNo, $scope.modal_data.Lot, Palletstatus);
+            var res_updatePalletToTag = updatePalletToTag(objsession, Tag_No, $scope.modal_data.PalletNo.toUpperCase(), $scope.modal_data.Lot, Palletstatus);
 
             res_updatePalletToTag.then(function (res) {
 
@@ -1146,12 +1152,13 @@ angular.module('Shipping.Controllers', ['ionic'])
                     //$ionicHistory.goBack();
 
                     //AppService.succ('สแกน Pallet' + $scope.data.PalletNo + 'อีกครั้งเพื่อเบิกสินค้า!', '');
+                    $scope.lbError = 'สแกน Pallet' + $scope.data.PalletNo.toUpperCase() + 'อีกครั้งเพื่อเบิกสินค้า!';
 
                     if (booAssing) {
 
                         loadDO(Withdraw_Index, Withdraw_No);
 
-                        searchPallet($scope.data.PalletNo);
+                        searchPallet($scope.data.PalletNo.toUpperCase(),'PalletNo');
                     }
 
                     $scope.data.PalletNo = null;
