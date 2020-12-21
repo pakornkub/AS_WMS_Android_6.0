@@ -268,7 +268,7 @@ angular.module('Additional.Controllers', ['ionic'])
 		$cordovaBarcodeScanner.scan().then(function (imageData) {
 			if (!imageData.cancelled) {
 				$scope['data'][id] = imageData.text.toUpperCase();
-				$scope.search(angular.copy($scope['data'][id]), '');
+				$scope.search(angular.copy($scope['data'][id]),id, '');
 			}
 		}, function (error) {
 			AppService.err('scanPalletNo', error);
@@ -679,7 +679,7 @@ angular.module('Additional.Controllers', ['ionic'])
 		$cordovaBarcodeScanner.scan().then(function (imageData) {
 			if (!imageData.cancelled) {
 				$scope['data'][id] = imageData.text.toUpperCase();
-				$scope.search(angular.copy($scope['data'][id]), '');
+				$scope.search(angular.copy($scope['data'][id]), id, '');
 			}
 		}, function (error) {
 			AppService.err('scanPalletNo', error);
@@ -1199,7 +1199,7 @@ angular.module('Additional.Controllers', ['ionic'])
 		$cordovaBarcodeScanner.scan().then(function (imageData) {
 			if (!imageData.cancelled) {
 				$scope['data'][id] = imageData.text.toUpperCase();
-				$scope.search(angular.copy($scope['data'][id]), '');
+				$scope.search(angular.copy($scope['data'][id]), id, '');
 			}
 		}, function (error) {
 			AppService.err('scanPalletNo', error);
@@ -1661,7 +1661,7 @@ angular.module('Additional.Controllers', ['ionic'])
 		$cordovaBarcodeScanner.scan().then(function (imageData) {
 			if (!imageData.cancelled) {
 				$scope['data'][id] = imageData.text.toUpperCase();
-				$scope.search(angular.copy($scope['data'][id]), '');
+				$scope.search(angular.copy($scope['data'][id]), id, '');
 			}
 		}, function (error) {
 			AppService.err('scanPalletNo', error);

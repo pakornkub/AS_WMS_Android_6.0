@@ -390,7 +390,7 @@ angular.module('Pallet.Controllers', [])
 				if (!imageData.cancelled) {
 
 					$scope['data'][id] = imageData.text.toUpperCase();
-					$scope.search(angular.copy($scope['data'][id]), '');
+					$scope.search(angular.copy($scope['data'][id]), id, '');
 
 				}
 			}, function (error) {
@@ -815,7 +815,7 @@ angular.module('Pallet.Controllers', [])
 				if (!imageData.cancelled) {
 
 					$scope['data'][id] = imageData.text.toUpperCase();
-					$scope.search(angular.copy($scope['data'][id]), '');
+					$scope.search(angular.copy($scope['data'][id]), id, '');
 
 				}
 			}, function (error) {

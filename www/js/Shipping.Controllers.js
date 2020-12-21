@@ -243,7 +243,7 @@ angular.module('Shipping.Controllers', ['ionic'])
             if (!imageData.cancelled) {
 
                 $scope['data'][id] = imageData.text.toUpperCase();
-                $scope.search(angular.copy($scope['data'][id]), '');
+                $scope.search(angular.copy($scope['data'][id]),id, '');
 
             }
         }, function (error) {

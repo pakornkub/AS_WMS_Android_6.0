@@ -730,7 +730,7 @@ angular.module('Production.Controllers', ['ionic'])
 		$cordovaBarcodeScanner.scan().then(function (imageData) {
 			if (!imageData.cancelled) {
 				$scope['data'][id] = imageData.text.toUpperCase();
-				$scope.search(angular.copy($scope['data'][id]), '');
+				$scope.search(angular.copy($scope['data'][id]), id, '');
 			}
 		}, function (error) {
 			AppService.err('scanPalletNo', error);
@@ -1250,7 +1250,7 @@ angular.module('Production.Controllers', ['ionic'])
 		$cordovaBarcodeScanner.scan().then(function (imageData) {
 			if (!imageData.cancelled) {
 				$scope['data'][id] = imageData.text.toUpperCase();
-				$scope.search(angular.copy($scope['data'][id]), '');
+				$scope.search(angular.copy($scope['data'][id]), id, '');
 			}
 		}, function (error) {
 			AppService.err('scanPalletNo', error);
@@ -1345,7 +1345,7 @@ angular.module('Production.Controllers', ['ionic'])
 					return false;
                 }
 
-                _tag_no = resDataSet[0].Tag_No;
+                _tag_no = resDataSet[0].TAG_No;
                 _qty_bal = resDataSet[0].Qty_Bal;
 
                 $scope.data.Status = resDataSet[0].PalletStatus_Id;
@@ -1383,11 +1383,9 @@ angular.module('Production.Controllers', ['ionic'])
 
                 var resDataSet2 = (!res2[1]['diffgr:diffgram']) ? {} : res2[1]['diffgr:diffgram'].NewDataSet.Table1;
 
-                if(!resDataSet2[0].Qty_Issue)
-                {
-                    _qty_issue = 0;
-                }
-                else
+                _qty_issue = 0;
+                
+                if(Object.keys(resDataSet2).length > 0 && resDataSet2[0].Qty_Issue)
                 {
                     _qty_issue = parseFloat(resDataSet2[0].Qty_Issue);
                 }
@@ -1419,7 +1417,7 @@ angular.module('Production.Controllers', ['ionic'])
                 AppService.stopLoading();
 
             }).catch(function (error) {
-                console.log("Error occurred");
+                console.log(error);
                 AppService.err('Error', 'Error occurred', '');
                 return;
             });
@@ -1485,7 +1483,7 @@ angular.module('Production.Controllers', ['ionic'])
 					return false;
                 }
                 
-                _tag_no = resDataSet[0].Tag_No;
+                _tag_no = resDataSet[0].TAG_No;
                 _qty_bal = resDataSet[0].Qty_Bal;
 
                 $scope.data.Status = resDataSet[0].PalletStatus_Id;
@@ -1521,13 +1519,11 @@ angular.module('Production.Controllers', ['ionic'])
 
                 }
 
-                var resDataSet2 = (!res2[1]['diffgr:diffgram']) ? {} : res2[1]['diffgr:diffgram'].NewDataSet.Table1;
+                var resDataSet2 = (!res3[1]['diffgr:diffgram']) ? {} : res3[1]['diffgr:diffgram'].NewDataSet.Table1;
 
-                if(!resDataSet2[0].Qty_Issue)
-                {
-                    _qty_issue = 0;
-                }
-                else
+                _qty_issue = 0;
+                
+                if(Object.keys(resDataSet2).length > 0 && resDataSet2[0].Qty_Issue)
                 {
                     _qty_issue = parseFloat(resDataSet2[0].Qty_Issue);
                 }
@@ -1559,7 +1555,7 @@ angular.module('Production.Controllers', ['ionic'])
                 AppService.stopLoading();
 
 			}).catch(function (error) {
-				console.log("Error occurred");
+				console.log(error);
 				AppService.err('Error', 'Error occurred', '');
 				return;
 			});
@@ -1678,7 +1674,7 @@ angular.module('Production.Controllers', ['ionic'])
 
             var objsession = angular.copy(LoginService.getLoginData());
 
-            if (!$scope.data.Pallet) {
+            if (!$scope.data.PalletNo) {
                 $scope.data.PalletNo = null;
                 AppService.err('แจ้งเตือน', 'กรุณาเลือก Pallet No.', 'PalletNo');
                 return;
@@ -1712,7 +1708,7 @@ angular.module('Production.Controllers', ['ionic'])
 
                     AppService.startLoading();
 
-                    var res_insertPDIssueRawMat =  insertPDIssueRawMat(objsession,_line_no,BaggingOrder_Index,BaggingOrder_No,WorkShifts_Index,$scope.data.Date,$scope.data.Qty,$scope.data.IssueQty,_tag_no,$scope.data.TypeIssue)
+                    var res_insertPDIssueRawMat =  insertPDIssueRawMat(objsession,_line_no,BaggingOrder_Index,BaggingOrder_No,WorkShifts_Index,$filter('date')($scope.data.Date, 'dd/MM/yyyy'),$scope.data.Qty,$scope.data.IssueQty,_tag_no,$scope.data.TypeIssue)
 
                     res_insertPDIssueRawMat.then(function(res){
 
@@ -1721,7 +1717,7 @@ angular.module('Production.Controllers', ['ionic'])
                         return;
 
                     }).catch(function (error) {
-                        console.log("Error occurred");
+                        console.log(error);
                         AppService.err('Error', 'Error occurred', '');
                         return;
                     });
@@ -2079,7 +2075,7 @@ angular.module('Production.Controllers', ['ionic'])
 		$cordovaBarcodeScanner.scan().then(function (imageData) {
 			if (!imageData.cancelled) {
 				$scope['data'][id] = imageData.text.toUpperCase();
-				$scope.search(angular.copy($scope['data'][id]), '');
+				$scope.search(angular.copy($scope['data'][id]), id, '');
 			}
 		}, function (error) {
 			AppService.err('scanPalletNo', error);
@@ -2979,7 +2975,7 @@ angular.module('Production.Controllers', ['ionic'])
 		$cordovaBarcodeScanner.scan().then(function (imageData) {
 			if (!imageData.cancelled) {
 				$scope['data'][id] = imageData.text.toUpperCase();
-				$scope.search(angular.copy($scope['data'][id]), '');
+				$scope.search(angular.copy($scope['data'][id]), id, '');
 			}
 		}, function (error) {
 			AppService.err('scanPalletNo', error);

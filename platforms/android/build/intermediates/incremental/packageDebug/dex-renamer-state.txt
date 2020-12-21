@@ -1,4 +1,4 @@
-#Mon Nov 16 15:27:55 ICT 2020
+#Mon Dec 21 16:57:43 ICT 2020
 base.0=E\:\\Work_Android\\WMS_Mobile_AS\\Code\\tpipl\\platforms\\android\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
 renamed.0=classes.dex
 file.0=E\:\\Work_Android\\WMS_Mobile_AS\\Code\\tpipl\\platforms\\android\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex
